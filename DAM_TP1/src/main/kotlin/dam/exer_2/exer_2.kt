@@ -36,10 +36,10 @@ fun main() {
 
     try {
         val result: Any = when (choice) { // result is Any due to boolean operations
-            "+" -> numA.toInt() + numB.toInt()
-            "-" -> numA.toInt() - numB.toInt()
-            "*" -> numA.toInt() * numB.toInt()
-            "/" -> numA.toInt() / numB.toInt()
+            "+" -> numA.toFloat() + numB.toFloat()
+            "-" -> numA.toFloat() - numB.toFloat()
+            "*" -> numA.toFloat() * numB.toFloat()
+            "/" -> numA.toFloat() / numB.toFloat()
             "&&" -> stringToBool(numA) && stringToBool(numB)
             "||" -> stringToBool(numA) || stringToBool(numB)
             "!" -> !stringToBool(numA) // it's the only unary operation
@@ -49,7 +49,12 @@ fun main() {
         }
         when (choice) {
             // aritmethic operations -> decimal
-            "+", "-", "*", "/" -> { println("The result in decimal is: $result") }
+            "+", "-", "*" -> { println("The result in decimal is: $result") }
+            "/" -> {
+                if (numB.toFloat() == 0f) {
+                    println("Division by 0 is not possible")
+                }
+            }
             // bitwise operations -> hexadecimal
             "shl", "shr" -> { println("The result in hexadecimal is: ${(result as Int).toString(16).uppercase()}") }
             // boolean operators -> boolean
@@ -57,8 +62,6 @@ fun main() {
         }
     } catch (e: NumberFormatException) {
         println("Please, type only numbers or valid true/false")
-    } catch (e: ArithmeticException) {
-        println("Division by zero isn't possible")
     } catch (e: Exception) {
         println("Unknown error: ${e.message}")
     }
