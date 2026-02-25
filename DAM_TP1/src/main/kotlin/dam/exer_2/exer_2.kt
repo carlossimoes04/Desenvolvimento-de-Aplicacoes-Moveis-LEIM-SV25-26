@@ -54,6 +54,7 @@ fun main() {
                 if (numB.toFloat() == 0f) {
                     println("Division by 0 is not possible")
                 }
+                println("The result in decimal is: $result")
             }
             // bitwise operations -> hexadecimal
             "shl", "shr" -> { println("The result in hexadecimal is: ${(result as Int).toString(16).uppercase()}") }
