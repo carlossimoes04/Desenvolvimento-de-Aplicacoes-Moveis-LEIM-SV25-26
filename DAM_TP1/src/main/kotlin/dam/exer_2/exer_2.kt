@@ -35,7 +35,7 @@ fun main() {
     }
 
     try {
-        val result: Any = when (choice) { // result is Any due to boolean operations
+        val result: Any = when (choice) { // result is Any due to boolean and bitwise shift operations
             "+" -> numA.toFloat() + numB.toFloat()
             "-" -> numA.toFloat() - numB.toFloat()
             "*" -> numA.toFloat() * numB.toFloat()
