@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Hello World Optional</string>
+    <string name="text_system_info">TextView</string>
 </resources>
