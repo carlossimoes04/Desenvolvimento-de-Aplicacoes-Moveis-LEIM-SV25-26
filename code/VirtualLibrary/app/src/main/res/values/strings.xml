@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Virtual Library</string>
+    <string name="total_criados">Total Criados: %1$d</string>
+    <string name="adicionar_livro">Adicionar Livro</string>
+    <string name="tv_msg">A biblioteca está vazia.</string>
+    <string name="msg_novo_livro">Novo livro adicionado com sucesso!\n\n%1$s</string>
 </resources>
