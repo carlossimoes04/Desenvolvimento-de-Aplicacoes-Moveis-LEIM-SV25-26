@@ -81,4 +81,11 @@ class Library {
             }
         }
     }
+
+    companion object {
+        private val globalTotalBooksCreated: Int = 0
+        fun getTotalBooksCreated(): Int {
+            return globalTotalBooksCreated
+        }
+    }
 }

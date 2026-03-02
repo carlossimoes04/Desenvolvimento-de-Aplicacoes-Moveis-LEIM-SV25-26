@@ -1,6 +1,6 @@
 package dam.exer_vl
 
-open class Book constructor(val title: String, val author: String, val year: Int, val initialCopies: Int) {
+abstract class Book constructor(val title: String, val author: String, val year: Int, val initialCopies: Int) {
     
     private val _publicationYear: Int = year
     val publicationYear: String
@@ -24,7 +24,19 @@ open class Book constructor(val title: String, val author: String, val year: Int
                 else -> field = value
             }
         }
-    
+
+    override fun toString(): String {
+        return """
+            Book:
+            -> Title: $title
+            -> Author: $author
+            -> Publication Year: $year; $publicationYear
+            -> Available Copies: $availableCopies/$initialCopies
+            """.trimIndent()
+    }
+
+    abstract fun getStorageInfo(): String
+
     init {
         println("Book created: '$title' by $author")
     }
