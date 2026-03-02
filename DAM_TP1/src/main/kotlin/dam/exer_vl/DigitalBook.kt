@@ -11,10 +11,7 @@ class DigitalBook (title: String, author: String, year: Int, initialCopies: Int,
     }
 
     override fun getStorageInfo(): String {
-        return """
-        -> File Size: ${fileSize}MB
-        -> Format: $format
-        """.trimIndent()
+        return """-> File Size: ${fileSize}MB; Format: $format"""
     }
 
 

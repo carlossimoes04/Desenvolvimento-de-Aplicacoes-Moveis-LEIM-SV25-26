@@ -13,9 +13,6 @@ class PhysicalBook (title: String, author: String, year: Int, initialCopies: Int
     }
 
     override fun getStorageInfo(): String {
-        return """
-        -> Weight: ${weight}Kg
-        -> Cover: ${doesItHaveHardcover()}
-        """.trimIndent()
+        return """Weight: ${weight}Kg; Cover: ${doesItHaveHardcover()}"""
     }
 }

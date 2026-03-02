@@ -1,6 +1,6 @@
 package dam.exer_vl
 
-class Library {
+class Library (val name: String) {
     // used mutable list instead of list because lists can't be modified after their creation
     private val books: MutableList<Book> = mutableListOf()
 
@@ -60,6 +60,7 @@ class Library {
             println("   Author: ${book.author}")
             println("   Year: ${book.year} (${book.publicationYear})")
             println("   Available Copies: ${book.availableCopies}")
+            println("   Storage: ${book.getStorageInfo()}")
             println()
         }
     }
