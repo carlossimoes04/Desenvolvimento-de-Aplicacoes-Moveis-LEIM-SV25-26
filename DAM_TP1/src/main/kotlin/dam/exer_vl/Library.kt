@@ -1,6 +1,7 @@
 package dam.exer_vl
 
 class Library {
+    // used mutable list instead of list because lists can't be modified after their creation
     private val books: MutableList<Book> = mutableListOf()
 
     /**
@@ -53,7 +54,7 @@ class Library {
             return
         }
         
-        println("\n=== Library Books ===")
+        println("\nLibrary Books: ")
         books.forEachIndexed { index, book ->
             println("${index + 1}. Title: '${book.title}'")
             println("   Author: ${book.author}")
@@ -72,9 +73,9 @@ class Library {
         when {
             authorBooks.isEmpty() -> println("No books found by author '$author'.")
             else -> {
-                println("\n=== Books by $author ===")
+                println("\nBooks by $author:")
                 authorBooks.forEach { book ->
-                    println("• '${book.title}' (${book.year}) - Available: ${book.availableCopies} copies")
+                    println("-> '${book.title}' (${book.year}) - Available: ${book.availableCopies} copies")
                 }
                 println()
             }
