@@ -10,6 +10,7 @@ class Library (val name: String) {
     fun addBook(book: Book) {
         books.add(book)
         println("Book '${book.title}' has been added to the library.")
+        globalTotalBooksCreated++
     }
 
     /**
@@ -84,7 +85,7 @@ class Library (val name: String) {
     }
 
     companion object {
-        private val globalTotalBooksCreated: Int = 0
+        private var globalTotalBooksCreated: Int = 0
         fun getTotalBooksCreated(): Int {
             return globalTotalBooksCreated
         }
