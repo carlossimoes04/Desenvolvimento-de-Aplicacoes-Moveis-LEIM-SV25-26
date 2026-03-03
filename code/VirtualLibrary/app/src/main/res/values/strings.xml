@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">Virtual Library</string>
-    <string name="total_criados">Total Criados: %1$d</string>
-    <string name="adicionar_livro">Adicionar Livro</string>
-    <string name="tv_msg">A biblioteca está vazia.</string>
-    <string name="msg_novo_livro">Novo livro adicionado com sucesso!\n\n%1$s</string>
+    <string name="gestor_de_biblioteca">Gestor de Biblioteca</string>
+    <string name="btn_add">1. Adicionar</string>
+    <string name="btn_show">2. Mostrar</string>
+    <string name="btn_req">3. Requisitar</string>
+    <string name="btn_return">4. Devolver</string>
+    <string name="tv_actions">A aguardar ações...\n</string>
 </resources>

@@ -1,43 +1,65 @@
 package dam_a51696.virtuallibrary
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
-    private val minhaBiblioteca = Library("Biblioteca do ISEL")
+    private val library = Library("Central Library")
+    private lateinit var tvConsola: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val tvTotalLivros = findViewById<TextView>(R.id.tvTotalLivros)
-        val btnAdicionar = findViewById<Button>(R.id.btnAdicionar)
-        val tvMensagem = findViewById<TextView>(R.id.tvMensagem)
+        tvConsola = findViewById(R.id.tvConsola)
+        val btnIniciar = findViewById<Button>(R.id.btnIniciar)
+        val btnMostrar = findViewById<Button>(R.id.btnMostrar)
+        val btnRequisitar = findViewById<Button>(R.id.btnRequisitar)
+        val btnDevolver = findViewById<Button>(R.id.btnDevolver)
 
-        tvTotalLivros.text = getString(R.string.total_criados, 0)
+        // Botão 1: Adicionar
+        btnIniciar.setOnClickListener {
+            val digitalBook = DigitalBook("Kotlin in Action", "Dmitry Jemerov", 2017, 5, 4.5, "PDF")
+            val physicalBook = PhysicalBook("Clean Code", "Robert C. Martin", 2008, 3, 650.0, true)
+            val classicBook = PhysicalBook("1984", "George Orwell", 1949, 2, 400.0, false)
 
-        btnAdicionar.setOnClickListener {
+            logToScreen(library.addBook(digitalBook))
+            logToScreen(library.addBook(physicalBook))
+            logToScreen(library.addBook(classicBook))
 
-            val novoLivro = DigitalBook(
-                title = "Kotlin para Android",
-                author = "Prof. ISEL",
-                year = 2026,
-                initialCopies = 5,
-                fileSize = 10.5,
-                format = "PDF"
-            )
-
-            minhaBiblioteca.addBook(novoLivro)
-
-            tvTotalLivros.text = getString(R.string.total_criados, Library.getTotalBooksCreated())
-
-            tvMensagem.text = getString(R.string.msg_novo_livro, novoLivro.toString())
+            logToScreen("\n> Total global de livros criados: ${Library.getTotalBooksCreated()}")
+            btnIniciar.isEnabled = false // Desativa para não adicionar duplicados
         }
+
+        // Botão 2: Mostrar e Pesquisar
+        btnMostrar.setOnClickListener {
+            logToScreen("\n--- LISTA DE LIVROS ---")
+            logToScreen(library.showBooks())
+
+            logToScreen("\n--- PESQUISA (George Orwell) ---")
+            logToScreen(library.searchByAuthor("George Orwell"))
+        }
+
+        // Botão 3: Requisitar (testa o warning do 1984)
+        btnRequisitar.setOnClickListener {
+            logToScreen("\n--- REQUISITAR ---")
+            logToScreen(library.borrowBook("Clean Code"))
+            logToScreen(library.borrowBook("1984"))
+            logToScreen(library.borrowBook("1984"))
+            logToScreen(library.borrowBook("1984")) // Este vai falhar pois o stock acabou!
+        }
+
+        // Botão 4: Devolver
+        btnDevolver.setOnClickListener {
+            logToScreen("\n--- DEVOLVER ---")
+            logToScreen(library.returnBook("1984"))
+        }
+    }
+
+    private fun logToScreen(mensagem: String) {
+        tvConsola.append("\n$mensagem")
     }
 }

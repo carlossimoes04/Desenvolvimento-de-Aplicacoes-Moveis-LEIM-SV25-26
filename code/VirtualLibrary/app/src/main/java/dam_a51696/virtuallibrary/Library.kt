@@ -1,85 +1,71 @@
 package dam_a51696.virtuallibrary
 
-class Library (val name: String) {
-    // used mutable list instead of list because lists can't be modified after their creation
+class Library(val name: String) {
+
     private val books: MutableList<Book> = mutableListOf()
 
-    /**
-     * Adds a new book to the library collection.
-     */
-    fun addBook(book: Book) {
+    fun addBook(book: Book): String {
         books.add(book)
-        println("Book '${book.title}' has been added to the library.")
         globalTotalBooksCreated++
+        return "Book '${book.title}' has been added to the library."
     }
 
-    /**
-     * Borrows a book from the library by title.
-     * Decreases availableCopies by 1 if the book is found and copies are available.
-     */
-    fun borrowBook(title: String) {
+    fun borrowBook(title: String): String {
         val book = books.find { it.title.equals(title, ignoreCase = true) }
-        
-        when {
-            book == null -> println("Error: Book '$title' not found in the library.")
-            book.availableCopies <= 0 -> println("Error: Book '$title' is not available. No copies left.")
+
+        return when {
+            book == null -> "Error: Book '$title' not found in the library."
+            book.availableCopies <= 0 -> "Error: Book '$title' is not available. No copies left."
             else -> {
                 book.availableCopies--
-                println("Success: Book '$title' has been borrowed. Remaining copies: ${book.availableCopies}")
-            }
-        }
-    }
-
-    /**
-     * Returns a book to the library by title.
-     * Increases availableCopies by 1 if the book is found.
-     */
-    fun returnBook(title: String) {
-        val book = books.find { it.title.equals(title, ignoreCase = true) }
-        
-        when {
-            book == null -> println("Error: Book '$title' not found in the library.")
-            else -> {
-                book.availableCopies++
-                println("Confirmation: Book '$title' has been returned. Total copies: ${book.availableCopies}")
-            }
-        }
-    }
-
-    /**
-     * Displays details of all books in the library.
-     */
-    fun showBooks() {
-        if (books.isEmpty()) {
-            println("The library is empty. No books available.")
-            return
-        }
-        
-        println("\nLibrary Books: ")
-        books.forEachIndexed { index, book ->
-            println("${index + 1}. Title: '${book.title}'")
-            println("   Author: ${book.author}")
-            println("   Year: ${book.year} (${book.publicationYear})")
-            println("   Available Copies: ${book.availableCopies}")
-            println("   Storage: ${book.getStorageInfo()}")
-            println()
-        }
-    }
-
-    /**
-     * Searches and displays all books by a specific author.
-     */
-    fun searchByAuthor(author: String) {
-        val authorBooks = books.filter { it.author.equals(author, ignoreCase = true) }
-        
-        when {
-            authorBooks.isEmpty() -> println("No books found by author '$author'.")
-            else -> {
-                println("\nBooks by $author:")
-                authorBooks.forEach { book ->
-                    println("-> '${book.title}' (${book.year}) - Available: ${book.availableCopies} copies")
+                var mensagem = "Success: Book '$title' has been borrowed. Remaining copies: ${book.availableCopies}"
+                if (book.availableCopies == 0) {
+                    mensagem += "\nWarning: Book is now out of stock!"
                 }
-                println()
+                mensagem
+            }
+        }
+    }
+
+    fun returnBook(title: String): String {
+        val book = books.find { it.title.equals(title, ignoreCase = true) }
+
+        return if (book != null) {
+            book.availableCopies++
+            "Success: Book '${book.title}' returned. Total copies: ${book.availableCopies}"
+        } else {
+            "Error: Book '$title' does not belong to this library."
+        }
+    }
+
+    fun showBooks(): String {
+        if (books.isEmpty()) {
+            return "The library is empty. No books available."
+        }
+
+        return buildString {
+            append("\nLibrary Books:\n")
+            books.forEachIndexed { index, book ->
+                append("${index + 1}. Title: '${book.title}'\n")
+                append("   Author: ${book.author}\n")
+                append("   Year: ${book.year} (${book.publicationYear})\n")
+                append("   Available Copies: ${book.availableCopies}\n")
+                append("   Storage: ${book.getStorageInfo()}\n\n")
+            }
+        }
+    }
+
+    fun searchByAuthor(author: String): String {
+        val authorBooks = books.filter { it.author.equals(author, ignoreCase = true) }
+
+        return if (authorBooks.isEmpty()) {
+            "No books found by author '$author'."
+        } else {
+            buildString {
+                append("\nBooks by $author:\n")
+                authorBooks.forEach { book ->
+                    append("-> '${book.title}' (${book.year}) - Available: ${book.availableCopies} copies\n")
+                }
             }
         }
     }
