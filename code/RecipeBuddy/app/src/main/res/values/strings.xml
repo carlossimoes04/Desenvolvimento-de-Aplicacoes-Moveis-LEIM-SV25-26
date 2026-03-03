@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Recipe Buddy</string>
+    
+    <!-- Search Screen -->
+    <string name="search_title">Search Meals</string>
+    <string name="search_hint">Search for meals...</string>
+    <string name="empty_state_search">Enter a meal name to search</string>
+    <string name="meal_image_description">Meal image</string>
+    
+    <!-- Detail Screen -->
+    <string name="detail_title">Meal Details</string>
+    <string name="ingredients_label">Ingredients</string>
+    <string name="instructions_label">Instructions</string>
+    <string name="retry_button">Retry</string>
+    
+</resources>
