@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
         val btnRequisitar = findViewById<Button>(R.id.btnRequisitar)
         val btnDevolver = findViewById<Button>(R.id.btnDevolver)
 
-        // Botão 1: Adicionar
+        // botão de adicionar
         btnIniciar.setOnClickListener {
             val digitalBook = DigitalBook("Kotlin in Action", "Dmitry Jemerov", 2017, 5, 4.5, "PDF")
             val physicalBook = PhysicalBook("Clean Code", "Robert C. Martin", 2008, 3, 650.0, true)
@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
             btnIniciar.isEnabled = false // Desativa para não adicionar duplicados
         }
 
-        // Botão 2: Mostrar e Pesquisar
+        // botão de mostrar e pesquisar
         btnMostrar.setOnClickListener {
             logToScreen("\n--- LISTA DE LIVROS ---")
             logToScreen(library.showBooks())
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
             logToScreen(library.searchByAuthor("George Orwell"))
         }
 
-        // Botão 3: Requisitar (testa o warning do 1984)
+        // botão de requisitar
         btnRequisitar.setOnClickListener {
             logToScreen("\n--- REQUISITAR ---")
             logToScreen(library.borrowBook("Clean Code"))
@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
             logToScreen(library.borrowBook("1984")) // Este vai falhar pois o stock acabou!
         }
 
-        // Botão 4: Devolver
+        // botão de devolver
         btnDevolver.setOnClickListener {
             logToScreen("\n--- DEVOLVER ---")
             logToScreen(library.returnBook("1984"))
