@@ -9,9 +9,7 @@ Welcome to the repository for the Mobile Application Development (DAM) course fr
 
 Here you will find direct links to the reports for each Practical Assignment (TP) developed throughout the semester:
 
-* [**TP1 - Hello Kotlin. Hello Android World!**](./TP1/README.md)
-* [**TP2 - [TP2 Name]**](./TP2/README.md) *(to be added later)*
-* [**TP3 - [TP3 Name]**](./TP3/README.md) *(to be added later)*
+* [**TP1 - Hello Kotlin. Hello Android World!**](./docs/report_tp1.md)
 
 ## Tech Stack
 * Kotlin
