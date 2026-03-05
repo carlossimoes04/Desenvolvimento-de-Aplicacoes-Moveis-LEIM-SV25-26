@@ -4,7 +4,7 @@
 **Degree:** LEIM (Bachelor in Computer Science and Multimedia Engineering)  
 **Student:** Carlos Simões, A51696, 61D  
 **Teacher:** Pedro Fazenda  
-**Date:** [Submission Date, e.g., March 8, 2026]  
+**Date:** March 8, 2026  
 **Repository URL:** https://github.com/carlossimoes04/Desenvolvimento-de-Aplicacoes-Moveis-LEIM-SV25-26
 
 ---
