@@ -12,6 +12,6 @@ Here you will find direct links to the reports for each Practical Assignment (TP
 * [**TP1 - Hello Kotlin. Hello Android World!**](./docs/report_tp1.md)
 
 ## Tech Stack
-* Kotlin
-* Android Studio (XML Views)
+* Kotlin, using IntelliJ Idea 2025.3.2
+* Android Studio Panda 1 (XML Views)
 * GitHub & Git
