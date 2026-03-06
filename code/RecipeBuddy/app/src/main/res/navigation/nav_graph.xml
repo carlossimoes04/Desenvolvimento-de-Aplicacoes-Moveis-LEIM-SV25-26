@@ -16,6 +16,16 @@
     </fragment>
 
     <fragment
+        android:id="@+id/favorites_fragment"
+        android:name="dam_a51696.recipebuddy.presentation.ui.favorites.FavoritesFragment"
+        android:label="@string/favorites_title"
+        tools:layout="@layout/fragment_favorites">
+        <action
+            android:id="@+id/action_favorites_fragment_to_detail_fragment"
+            app:destination="@id/detail_fragment" />
+    </fragment>
+
+    <fragment
         android:id="@+id/detail_fragment"
         android:name="dam_a51696.recipebuddy.presentation.ui.detail.DetailFragment"
         android:label="@string/detail_title"

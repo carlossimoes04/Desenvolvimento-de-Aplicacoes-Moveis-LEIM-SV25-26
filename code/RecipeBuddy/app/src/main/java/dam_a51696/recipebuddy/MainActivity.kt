@@ -1,6 +1,7 @@
 package dam_a51696.recipebuddy
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -26,11 +27,27 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
         
+        // Top-level destinations (no back button)
         appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.search_fragment)
+            setOf(R.id.search_fragment, R.id.favorites_fragment)
         )
         
-        // Configura a Toolbar diretamente com o NavController
+        // Setup toolbar with navigation
         binding.topAppBar.setupWithNavController(navController, appBarConfiguration)
+        
+        // Setup bottom navigation
+        binding.bottomNavigationView.setupWithNavController(navController)
+        
+        // Hide bottom navigation on detail screen
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.detail_fragment -> {
+                    binding.bottomNavigationView.visibility = View.GONE
+                }
+                else -> {
+                    binding.bottomNavigationView.visibility = View.VISIBLE
+                }
+            }
+        }
     }
 }

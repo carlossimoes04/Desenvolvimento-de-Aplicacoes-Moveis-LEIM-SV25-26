@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import coil.load
+import dam_a51696.recipebuddy.R
 import dam_a51696.recipebuddy.databinding.FragmentDetailBinding
 import dam_a51696.recipebuddy.presentation.state.DetailUiState
 import dam_a51696.recipebuddy.presentation.viewmodel.DetailViewModel
@@ -38,7 +39,15 @@ class DetailFragment : Fragment() {
     
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupFavoriteButton()
         observeUiState()
+        observeFavoriteState()
+    }
+    
+    private fun setupFavoriteButton() {
+        binding.favoriteFab.setOnClickListener {
+            viewModel.toggleFavorite()
+        }
     }
     
     private fun observeUiState() {
@@ -59,11 +68,26 @@ class DetailFragment : Fragment() {
         }
     }
     
+    private fun observeFavoriteState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.isFavorite.collect { isFavorite ->
+                updateFavoriteIcon(isFavorite)
+            }
+        }
+    }
+    
+    private fun updateFavoriteIcon(isFavorite: Boolean) {
+        binding.favoriteFab.setImageResource(
+            if (isFavorite) R.drawable.ic_favorite_filled else R.drawable.ic_favorite_border
+        )
+    }
+    
     private fun showLoading() {
         binding.apply {
             loadingProgressBar.visibility = View.VISIBLE
             mealContent.visibility = View.GONE
             errorContainer.visibility = View.GONE
+            favoriteFab.visibility = View.GONE
         }
     }
     
@@ -73,6 +97,7 @@ class DetailFragment : Fragment() {
             loadingProgressBar.visibility = View.GONE
             mealContent.visibility = View.VISIBLE
             errorContainer.visibility = View.GONE
+            favoriteFab.visibility = View.VISIBLE
             
             mealImage.load(meal.imageUrl) {
                 crossfade(true)
@@ -95,6 +120,7 @@ class DetailFragment : Fragment() {
             loadingProgressBar.visibility = View.GONE
             mealContent.visibility = View.GONE
             errorContainer.visibility = View.VISIBLE
+            favoriteFab.visibility = View.GONE
             errorMessage.text = message
             
             retryButton.setOnClickListener {

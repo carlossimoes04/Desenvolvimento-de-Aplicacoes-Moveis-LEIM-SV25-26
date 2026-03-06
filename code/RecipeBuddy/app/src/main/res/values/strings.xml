@@ -1,16 +1,37 @@
 <resources>
     <string name="app_name">Recipe Buddy</string>
     
+    <!-- Navigation -->
+    <string name="nav_search">Search</string>
+    <string name="nav_favorites">Favorites</string>
+    
     <!-- Search Screen -->
     <string name="search_title">Search Meals</string>
     <string name="search_hint">Search for meals...</string>
     <string name="empty_state_search">Enter a meal name to search</string>
     <string name="meal_image_description">Meal image</string>
+    <string name="no_meals_found">No meals found. Try another search.</string>
+    
+    <!-- Filter -->
+    <string name="filter_by_label">Filter by:</string>
+    <string name="filter_category">Category</string>
+    <string name="filter_area">Area</string>
+    <string name="filter_ingredient">Ingredient</string>
+    <string name="select_category">Select Category</string>
+    <string name="select_area">Select Area</string>
+    <string name="select_ingredient">Select Ingredient</string>
+    <string name="clear_filters">Clear Filters</string>
     
     <!-- Detail Screen -->
     <string name="detail_title">Meal Details</string>
     <string name="ingredients_label">Ingredients</string>
     <string name="instructions_label">Instructions</string>
     <string name="retry_button">Retry</string>
+    <string name="toggle_favorite">Toggle favorite</string>
+    
+    <!-- Favorites Screen -->
+    <string name="favorites_title">Favorites</string>
+    <string name="no_favorites_message">No favorites yet.\nAdd meals to your favorites to see them here.</string>
+    <string name="remove_from_favorites">Remove from favorites</string>
     
 </resources>
