@@ -14,7 +14,14 @@ import javax.inject.Inject
 import java.lang.reflect.Type
 
 /**
- * Implementation of MealRepository
+ * Implementation of [MealRepository] that coordinates data from remote and local sources.
+ * 
+ * This class uses [RemoteDataSource] for network requests and [LocalDataSource] for 
+ * database operations. It handles exception wrapping and data mapping.
+ * 
+ * @property remoteDataSource Source for fetching data from the API.
+ * @property localDataSource Source for persistent storage of favorite meals.
+ * @property gson Gson instance for serializing and deserializing domain models.
  */
 class MealRepositoryImpl @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
@@ -44,7 +51,6 @@ class MealRepositoryImpl @Inject constructor(
         }
     }
     
-    // Filter implementations
     override suspend fun filterByCategory(category: String): Result<MealResponse> {
         return try {
             val response = remoteDataSource.filterByCategory(category)
@@ -102,7 +108,6 @@ class MealRepositoryImpl @Inject constructor(
         }
     }
     
-    // Favorites implementations (Room Database)
     override fun getAllFavorites(): Flow<List<MealDetail>> {
         val ingredientListType: Type = object : TypeToken<List<Ingredient>>() {}.type
         return localDataSource.getAllFavorites().map { entities ->

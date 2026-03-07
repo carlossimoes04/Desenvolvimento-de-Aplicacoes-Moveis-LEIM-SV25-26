@@ -17,7 +17,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * ViewModel for Search screen
+ * ViewModel for the Search screen.
+ * 
+ * This ViewModel manages the state of the meal search and filtering functionality.
+ * It coordinates multiple use cases to fetch filter options (categories, areas, ingredients)
+ * and perform search or filter operations.
  */
 @HiltViewModel
 class SearchViewModel @Inject constructor(
@@ -31,33 +35,60 @@ class SearchViewModel @Inject constructor(
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow<SearchUiState>(SearchUiState.Idle)
+    /**
+     * State representing the current UI status (Idle, Loading, Success, Error, NoResults).
+     */
     val uiState: StateFlow<SearchUiState> = _uiState
     
     private val _categories = MutableStateFlow<List<String>>(emptyList())
+    /**
+     * List of all available meal categories for filtering.
+     */
     val categories: StateFlow<List<String>> = _categories
     
     private val _areas = MutableStateFlow<List<String>>(emptyList())
+    /**
+     * List of all available meal areas for filtering.
+     */
     val areas: StateFlow<List<String>> = _areas
     
     private val _ingredients = MutableStateFlow<List<String>>(emptyList())
+    /**
+     * List of all available meal ingredients for filtering.
+     */
     val ingredients: StateFlow<List<String>> = _ingredients
     
     private val _selectedCategory = MutableStateFlow<String?>(null)
+    /**
+     * Currently selected category filter, if any.
+     */
     val selectedCategory: StateFlow<String?> = _selectedCategory
     
     private val _selectedArea = MutableStateFlow<String?>(null)
+    /**
+     * Currently selected area filter, if any.
+     */
     val selectedArea: StateFlow<String?> = _selectedArea
     
     private val _selectedIngredient = MutableStateFlow<String?>(null)
+    /**
+     * Currently selected ingredient filter, if any.
+     */
     val selectedIngredient: StateFlow<String?> = _selectedIngredient
     
     private val _hasActiveFilters = MutableStateFlow(false)
+    /**
+     * Boolean flag indicating if any filter is currently applied.
+     */
     val hasActiveFilters: StateFlow<Boolean> = _hasActiveFilters
     
     init {
         loadFilterOptions()
     }
     
+    /**
+     * Loads the initial filter options from the remote source.
+     */
     private fun loadFilterOptions() {
         viewModelScope.launch {
             // Load categories
@@ -77,6 +108,11 @@ class SearchViewModel @Inject constructor(
         }
     }
     
+    /**
+     * Performs a text-based search for meals.
+     * 
+     * @param query The search query string.
+     */
     fun searchMeals(query: String) {
         if (query.isBlank()) {
             _uiState.value = SearchUiState.Idle
@@ -102,6 +138,11 @@ class SearchViewModel @Inject constructor(
         }
     }
     
+    /**
+     * Filters meals by a specific category.
+     * 
+     * @param category The category to filter by.
+     */
     fun filterByCategory(category: String) {
         _selectedCategory.value = category
         _selectedArea.value = null
@@ -127,6 +168,11 @@ class SearchViewModel @Inject constructor(
         }
     }
     
+    /**
+     * Filters meals by a specific area.
+     * 
+     * @param area The area to filter by.
+     */
     fun filterByArea(area: String) {
         _selectedCategory.value = null
         _selectedArea.value = area
@@ -152,6 +198,11 @@ class SearchViewModel @Inject constructor(
         }
     }
     
+    /**
+     * Filters meals by a specific ingredient.
+     * 
+     * @param ingredient The ingredient to filter by.
+     */
     fun filterByIngredient(ingredient: String) {
         _selectedCategory.value = null
         _selectedArea.value = null
@@ -177,6 +228,9 @@ class SearchViewModel @Inject constructor(
         }
     }
     
+    /**
+     * Clears all active filters and resets the search state to Idle.
+     */
     fun clearFilters() {
         _selectedCategory.value = null
         _selectedArea.value = null

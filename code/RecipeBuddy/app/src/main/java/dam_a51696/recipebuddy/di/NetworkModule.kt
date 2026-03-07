@@ -17,12 +17,20 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 /**
- * Dependency injection module for network operations
+ * Hilt module for providing network-related dependencies.
+ * 
+ * This module provides the [OkHttpClient], [Retrofit] instances, and the [MealDbApiService].
+ * All provided dependencies are scoped to the [SingletonComponent].
  */
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
     
+    /**
+     * Provides a configured [OkHttpClient] with logging and timeouts.
+     * 
+     * @return A singleton instance of [OkHttpClient].
+     */
     @Provides
     @Singleton
     fun provideHttpClient(): OkHttpClient {
@@ -38,6 +46,12 @@ object NetworkModule {
             .build()
     }
     
+    /**
+     * Provides a [Retrofit] instance configured for TheMealDB API.
+     * 
+     * @param okHttpClient The HTTP client to use for network requests.
+     * @return A singleton [Retrofit] instance.
+     */
     @Provides
     @Singleton
     @Named("mealdb")
@@ -49,12 +63,24 @@ object NetworkModule {
             .build()
     }
     
+    /**
+     * Provides the [MealDbApiService] for making API calls.
+     * 
+     * @param retrofit The Retrofit instance to create the service.
+     * @return A singleton instance of [MealDbApiService].
+     */
     @Provides
     @Singleton
     fun provideMealDbApiService(@Named("mealdb") retrofit: Retrofit): MealDbApiService {
         return retrofit.create(MealDbApiService::class.java)
     }
     
+    /**
+     * Binds the [MealRepository] interface to its implementation [MealRepositoryImpl].
+     * 
+     * @param impl The implementation of the repository.
+     * @return The bound repository.
+     */
     @Provides
     @Singleton
     fun provideMealRepository(impl: MealRepositoryImpl): MealRepository {

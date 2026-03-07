@@ -16,7 +16,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 /**
- * Fragment for displaying favorite meals
+ * Fragment that displays the user's list of favorite meals.
+ * 
+ * This fragment uses a RecyclerView to show the favorited recipes and allows the user
+ * to view their details or remove them from the favorites list.
  */
 @AndroidEntryPoint
 class FavoritesFragment : Fragment() {
@@ -43,6 +46,9 @@ class FavoritesFragment : Fragment() {
         observeUiState()
     }
     
+    /**
+     * Initializes the [FavoritesAdapter] and attaches it to the RecyclerView.
+     */
     private fun setupRecyclerView() {
         adapter = FavoritesAdapter(
             onMealClick = { meal ->
@@ -61,6 +67,9 @@ class FavoritesFragment : Fragment() {
         }
     }
     
+    /**
+     * Observes the [FavoritesUiState] from the ViewModel and updates the UI visibility.
+     */
     private fun observeUiState() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect { state ->

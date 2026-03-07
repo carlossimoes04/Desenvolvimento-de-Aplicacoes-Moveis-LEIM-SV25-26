@@ -17,7 +17,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 /**
- * Fragment for displaying meal details
+ * Fragment that displays detailed information about a selected meal.
+ * 
+ * It shows the meal's image, name, instructions, and ingredients.
+ * It also allows users to toggle the meal's favorite status using a Floating Action Button.
  */
 @AndroidEntryPoint
 class DetailFragment : Fragment() {
@@ -44,12 +47,18 @@ class DetailFragment : Fragment() {
         observeFavoriteState()
     }
     
+    /**
+     * Sets up the click listener for the favorite Floating Action Button.
+     */
     private fun setupFavoriteButton() {
         binding.favoriteFab.setOnClickListener {
             viewModel.toggleFavorite()
         }
     }
     
+    /**
+     * Observes the main [DetailUiState] from the ViewModel and updates the UI accordingly.
+     */
     private fun observeUiState() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect { state ->
@@ -68,6 +77,9 @@ class DetailFragment : Fragment() {
         }
     }
     
+    /**
+     * Observes the favorite status of the current meal and updates the FAB icon.
+     */
     private fun observeFavoriteState() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.isFavorite.collect { isFavorite ->
@@ -76,12 +88,20 @@ class DetailFragment : Fragment() {
         }
     }
     
+    /**
+     * Updates the icon of the favorite Floating Action Button based on favorited state.
+     * 
+     * @param isFavorite True if the meal is a favorite, false otherwise.
+     */
     private fun updateFavoriteIcon(isFavorite: Boolean) {
         binding.favoriteFab.setImageResource(
             if (isFavorite) R.drawable.ic_favorite_filled else R.drawable.ic_favorite_border
         )
     }
     
+    /**
+     * Displays the loading progress bar and hides other UI elements.
+     */
     private fun showLoading() {
         binding.apply {
             loadingProgressBar.visibility = View.VISIBLE
@@ -91,6 +111,11 @@ class DetailFragment : Fragment() {
         }
     }
     
+    /**
+     * Displays the meal details on the screen.
+     * 
+     * @param state The successful UI state containing the meal data.
+     */
     private fun showMealDetail(state: DetailUiState.Success) {
         val meal = state.meal
         binding.apply {
@@ -115,6 +140,11 @@ class DetailFragment : Fragment() {
         }
     }
     
+    /**
+     * Displays an error message and a retry button.
+     * 
+     * @param message The error message to be displayed.
+     */
     private fun showError(message: String) {
         binding.apply {
             loadingProgressBar.visibility = View.GONE

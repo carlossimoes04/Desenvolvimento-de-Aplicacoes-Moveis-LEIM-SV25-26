@@ -6,11 +6,22 @@ import dam_a51696.recipebuddy.domain.model.MealDetail
 import javax.inject.Inject
 
 /**
- * Use case for getting meal details
+ * Use case for retrieving full details of a specific meal.
+ * 
+ * This use case handles fetching the meal details from the repository and mapping
+ * the DTO to the domain [MealDetail] model, including processing the ingredient list.
+ * 
+ * @property repository The [MealRepository] providing the data.
  */
 class GetMealDetailUseCase @Inject constructor(
     private val repository: MealRepository
 ) {
+    /**
+     * Executes the retrieval of meal details.
+     * 
+     * @param mealId The unique ID of the meal.
+     * @return A [Result] containing the [MealDetail] if successful.
+     */
     suspend operator fun invoke(mealId: String): Result<MealDetail> {
         return try {
             val result = repository.getMealDetail(mealId)

@@ -6,7 +6,9 @@ import dam_a51696.recipebuddy.data.local.dao.FavoriteMealDao
 import dam_a51696.recipebuddy.data.local.entity.FavoriteMealEntity
 
 /**
- * Room Database for Recipe Buddy application
+ * Main Room Database class for the Recipe Buddy application.
+ * 
+ * This database manages the local storage of favorite meals.
  */
 @Database(
     entities = [FavoriteMealEntity::class],
@@ -14,5 +16,10 @@ import dam_a51696.recipebuddy.data.local.entity.FavoriteMealEntity
     exportSchema = false
 )
 abstract class RecipeBuddyDatabase : RoomDatabase() {
+    /**
+     * Provides access to the [FavoriteMealDao] for interacting with favorite meals.
+     * 
+     * @return The [FavoriteMealDao] implementation.
+     */
     abstract fun favoriteMealDao(): FavoriteMealDao
 }

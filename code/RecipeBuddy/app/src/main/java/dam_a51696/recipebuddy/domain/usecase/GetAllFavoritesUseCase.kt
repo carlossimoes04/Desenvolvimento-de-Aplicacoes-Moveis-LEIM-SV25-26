@@ -6,11 +6,18 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 /**
- * Use case for getting all favorite meals
+ * Use case for retrieving all meals marked as favorites from the repository.
+ * 
+ * @property repository The [MealRepository] providing access to local storage.
  */
 class GetAllFavoritesUseCase @Inject constructor(
     private val repository: MealRepository
 ) {
+    /**
+     * Executes the retrieval of all favorite meals.
+     * 
+     * @return A Flow emitting a list of [MealDetail] objects.
+     */
     operator fun invoke(): Flow<List<MealDetail>> {
         return repository.getAllFavorites()
     }

@@ -5,7 +5,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 
 /**
- * RecyclerView adapter for filter options
+ * RecyclerView adapter for displaying selectable filter options (categories, areas, or ingredients).
+ * 
+ * This adapter is used within the [FilterBottomSheet] to present a list of strings to the user.
+ * 
+ * @property onOptionClick Callback function invoked when an option is selected.
  */
 class FilterOptionAdapter(
     private val onOptionClick: (String) -> Unit
@@ -22,7 +26,9 @@ class FilterOptionAdapter(
 }
 
 /**
- * DiffUtil callback for filter options
+ * [DiffUtil.ItemCallback] implementation for filter option strings.
+ * 
+ * Since the options are simple strings, equality checks are used for both item and content identity.
  */
 class FilterOptionDiffCallback : DiffUtil.ItemCallback<String>() {
     override fun areItemsTheSame(oldItem: String, newItem: String): Boolean {

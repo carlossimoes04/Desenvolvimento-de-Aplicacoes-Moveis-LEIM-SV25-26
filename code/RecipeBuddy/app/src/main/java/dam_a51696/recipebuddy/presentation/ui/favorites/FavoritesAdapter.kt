@@ -6,7 +6,12 @@ import androidx.recyclerview.widget.ListAdapter
 import dam_a51696.recipebuddy.domain.model.MealDetail
 
 /**
- * RecyclerView adapter for displaying favorite meals
+ * RecyclerView adapter for displaying the list of favorite meals.
+ * 
+ * This adapter uses [ListAdapter] with [FavoriteDiffCallback] for efficient list updates.
+ * 
+ * @property onMealClick Callback function invoked when a favorite meal item is clicked.
+ * @property onRemoveClick Callback function invoked when the remove button on a meal item is clicked.
  */
 class FavoritesAdapter(
     private val onMealClick: (MealDetail) -> Unit,
@@ -24,13 +29,19 @@ class FavoritesAdapter(
 }
 
 /**
- * DiffUtil callback for efficient RecyclerView updates
+ * [DiffUtil.ItemCallback] implementation for [MealDetail] objects in the favorites list.
  */
 class FavoriteDiffCallback : DiffUtil.ItemCallback<MealDetail>() {
+    /**
+     * Checks if two items represent the same meal by comparing their IDs.
+     */
     override fun areItemsTheSame(oldItem: MealDetail, newItem: MealDetail): Boolean {
         return oldItem.id == newItem.id
     }
     
+    /**
+     * Checks if two items have the same content.
+     */
     override fun areContentsTheSame(oldItem: MealDetail, newItem: MealDetail): Boolean {
         return oldItem == newItem
     }

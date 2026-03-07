@@ -3,13 +3,25 @@ package dam_a51696.recipebuddy.data.models
 import com.google.gson.annotations.SerializedName
 
 /**
- * Data Transfer Object for meal detail response from TheMealDB API
+ * Data Transfer Object for the detailed meal response from TheMealDB API.
+ * 
+ * @property meals A list containing the detailed meal data, or null if not found.
  */
 data class MealDetailResponse(
     @SerializedName("meals")
     val meals: List<MealDetailDto>?
 )
 
+/**
+ * Data Transfer Object representing all details of a single meal.
+ * 
+ * This class includes the meal's basic info, instructions, and up to 20 ingredients with their measures.
+ * 
+ * @property idMeal Unique identifier for the meal.
+ * @property strMeal Name of the meal.
+ * @property strMealThumb URL to the meal's thumbnail.
+ * @property strInstructions Preparation instructions.
+ */
 data class MealDetailDto(
     @SerializedName("idMeal")
     val idMeal: String,
@@ -101,7 +113,11 @@ data class MealDetailDto(
     val strMeasure20: String? = null
 ) {
     /**
-     * Extract ingredients and measures as pairs, filtering out null values
+     * Extracts ingredients and their corresponding measures as a list of pairs.
+     * 
+     * Filters out null or blank ingredients.
+     * 
+     * @return A list of [Pair] where the first element is the ingredient name and the second is the measure.
      */
     fun getIngredientsWithMeasures(): List<Pair<String, String>> {
         val ingredients = listOf(

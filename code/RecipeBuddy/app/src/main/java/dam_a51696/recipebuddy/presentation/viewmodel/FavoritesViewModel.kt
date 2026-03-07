@@ -12,7 +12,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * ViewModel for Favorites screen
+ * ViewModel for the Favorites screen.
+ * 
+ * This ViewModel handles observing the list of favorite meals and provides
+ * functionality to remove meals from the favorites list.
+ * 
+ * @property getAllFavoritesUseCase Use case to observe all favorite meals.
+ * @property removeFromFavoritesUseCase Use case to remove a meal from favorites.
  */
 @HiltViewModel
 class FavoritesViewModel @Inject constructor(
@@ -21,12 +27,18 @@ class FavoritesViewModel @Inject constructor(
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow<FavoritesUiState>(FavoritesUiState.Empty)
+    /**
+     * State representing the current UI status for the favorites list (Empty, Success).
+     */
     val uiState: StateFlow<FavoritesUiState> = _uiState
     
     init {
         observeFavorites()
     }
     
+    /**
+     * Starts observing the favorites Flow from the use case.
+     */
     private fun observeFavorites() {
         viewModelScope.launch {
             getAllFavoritesUseCase().collect { favorites ->
@@ -39,6 +51,11 @@ class FavoritesViewModel @Inject constructor(
         }
     }
     
+    /**
+     * Removes a specific meal from the favorites list.
+     * 
+     * @param mealId The unique ID of the meal to remove.
+     */
     fun removeFromFavorites(mealId: String) {
         viewModelScope.launch {
             removeFromFavoritesUseCase(mealId)

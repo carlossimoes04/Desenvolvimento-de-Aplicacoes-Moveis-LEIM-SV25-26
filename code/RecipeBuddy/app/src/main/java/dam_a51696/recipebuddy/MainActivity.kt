@@ -10,6 +10,12 @@ import androidx.navigation.ui.setupWithNavController
 import dam_a51696.recipebuddy.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * Main activity of the application that hosts the navigation components.
+ * 
+ * This activity manages the [NavController], top app bar, and bottom navigation.
+ * It also handles the visibility of the bottom navigation bar based on the current destination.
+ */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     

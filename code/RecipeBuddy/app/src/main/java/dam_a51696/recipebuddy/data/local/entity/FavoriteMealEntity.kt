@@ -5,7 +5,18 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 /**
- * Room Entity for storing favorite meals locally
+ * Room Entity representing a favorite meal in the local database.
+ * 
+ * This class defines the schema for the "favorite_meals" table.
+ * 
+ * @property mealId Unique identifier for the meal, used as the primary key.
+ * @property name The name of the meal.
+ * @property imageUrl URL to the meal's thumbnail image.
+ * @property category The category the meal belongs to (optional).
+ * @property area The geographic area/origin of the meal (optional).
+ * @property instructions Step-by-step preparation instructions.
+ * @property ingredientsJson A JSON string representation of the ingredients list.
+ * @property addedTimestamp The time when the meal was added to favorites, used for sorting.
  */
 @Entity(tableName = "favorite_meals")
 data class FavoriteMealEntity(

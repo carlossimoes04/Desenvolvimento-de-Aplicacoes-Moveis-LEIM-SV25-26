@@ -16,7 +16,16 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * ViewModel for Detail screen
+ * ViewModel for the Meal Detail screen.
+ * 
+ * This ViewModel handles fetching detailed meal information, tracking the favorite status
+ * of the meal, and providing methods to toggle the favorite state.
+ * 
+ * @property getMealDetailUseCase Use case to fetch full meal details.
+ * @property isFavoriteUseCase Use case to observe favorite status.
+ * @property addToFavoritesUseCase Use case to save meal to favorites.
+ * @property removeFromFavoritesUseCase Use case to remove meal from favorites.
+ * @param savedStateHandle Handle to retrieve navigation arguments (e.g., "meal_id").
  */
 @HiltViewModel
 class DetailViewModel @Inject constructor(
@@ -28,9 +37,15 @@ class DetailViewModel @Inject constructor(
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow<DetailUiState>(DetailUiState.Loading)
+    /**
+     * State representing the current UI status (Loading, Success, Error).
+     */
     val uiState: StateFlow<DetailUiState> = _uiState
     
     private val _isFavorite = MutableStateFlow(false)
+    /**
+     * Flow emitting the favorite status of the current meal.
+     */
     val isFavorite: StateFlow<Boolean> = _isFavorite
     
     private var currentMealId: String? = null
@@ -45,6 +60,11 @@ class DetailViewModel @Inject constructor(
         }
     }
     
+    /**
+     * Observes the favorite status of a specific meal from the local database.
+     * 
+     * @param mealId The ID of the meal to observe.
+     */
     private fun observeFavoriteStatus(mealId: String) {
         viewModelScope.launch {
             isFavoriteUseCase(mealId).collect { isFav ->
@@ -53,6 +73,11 @@ class DetailViewModel @Inject constructor(
         }
     }
     
+    /**
+     * Fetches detailed information for a meal.
+     * 
+     * @param mealId The ID of the meal to load.
+     */
     private fun loadMealDetail(mealId: String) {
         viewModelScope.launch {
             _uiState.value = DetailUiState.Loading
@@ -70,10 +95,20 @@ class DetailViewModel @Inject constructor(
         }
     }
     
+    /**
+     * Retries loading the meal details in case of failure.
+     * 
+     * @param mealId The ID of the meal to reload.
+     */
     fun retry(mealId: String) {
         loadMealDetail(mealId)
     }
     
+    /**
+     * Toggles the favorite status of the current meal.
+     * 
+     * If the meal is already a favorite, it is removed; otherwise, it is saved.
+     */
     fun toggleFavorite() {
         val mealDetail = currentMealDetail ?: return
         

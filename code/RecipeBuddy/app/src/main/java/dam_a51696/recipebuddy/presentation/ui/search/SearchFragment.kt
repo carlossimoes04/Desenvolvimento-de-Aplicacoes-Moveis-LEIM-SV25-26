@@ -18,7 +18,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 /**
- * Fragment for meal search functionality
+ * Fragment that provides meal search and filtering UI.
+ * 
+ * Users can search for meals by name using a search bar or filter them by category,
+ * area, or ingredient using chips that open a bottom sheet.
  */
 @AndroidEntryPoint
 class SearchFragment : Fragment() {
@@ -50,6 +53,9 @@ class SearchFragment : Fragment() {
         observeActiveFilters()
     }
     
+    /**
+     * Initializes the [SearchAdapter] and attaches it to the RecyclerView.
+     */
     private fun setupRecyclerView() {
         adapter = SearchAdapter { meal ->
             val action = SearchFragmentDirections
@@ -63,6 +69,9 @@ class SearchFragment : Fragment() {
         }
     }
     
+    /**
+     * Sets up the text change listener for the search input field.
+     */
     private fun setupSearchInput() {
         binding.searchInput.addTextChangedListener { text ->
             if (!text.isNullOrBlank()) {
@@ -73,6 +82,9 @@ class SearchFragment : Fragment() {
         }
     }
     
+    /**
+     * Configures the click listeners for the filter chips.
+     */
     private fun setupFilterChips() {
         binding.categoryFilterChip.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
@@ -123,6 +135,9 @@ class SearchFragment : Fragment() {
         }
     }
     
+    /**
+     * Sets up the listener for the 'Clear Filters' chip.
+     */
     private fun setupClearFilterChip() {
         binding.clearFiltersChip.setOnClickListener {
             // Clear search input
@@ -131,6 +146,13 @@ class SearchFragment : Fragment() {
         }
     }
     
+    /**
+     * Displays a [FilterBottomSheet] with the given title and options.
+     * 
+     * @param title The title to show at the top of the bottom sheet.
+     * @param options The list of strings to display as selectable options.
+     * @param onOptionSelected Callback triggered when an option is selected.
+     */
     private fun showFilterBottomSheet(
         title: String,
         options: List<String>,
@@ -140,6 +162,9 @@ class SearchFragment : Fragment() {
             .show(childFragmentManager, "FilterBottomSheet")
     }
     
+    /**
+     * Observes the selected filter states from the ViewModel and updates chip UI.
+     */
     private fun observeFilterStates() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.selectedCategory.collect { category ->
@@ -175,6 +200,9 @@ class SearchFragment : Fragment() {
         }
     }
     
+    /**
+     * Observes whether any filters are active to enable/disable the clear chip.
+     */
     private fun observeActiveFilters() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.hasActiveFilters.collect { hasFilters ->
@@ -184,6 +212,9 @@ class SearchFragment : Fragment() {
         }
     }
     
+    /**
+     * Observes the main [SearchUiState] and updates the visibility of UI components.
+     */
     private fun observeUiState() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect { state ->
