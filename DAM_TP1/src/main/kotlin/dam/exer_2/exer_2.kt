@@ -1,10 +1,12 @@
 package dam.exer_2
 
 /**
- * Main function
+ * Entry point for a simple command-line calculator.
  *
- * It calculates basic arithmetic operations, boolean operations and bitwise shift operations.
- * Depending on the operations, it shows the result in decimal, hexadecimal and boolean.
+ * This program reads an operation from the user, collects the required operands,
+ * executes the operation, and prints the result using an appropriate format:
+ * decimal for arithmetic, hexadecimal for bitwise shifts, and boolean for
+ * logical operations.
  */
 fun main() {
     print("Welcome. Which operation would you like to do? ")
@@ -69,11 +71,13 @@ fun main() {
 }
 
 /**
- * Auxiliary function to check if a value is "1" or "true".
- * It helps with the boolean operations AND, OR and NOT.
+ * Converts a textual value to a boolean.
  *
- * @param value value to be checked
- * @return true or false depending on the given value
+ * Accepted true values are `"1"` and `"true"` (case-insensitive).
+ * Any other value is treated as `false`.
+ *
+ * @param value Text input to convert.
+ * @return `true` when the input represents a true value, otherwise `false`.
  */
 fun stringToBool(value: String): Boolean {
     // auxiliary function for the boolean operations

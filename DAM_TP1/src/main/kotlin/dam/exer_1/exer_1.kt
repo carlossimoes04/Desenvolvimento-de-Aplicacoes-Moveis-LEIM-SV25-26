@@ -1,5 +1,11 @@
 package dam.exer_1
 
+/**
+ * Prints the first 50 perfect squares using three different approaches:
+ * 1) [IntArray] initialization,
+ * 2) range mapping with [map] and conversion to [IntArray],
+ * 3) generic [Array] initialization.
+ */
 fun main() {
     // first approach, using IntArray
     val squaredNumsA = IntArray(50) { num ->

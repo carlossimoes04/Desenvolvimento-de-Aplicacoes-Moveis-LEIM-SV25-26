@@ -1,5 +1,10 @@
 package dam.exer_vl
 
+/**
+ * Represents a library that manages a collection of books.
+ *
+ * @property name Library name.
+ */
 class Library (val name: String) {
     // used mutable list instead of list because lists can't be modified after their creation
     private val books: MutableList<Book> = mutableListOf()
@@ -86,6 +91,10 @@ class Library (val name: String) {
 
     companion object {
         private var globalTotalBooksCreated: Int = 0
+
+        /**
+         * Returns the total number of books added across all library instances.
+         */
         fun getTotalBooksCreated(): Int {
             return globalTotalBooksCreated
         }

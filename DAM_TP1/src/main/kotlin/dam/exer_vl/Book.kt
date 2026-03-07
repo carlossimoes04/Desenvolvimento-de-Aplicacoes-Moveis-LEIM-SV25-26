@@ -1,8 +1,23 @@
 package dam.exer_vl
 
+/**
+ * Base abstraction for books managed by the virtual library.
+ *
+ * @property title Book title.
+ * @property author Book author.
+ * @property year Numeric publication year.
+ * @property initialCopies Number of copies initially available in stock.
+ */
 abstract class Book constructor(val title: String, val author: String, val year: Int, val initialCopies: Int) {
     
     private val _publicationYear: Int = year
+
+    /**
+     * Publication period label derived from [year].
+     *
+     * Returns `Classic` for years before 1980, `Modern` for 1980..2010,
+     * and `Contemporary` for later years.
+     */
     val publicationYear: String
         get() = when {
             _publicationYear < 1980 -> "Classic"
@@ -10,6 +25,12 @@ abstract class Book constructor(val title: String, val author: String, val year:
             else -> "Contemporary"
         }
     
+    /**
+     * Current number of copies available for borrowing.
+     *
+     * Negative values are rejected, and setting the value to `0` emits an
+     * out-of-stock warning.
+     */
     var availableCopies: Int = initialCopies
         set(value) {
             when {
@@ -25,6 +46,9 @@ abstract class Book constructor(val title: String, val author: String, val year:
             }
         }
 
+    /**
+     * Returns a multi-line, human-readable summary of the book metadata and stock.
+     */
     override fun toString(): String {
         return """
             Book:
@@ -35,6 +59,11 @@ abstract class Book constructor(val title: String, val author: String, val year:
             """.trimIndent()
     }
 
+    /**
+     * Provides implementation-specific storage details.
+     *
+     * @return Description of where or how this book is stored.
+     */
     abstract fun getStorageInfo(): String
 
     init {

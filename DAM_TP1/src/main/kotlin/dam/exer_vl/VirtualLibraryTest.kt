@@ -1,5 +1,9 @@
 package dam.exer_vl
 
+/**
+ * Demonstrates virtual library features by creating books, borrowing/returning
+ * items, searching by author, and printing summary information.
+ */
 fun main() {
     val library = Library("Central Library")
 
