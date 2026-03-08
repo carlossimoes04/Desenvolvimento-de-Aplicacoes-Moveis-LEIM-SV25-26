@@ -12,7 +12,7 @@ Here you will find direct links to the Practical Assignments (TPs) developed thr
 * **TP1 - Hello Kotlin. Hello Android World!**
   * [Report](./docs/report_tp1.md)
   * [Kotlin](./DAM_TP1)
-  * [Android Studio]
+  * Android Studio
     * [Hello World](./code/HelloWorld)
     * [Hello World Optional (System Info)](./code/HelloWorldOptional)
     * [Virtual Library (UI)](./code/VirtualLibrary)
