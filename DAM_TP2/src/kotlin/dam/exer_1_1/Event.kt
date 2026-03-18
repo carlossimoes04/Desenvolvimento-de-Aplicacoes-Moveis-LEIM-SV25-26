@@ -25,3 +25,7 @@ fun List<Event>.totalSpent(username: String) : Double {
     val total = userEvents.filterIsInstance<Event.Purchase>().sumOf { compra -> compra.amount }
     return total
 }
+
+fun processEvents(list: List<Event>, handler: (Event) -> Unit) {
+    list.forEach { e -> handler(e)}
+}
