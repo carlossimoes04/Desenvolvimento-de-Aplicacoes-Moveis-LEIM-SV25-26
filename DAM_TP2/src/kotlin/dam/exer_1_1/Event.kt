@@ -18,3 +18,10 @@ fun List<Event>.filterByUser(username: String) : List<Event> {
         // comparando com as propriedades de cada subclasse
     }
 }
+
+// val -> não pode ser alterado | var -> pode ser alterada
+fun List<Event>.totalSpent(username: String) : Double {
+    val userEvents = filterByUser(username)
+    val total = userEvents.filterIsInstance<Event.Purchase>().sumOf { compra -> compra.amount }
+    return total
+}
