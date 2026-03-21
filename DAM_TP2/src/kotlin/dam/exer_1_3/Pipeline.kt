@@ -33,3 +33,40 @@ class Pipeline {
 fun buildPipeline(block: Pipeline.() -> Unit): Pipeline {
     return Pipeline().apply(block)
 }
+
+fun main() {
+
+    val logs = listOf(
+        "   system started   ",
+        " error : disk full ",
+        "   user logged in   ",
+        " ERROR : OUT OF MEMORY ",
+        " error : connection timeout "
+    )
+
+    val myPipeline = buildPipeline {
+        addStage("Trim") { list ->
+            list.map { it.trim() }
+        }
+
+        addStage("Filter errors") { list ->
+            list.filter { it.contains("error", ignoreCase = true) }
+        }
+
+        addStage("Uppercase") { list ->
+            list.map { it.uppercase() }
+        }
+
+        addStage("Add index") { list ->
+            list.mapIndexed { index, line -> "${index + 1}. $line" }
+        }
+    }
+
+    println("--- Pipeline Stages ---")
+    myPipeline.describe()
+
+    println("\n--- Execution Result ---")
+    val processedLogs = myPipeline.execute(logs)
+
+    processedLogs.forEach { println(it) }
+}
