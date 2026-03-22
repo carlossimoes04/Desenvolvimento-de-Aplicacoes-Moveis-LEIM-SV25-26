@@ -22,7 +22,7 @@ data class Vec2(val x: Double, val y: Double): Comparable<Vec2> {
         return kotlin.math.sqrt(x * x + y * y)
     }
 
-    override operator fun compareTo(other: Vec2): Int {
+    override operator fun compareTo(other: Vec2): Int { // foi necessário adicionar o Comparable<Vec2> na declaração da classe
         val magThis = this.magnitude()
         val magOther = other.magnitude()
         return magThis.compareTo(magOther)
@@ -45,6 +45,13 @@ data class Vec2(val x: Double, val y: Double): Comparable<Vec2> {
             else -> throw IndexOutOfBoundsException("index $index out of bounds")
         }
     }
+
+    // component1() e component2() são gerados automaticamente
+    // pela data class, permitindo: val (x, y) = a
+}
+
+operator fun Double.times(other: Vec2): Vec2 {
+    return Vec2(this * other.x, this * other.y)
 }
 
 fun main() {
@@ -66,4 +73,10 @@ fun main() {
     val vectors = listOf ( Vec2 (1.0 , 0.0) , Vec2 (3.0 , 4.0) , Vec2 (0.0 , 2.0) )
     println (" Longest = ${vectors.max()}") // Longest = Vec2 (x=3.0 , y =4.0)
     println (" Shortest = ${vectors.min()}") // Shortest = Vec2 (x=1.0 , y =0.0)
+
+    println("2.0 * a = ${2.0 * a}")
+
+    val (x, y) = a
+    println("x = $x")
+    println("y = $y")
 }
