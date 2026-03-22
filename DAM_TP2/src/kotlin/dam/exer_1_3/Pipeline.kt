@@ -1,5 +1,12 @@
 package dam.exer_1_3
 
+fun <A, B, C> ((A) -> B).andThen(other: (B) -> C): (A) -> C = { a: A -> other(this(a)) }
+// baseado em: https://www.youtube.com/watch?v=47NYovu2VaQ
+/*
+O objetivo do andThen é combinar as ações de duas funções, f.andThen(g). Esta retorna uma função que aplica f and depois
+aplica g ao resultado.
+ */
+
 class Pipeline {
 
     // guarda-se um "pair" (par) onde o 1º elemento é a String (nome)
@@ -26,6 +33,24 @@ class Pipeline {
             // step.first acede ao 1º elemento do par (o nome)
             println(step.first)
         }
+    }
+
+    fun compose(nameA: String, nameB: String, newName: String) {
+        val step1 = listOfSteps.find { it.first == nameA }
+        val step2 = listOfSteps.find { it.first == nameB }
+
+        val funcao1 = step1?.second ?: return
+        val funcao2 = step2?.second ?: return
+
+        val combinada = funcao1.andThen(funcao2)
+
+        addStage(newName, combinada)
+    }
+
+    fun fork(input: List<String>, other: Pipeline): Pair<List<String>, List<String>> {
+        val resultadoA = this.execute(input)
+        val resultadoB = other.execute(input)
+        return Pair(resultadoA, resultadoB)
     }
 }
 
@@ -69,4 +94,22 @@ fun main() {
     val processedLogs = myPipeline.execute(logs)
 
     processedLogs.forEach { println(it) }
+
+    println("\n")
+    myPipeline.compose("Trim", "Filter errors", "TrimAndFilter")
+    myPipeline.describe()
+
+    val pipeline2 = buildPipeline {
+        addStage("Trim") { list ->
+            list.map { it.trim() }
+        }
+
+        addStage("Filter errors") { list ->
+            list.filter { it.contains("error", ignoreCase = true) }
+        }
+    }
+
+    val resultado = myPipeline.fork(logs, pipeline2)
+    println(resultado.first)  // resultado do myPipeline
+    println(resultado.second)  // resultado do pipeline2
 }
