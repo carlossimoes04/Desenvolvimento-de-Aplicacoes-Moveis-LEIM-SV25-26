@@ -1,11 +1,29 @@
 package dam.exer_1_1
 
+/**
+ * A sealed class Event serve para definir os tipos de eventos existentes
+ * no sistema, garantindo que apenas Login, Purchase e Logout são possíveis
+ */
 sealed class Event {
+    /*
+    Evento de login
+     */
     data class Login(val username: String, val timestamp: Long) : Event()
+
+    /*
+    Evento de purchase
+     */
     data class Purchase(val username: String, val amount: Double, val timestamp: Long) : Event()
+
+    /*
+    Evento de Logout
+     */
     data class Logout(val username: String, val timestamp: Long) : Event()
 }
 
+/**
+ * Esta função, filtra por todos os eventos de um certo utilizador
+ */
 fun List<Event>.filterByUser(username: String) : List<Event> {
     return this.filter { event ->
         // itera sobre a List<Event> original, e só mantém na nova lista
@@ -21,13 +39,25 @@ fun List<Event>.filterByUser(username: String) : List<Event> {
 }
 
 // val -> não pode ser alterado | var -> pode ser alterada
+
+/**
+ * Calcula o total gasto por um utilizador específico.
+ *
+ * Extensão de [List]<[Event]> que filtra os eventos do utilizador
+ * e soma os valores de todas as suas compras ([Event.Purchase]).
+ */
 fun List<Event>.totalSpent(username: String) : Double {
+    // filtra por todos os eventos do utilizador, utilizando o método anteriormente criado
     val userEvents = filterByUser(username)
+    // faz a soma dos valores de todas as compras, filtrando pela instância de Purchase
     val total = userEvents.filterIsInstance<Event.Purchase>().sumOf { compra -> compra.amount }
+    // retorna o total
     return total
 }
 
 fun processEvents(list: List<Event>, handler: (Event) -> Unit) {
+    // processa uma lista de eventos, aplicando um handler a cada um
+    // o handler é uma função passada como argumento que define o que fazer com cada evento
     list.forEach { e -> handler(e) }
 }
 
@@ -43,6 +73,7 @@ fun main () {
     )
 
     processEvents(events) { event ->
+        // o handler definido em processEvents começa aqui
         when (event) {
             is Event.Login -> println("[LOGIN] ${event.username} logged in at t=${event.timestamp}")
             is Event.Purchase -> println("[PURCHASE] ${event.username} spent $${event.amount} at t=${event.timestamp}")
