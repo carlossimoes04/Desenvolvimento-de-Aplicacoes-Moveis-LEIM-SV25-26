@@ -94,7 +94,7 @@ fun processEvents(list: List<Event>, handler: (Event) -> Unit) {
     // forEach itera sobre cada elemento da lista, passando-o ao handler
     // processEvents é de ordem superior porque recebe o handler
     // é passada como argumento, permitindo que o comportamento
-    // seja definido pelo chamador da função
+    // seja definido pelo caller da função
     list.forEach { e -> handler(e) } // invoca o handler para cada evento "e"
 }
 
