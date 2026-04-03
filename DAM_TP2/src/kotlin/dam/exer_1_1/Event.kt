@@ -1,40 +1,65 @@
 package dam.exer_1_1
 
 /**
- * A sealed class Event serve para definir os tipos de eventos existentes
- * no sistema, garantindo que apenas Login, Purchase e Logout são possíveis
+ * A sealed class Event serve para definir os eventos possíveis no sistema.
+ *
+ * Por ser sealed, o compilador garante exaustividade em expressões [when],
+ * tornando impossível a existência de subtipos não tratados.
  */
 sealed class Event {
     /*
-    Evento de login
+     Uma sealed class é uma classe que restringe a hierarquia de herança,
+     permitindo apenas que as subclasses definidas no mesmo ficheiro ou
+     bloco a estendam. Isto garante que o compilador conhece todos os
+     subtipos possíveis, tornando expressões when exaustivas e seguras em
+     tempo de compilação.
+
+     Uma data class é uma classe cujo propósito principal é guardar dados.
+     O compilador gera automaticamente os métodos equals(), hashCode(),
+     toString() e copy(), com base nas propriedades declaradas no construtor
+     primário.
+     */
+
+    /**
+     * Regista a entrada de um utilizador no sistema.
+     *
+     * @property username Nome do utilizador. Identificador único do mesmo.
+     * @property timestamp Instante do evento, em milissegundos.
      */
     data class Login(val username: String, val timestamp: Long) : Event()
 
-    /*
-    Evento de purchase
+    /**
+     * Regista uma compra efetuada por um utilizador.
+     *
+     * @property username Nome do utilizador. Identificador único do mesmo.
+     * @property amount Valor da compra, em euros (não negativo).
+     * @property timestamp Instante do evento, em milissegundos.
      */
     data class Purchase(val username: String, val amount: Double, val timestamp: Long) : Event()
 
-    /*
-    Evento de Logout
+    /**
+     * Regista a saída de um utilizador do sistema.
+     *
+     * @property username Nome do utilizador. Identificador único do mesmo.
+     * @property timestamp Instante do evento, em milissegundos.
      */
     data class Logout(val username: String, val timestamp: Long) : Event()
 }
 
 /**
- * Esta função, filtra por todos os eventos de um certo utilizador
+ * Extensão de List<Event> que filtra os eventos associados a um utilizador.
+ *
+ * @param username Identificador do utilizador cujos eventos se pretende obter.
+ * @return Nova lista contendo apenas os eventos do utilizador indicado.
  */
 fun List<Event>.filterByUser(username: String) : List<Event> {
-    return this.filter { event ->
-        // itera sobre a List<Event> original, e só mantém na nova lista
-        // os elementos onde a condição retorna true
-        when (event) { // vai procurar o username dependendo do evento
-            is Event.Login -> event.username == username
-            is Event.Purchase -> event.username == username
-            is Event.Logout -> event.username == username
+    // this refere-se à lista original sobre a qual a extensão é chamada
+    return this.filter { event -> // filter retorna uma lista com os elementos onde a condição é true
+        when (event) {
+            is Event.Login -> event.username == username // compara o username do evento Login
+            is Event.Purchase -> event.username == username // compara o username do evento Purchase
+            is Event.Logout -> event.username == username // compara o username do evento Logout
         }
-        // com este when, é possível retornar apenas os eventos filtrados com o nome de utilizador
-        // comparando com as propriedades de cada subclasse
     }
 }
 
@@ -45,20 +70,32 @@ fun List<Event>.filterByUser(username: String) : List<Event> {
  *
  * Extensão de [List]<[Event]> que filtra os eventos do utilizador
  * e soma os valores de todas as suas compras ([Event.Purchase]).
+ *
+ * @param username Identificador do utilizador cujo total se pretende calcular.
+ * @return Soma de todos os valores de compras do utilizador. Devolve 0.0 se não houver compras.
  */
 fun List<Event>.totalSpent(username: String) : Double {
-    // filtra por todos os eventos do utilizador, utilizando o método anteriormente criado
+    // reutiliza a extensão filterByUser para obter apenas os eventos do utilizador
     val userEvents = filterByUser(username)
-    // faz a soma dos valores de todas as compras, filtrando pela instância de Purchase
+    // filterIsInstance<Event.Purchase>() filtra a lista mantendo apenas os elementos
+    // que são instâncias de Event.Purchase, ignorando Login e Logout
+    // sumOf itera sobre esses elementos e acumula a soma da propriedade amount
     val total = userEvents.filterIsInstance<Event.Purchase>().sumOf { compra -> compra.amount }
-    // retorna o total
-    return total
+    return total // devolve a soma total das compras do utilizador
 }
 
+/**
+ * Função de ordem superior que aplica um handler a cada evento da lista.
+ *
+ * @param list Lista de eventos a processar.
+ * @param handler Lambda que define a ação a executar sobre cada evento. Recebe um [Event] e não devolve nada (Unit).
+ */
 fun processEvents(list: List<Event>, handler: (Event) -> Unit) {
-    // processa uma lista de eventos, aplicando um handler a cada um
-    // o handler é uma função passada como argumento que define o que fazer com cada evento
-    list.forEach { e -> handler(e) }
+    // forEach itera sobre cada elemento da lista, passando-o ao handler
+    // processEvents é de ordem superior porque recebe o handler
+    // é passada como argumento, permitindo que o comportamento
+    // seja definido pelo chamador da função
+    list.forEach { e -> handler(e) } // invoca o handler para cada evento "e"
 }
 
 fun main () {
