@@ -5,7 +5,8 @@ data class WeatherData (
     var longitude:String ,
     var timezone:String ,
     var current_weather:CurrentWeather ,
-    var hourly:Hourly
+    var hourly:Hourly,
+    var daily: Daily
 )
 data class CurrentWeather (
     var temperature:Float ,
@@ -20,6 +21,11 @@ data class Hourly (
     var temperature_2m : ArrayList<Float>,
     var weathercode : ArrayList<Int>,
     var pressure_msl : ArrayList<Double>
+)
+
+data class Daily( // criado para se saber o nascer e pôr do sol, para se saber se é de dia ou de noite
+    var sunrise: ArrayList<String>,   // ex: "2024-03-10T07:23"
+    var sunset: ArrayList<String>     // ex: "2024-03-10T19:45"
 )
 
 enum class WMO_WeatherCode(var code : Int, var image : String) {

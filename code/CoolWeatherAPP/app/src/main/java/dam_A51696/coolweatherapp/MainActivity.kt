@@ -16,10 +16,7 @@ import java.net.URL
 
 class MainActivity : AppCompatActivity() {
 
-    // verifica se é de dia ou de noite para escolher o tema adequado
-    // é considerado dia entre as 7h e as 20h, e noite fora desse intervalo
-    private val day: Boolean
-        get() = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY) in 7..20
+    private var day = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -80,6 +77,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateUI ( request : WeatherData ) {
         runOnUiThread {
+
+            // hora atual do local (ex: "2024-03-10T14:00") -> extrai "14:00"
+            val currentTime = request.current_weather.time.substringAfter("T")
+            val sunrise     = request.daily.sunrise[0].substringAfter("T")  // ex: "07:23"
+            val sunset      = request.daily.sunset[0].substringAfter("T")   // ex: "19:45"
+
+            day = currentTime in sunrise..sunset
+
             val weatherImage : ImageView = findViewById(R.id.weatherImage)
             val pressure: TextView = findViewById(R.id.pressureValue)
             val windDir    = findViewById<TextView>(R.id.windDirectionValue)
