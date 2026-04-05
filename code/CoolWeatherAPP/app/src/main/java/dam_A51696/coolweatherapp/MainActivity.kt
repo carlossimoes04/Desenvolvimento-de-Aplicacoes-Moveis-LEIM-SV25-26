@@ -17,8 +17,17 @@ import java.net.URL
 class MainActivity : AppCompatActivity() {
 
     private var day = true
+    private var lastLat = 38.076f
+    private var lastLon = -9.12f
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        // Recupera o day e coordenadas guardados (vindos de um recreate)
+        if (savedInstanceState != null) {
+            day = savedInstanceState.getBoolean("day", true)
+            lastLat = savedInstanceState.getFloat("lastLat", 38.076f)
+            lastLon = savedInstanceState.getFloat("lastLon", -9.12f)
+        }
 
         when (resources.configuration.orientation) {
             Configuration.ORIENTATION_PORTRAIT -> {
@@ -41,7 +50,8 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        fetchWeatherData(38.076f, -9.12f).start()
+        // Carrega dados (usa as últimas coordenadas guardadas)
+        fetchWeatherData(lastLat, lastLon).start()
 
         val updateButton = findViewById<Button>(R.id.updateButton)
         val latInput = findViewById<EditText>(R.id.latitudeValue)
@@ -50,8 +60,18 @@ class MainActivity : AppCompatActivity() {
         updateButton.setOnClickListener {
             val lat = latInput.text.toString().toFloatOrNull() ?: 38.076f
             val lon = lonInput.text.toString().toFloatOrNull() ?: -9.12f
+            lastLat = lat
+            lastLon = lon
             fetchWeatherData(lat, lon).start()
         }
+    }
+
+    // Guarda o day e coordenadas antes de um recreate
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean("day", day)
+        outState.putFloat("lastLat", lastLat)
+        outState.putFloat("lastLon", lastLon)
     }
 
     private fun WeatherAPI_Call(lat: Float ,long : Float) : WeatherData {
@@ -78,12 +98,17 @@ class MainActivity : AppCompatActivity() {
     private fun updateUI ( request : WeatherData ) {
         runOnUiThread {
 
-            // hora atual do local (ex: "2024-03-10T14:00") -> extrai "14:00"
-            val currentTime = request.current_weather.time.substringAfter("T")
-            val sunrise     = request.daily.sunrise[0].substringAfter("T")  // ex: "07:23"
-            val sunset      = request.daily.sunset[0].substringAfter("T")   // ex: "19:45"
+            val currentTime = request.current_weather.time.substringAfter("T") // ex: "14:00"
+            val sunrise     = request.daily.sunrise[0].substringAfter("T")     // ex: "07:23"
+            val sunset      = request.daily.sunset[0].substringAfter("T")      // ex: "19:45"
+            val newDay      = currentTime in sunrise..sunset
 
-            day = currentTime in sunrise..sunset
+            // Se o dia/noite mudou, guarda e reinicia a activity para aplicar o novo tema
+            if (newDay != day) {
+                day = newDay
+                recreate()
+                return@runOnUiThread
+            }
 
             val weatherImage : ImageView = findViewById(R.id.weatherImage)
             val pressure: TextView = findViewById(R.id.pressureValue)
