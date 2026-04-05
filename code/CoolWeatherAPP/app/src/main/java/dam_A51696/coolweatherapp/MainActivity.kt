@@ -6,6 +6,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.gson.Gson
+import java.io.InputStreamReader
+import java.net.URL
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,6 +34,20 @@ class MainActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+    }
+
+    private fun WeatherAPI_Call(lat: Float ,long : Float) : WeatherData {
+        val reqString = buildString {
+            append("https://api.open-meteo.com/v1/forecast?")
+            append("latitude=${lat}&longitude=${long}&")
+            append("current_weather=true&")
+            append("hourly=temperature_2m,weathercode,pressure_msl,windspeed_10m&")
+            append("daily=sunrise,sunset&timezone=auto")
+        }
+        val url = URL(reqString)
+        url.openStream().use {
+            return Gson().fromJson(InputStreamReader(it, "UTF-8"), WeatherData::class.java)
         }
     }
 }
