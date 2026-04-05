@@ -2,6 +2,8 @@ package dam_A51696.coolweatherapp
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -11,9 +13,10 @@ import java.io.InputStreamReader
 import java.net.URL
 
 class MainActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
 
-        val day = true
+    private val day = true
+
+    override fun onCreate(savedInstanceState: Bundle?) {
 
         when (resources.configuration.orientation) {
             Configuration.ORIENTATION_PORTRAIT -> {
@@ -48,6 +51,44 @@ class MainActivity : AppCompatActivity() {
         val url = URL(reqString)
         url.openStream().use {
             return Gson().fromJson(InputStreamReader(it, "UTF-8"), WeatherData::class.java)
+        }
+    }
+
+    private fun fetchWeatherData (lat: Float, long : Float) : Thread {
+        return Thread {
+            val weather = WeatherAPI_Call (lat , long)
+            updateUI(weather)
+        }
+    }
+
+    private fun updateUI ( request : WeatherData ) {
+        runOnUiThread {
+            val weatherImage : ImageView = findViewById(R.id.weatherImage)
+            val pressure: TextView = findViewById(R.id.pressureValue)
+            val windDir    = findViewById<TextView>(R.id.windDirectionValue)
+            val windSpeed  = findViewById<TextView>(R.id.windSpeedValue)
+            val temp       = findViewById<TextView>(R.id.temperatureValue)
+            val time       = findViewById<TextView>(R.id.timeValue)
+
+            pressure.text  = "${request.hourly.pressure_msl[12]} hPa"
+            windDir.text   = "${request.current_weather.winddirection}°"
+            windSpeed.text = "${request.current_weather.windspeed} km/h"
+            temp.text      = "${request.current_weather.temperature} ºC"
+            time.text      = request.current_weather.time
+
+            val mapt = getWeatherCodeMap() ;
+            val wCode = mapt.get(request.current_weather.weathercode)
+            val wImage = when (wCode) {
+                WMO_WeatherCode.CLEAR_SKY,
+                WMO_WeatherCode.MAINLY_CLEAR,
+                WMO_WeatherCode.PARTLY_CLOUDY -> if (day) wCode.image + "day" else wCode.image + "night"
+                else -> wCode?.image
+            }
+
+            val resID = resources.getIdentifier(wImage, "drawable", packageName)
+            if (resID != 0) {
+                weatherImage.setImageDrawable(getDrawable(resID))
+            }
         }
     }
 }
