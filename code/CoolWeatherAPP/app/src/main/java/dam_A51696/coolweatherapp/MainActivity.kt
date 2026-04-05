@@ -16,7 +16,10 @@ import java.net.URL
 
 class MainActivity : AppCompatActivity() {
 
-    private val day = true
+    // verifica se é de dia ou de noite para escolher o tema adequado
+    // é considerado dia entre as 7h e as 20h, e noite fora desse intervalo
+    private val day: Boolean
+        get() = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY) in 7..20
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
