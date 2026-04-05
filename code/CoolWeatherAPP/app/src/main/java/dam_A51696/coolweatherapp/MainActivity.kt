@@ -2,6 +2,8 @@ package dam_A51696.coolweatherapp
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -37,6 +39,18 @@ class MainActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+
+        fetchWeatherData(38.076f, -9.12f).start()
+
+        val updateButton = findViewById<Button>(R.id.updateButton)
+        val latInput = findViewById<EditText>(R.id.latitudeValue)
+        val lonInput = findViewById<EditText>(R.id.longitudeValue)
+
+        updateButton.setOnClickListener {
+            val lat = latInput.text.toString().toFloatOrNull() ?: 38.076f
+            val lon = lonInput.text.toString().toFloatOrNull() ?: -9.12f
+            fetchWeatherData(lat, lon).start()
         }
     }
 
