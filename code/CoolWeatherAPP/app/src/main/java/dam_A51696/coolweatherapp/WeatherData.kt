@@ -28,6 +28,7 @@ data class Daily( // criado para se saber o nascer e pôr do sol, para se saber 
     var sunset: ArrayList<String>     // ex: "2024-03-10T19:45"
 )
 
+/*
 enum class WMO_WeatherCode(var code : Int, var image : String) {
     CLEAR_SKY(0 ,"clear_") ,
     MAINLY_CLEAR(1 , "mostly_clear_") ,
@@ -65,4 +66,4 @@ fun getWeatherCodeMap () : Map <Int , WMO_WeatherCode > {
         weatherMap.put(it.code ,it)
     }
     return weatherMap
-}
+} */

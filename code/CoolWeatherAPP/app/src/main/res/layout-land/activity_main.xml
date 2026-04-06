@@ -5,10 +5,9 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_land_app"
     tools:context=".MainActivity">
 
-    <!-- Guideline vertical a 50% — divide imagem (esq) da tabela (dir) -->
+    <!-- Guideline vertical a 50% — divide ícone (esq) da info (dir) -->
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
         android:layout_width="wrap_content"
@@ -16,221 +15,225 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.50" />
 
-    <!-- Ícone do tempo atual — coluna esquerda, centrado verticalmente -->
-
-    <!-- Latitude -->
-
+    <!-- ───── COLUNA ESQUERDA: ícone centrado ───── -->
     <ImageView
         android:id="@+id/weatherImage"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
         android:contentDescription="@string/weather_image_description"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/temperatureValue"
         app:layout_constraintEnd_toStartOf="@id/guideline"
-        app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.515" />
+        app:layout_constraintVertical_chainStyle="packed" />
 
-    <EditText
-        android:id="@+id/latitudeValue"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:minHeight="48dp"
-        android:autofillHints="no"
-        android:background="@color/viewBG"
-        android:hint="@string/hint_latitude"
-        android:inputType="text"
-        android:padding="4dp"
-        android:textColor="@color/WeatherLabel"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/labelLatitude"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="8dp" />
-
-    <TextView
-        android:id="@+id/labelLatitude"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:background="@color/viewBG"
-        android:padding="4dp"
-        android:gravity="center_vertical"
-        android:text="@string/latitude"
-        android:textColor="@color/WeatherLabel"
-        app:layout_constraintEnd_toStartOf="@id/latitudeValue"
-        app:layout_constraintStart_toEndOf="@id/guideline"
-        app:layout_constraintTop_toTopOf="@id/latitudeValue"
-        app:layout_constraintBottom_toBottomOf="@id/latitudeValue" />
-
-    <!-- Longitude -->
-    <EditText
-        android:id="@+id/longitudeValue"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:minHeight="48dp"
-        android:autofillHints="no"
-        android:background="@color/viewBG"
-        android:hint="@string/hint_longitude"
-        android:inputType="text"
-        android:padding="4dp"
-        android:textColor="@color/WeatherLabel"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/labelLongitude"
-        app:layout_constraintTop_toBottomOf="@id/latitudeValue"
-        android:layout_marginTop="4dp" />
-
-    <TextView
-        android:id="@+id/labelLongitude"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:background="@color/viewBG"
-        android:padding="4dp"
-        android:gravity="center_vertical"
-        android:text="@string/longitude"
-        android:textColor="@color/WeatherLabel"
-        app:layout_constraintEnd_toStartOf="@id/longitudeValue"
-        app:layout_constraintStart_toEndOf="@id/guideline"
-        app:layout_constraintTop_toTopOf="@id/longitudeValue"
-        app:layout_constraintBottom_toBottomOf="@id/longitudeValue" />
-
-    <!-- Sea Level Pressure -->
-    <TextView
-        android:id="@+id/labelPressure"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:background="@color/viewBG"
-        android:padding="4dp"
-        android:text="@string/sea_level_pressure"
-        android:textColor="@color/WeatherLabel"
-        app:layout_constraintEnd_toStartOf="@+id/pressureValue"
-        app:layout_constraintStart_toEndOf="@id/guideline"
-        app:layout_constraintTop_toBottomOf="@id/longitudeValue" />
-
-    <TextView
-        android:id="@+id/pressureValue"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/viewBG"
-        android:padding="4dp"
-        android:text="@string/sea_level_pressure_text"
-        android:textColor="@color/WeatherLabel"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/labelPressure"
-        app:layout_constraintTop_toTopOf="@id/labelPressure" />
-
-    <!-- Wind Direction -->
-    <TextView
-        android:id="@+id/labelWindDirection"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:background="@color/viewBG"
-        android:padding="4dp"
-        android:text="@string/wind_direction"
-        android:textColor="@color/WeatherLabel"
-        app:layout_constraintEnd_toStartOf="@+id/windDirectionValue"
-        app:layout_constraintStart_toEndOf="@id/guideline"
-        app:layout_constraintTop_toBottomOf="@id/labelPressure" />
-
-    <TextView
-        android:id="@+id/windDirectionValue"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/viewBG"
-        android:padding="4dp"
-        android:text="@string/wind_direction_value_text"
-        android:textColor="@color/WeatherLabel"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/labelWindDirection"
-        app:layout_constraintTop_toTopOf="@id/labelWindDirection" />
-
-    <!-- Wind Speed -->
-    <TextView
-        android:id="@+id/labelWindSpeed"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:background="@color/viewBG"
-        android:padding="4dp"
-        android:text="@string/wind_speed"
-        android:textColor="@color/WeatherLabel"
-        app:layout_constraintEnd_toStartOf="@+id/windSpeedValue"
-        app:layout_constraintStart_toEndOf="@id/guideline"
-        app:layout_constraintTop_toBottomOf="@id/labelWindDirection" />
-
-    <TextView
-        android:id="@+id/windSpeedValue"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/viewBG"
-        android:padding="4dp"
-        android:text="@string/wind_speed_value_text"
-        android:textColor="@color/WeatherLabel"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/labelWindSpeed"
-        app:layout_constraintTop_toTopOf="@id/labelWindSpeed" />
-
-    <!-- Temperature -->
-    <TextView
-        android:id="@+id/labelTemperature"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:background="@color/viewBG"
-        android:padding="4dp"
-        android:text="@string/temperature"
-        android:textColor="@color/WeatherLabel"
-        app:layout_constraintEnd_toStartOf="@+id/temperatureValue"
-        app:layout_constraintStart_toEndOf="@id/guideline"
-        app:layout_constraintTop_toBottomOf="@id/labelWindSpeed" />
-
+    <!-- Temperatura grande na coluna esquerda, por baixo do ícone -->
     <TextView
         android:id="@+id/temperatureValue"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/viewBG"
-        android:padding="4dp"
+        android:layout_marginTop="4dp"
         android:text="@string/temperature_value_text"
         android:textColor="@color/WeatherLabel"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/labelTemperature"
-        app:layout_constraintTop_toTopOf="@id/labelTemperature" />
+        android:textSize="56sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/weatherImage" />
 
-    <!-- Time -->
-    <TextView
-        android:id="@+id/labelTime"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:background="@color/viewBG"
-        android:padding="4dp"
-        android:text="@string/time"
-        android:textColor="@color/WeatherLabel"
-        app:layout_constraintEnd_toStartOf="@+id/timeValue"
-        app:layout_constraintStart_toEndOf="@id/guideline"
-        app:layout_constraintTop_toBottomOf="@id/labelTemperature" />
-
+    <!-- ───── COLUNA DIREITA: hora no topo ───── -->
     <TextView
         android:id="@+id/timeValue"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/viewBG"
-        android:padding="4dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
         android:text="@string/time_value_text"
         android:textColor="@color/WeatherLabel"
+        android:textSize="28sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/labelTime"
-        app:layout_constraintTop_toTopOf="@id/labelTime" />
+        app:layout_constraintStart_toEndOf="@id/guideline"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Botão UPDATE — abaixo da tabela, alinhado à coluna direita -->
+    <!-- Lat/Lon lado a lado por baixo da hora -->
+    <EditText
+        android:id="@+id/latitudeValue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginTop="4dp"
+        android:autofillHints="no"
+        android:background="@android:color/transparent"
+        android:gravity="center"
+        android:hint="@string/hint_latitude"
+        android:inputType="text"
+        android:textColor="@color/WeatherLabel"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/longitudeValue"
+        app:layout_constraintStart_toEndOf="@id/guideline"
+        app:layout_constraintTop_toBottomOf="@id/timeValue" />
+
+    <EditText
+        android:id="@+id/longitudeValue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="4dp"
+        android:autofillHints="no"
+        android:background="@android:color/transparent"
+        android:gravity="center"
+        android:hint="@string/hint_longitude"
+        android:inputType="text"
+        android:textColor="@color/WeatherLabel"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/latitudeValue"
+        app:layout_constraintTop_toBottomOf="@id/timeValue" />
+
+    <!-- Labels Lat / Lon discretos por baixo -->
+    <TextView
+        android:id="@+id/labelLatitude"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:alpha="0.6"
+        android:gravity="center"
+        android:text="@string/latitude"
+        android:textColor="@color/WeatherLabel"
+        android:textSize="10sp"
+        app:layout_constraintEnd_toStartOf="@id/longitudeValue"
+        app:layout_constraintStart_toEndOf="@id/guideline"
+        app:layout_constraintTop_toBottomOf="@id/latitudeValue" />
+
+    <TextView
+        android:id="@+id/labelLongitude"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:alpha="0.6"
+        android:gravity="center"
+        android:text="@string/longitude"
+        android:textColor="@color/WeatherLabel"
+        android:textSize="10sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/latitudeValue"
+        app:layout_constraintTop_toBottomOf="@id/longitudeValue" />
+
+    <!-- ───── CARD DE DETALHES (coluna direita) ───── -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/detailsCard"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        app:cardBackgroundColor="@color/viewBG"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guideline"
+        app:layout_constraintTop_toBottomOf="@id/labelLatitude">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <!-- Pressão -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="6dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/sea_level_pressure"
+                    android:textColor="@color/WeatherLabel"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/pressureValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sea_level_pressure_text"
+                    android:textColor="@color/WeatherLabel"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Direção do vento -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="6dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/wind_direction"
+                    android:textColor="@color/WeatherLabel"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/windDirectionValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/wind_direction_value_text"
+                    android:textColor="@color/WeatherLabel"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Velocidade do vento -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/wind_speed"
+                    android:textColor="@color/WeatherLabel"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/windSpeedValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/wind_speed_value_text"
+                    android:textColor="@color/WeatherLabel"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- ───── BOTÕES (coluna direita, fundo) ───── -->
+    <Button
+        android:id="@+id/gpsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="4dp"
+        android:text="@string/gps_text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/updateButton"
+        app:layout_constraintStart_toEndOf="@id/guideline" />
+
     <Button
         android:id="@+id/updateButton"
         android:layout_width="wrap_content"
@@ -239,6 +242,6 @@
         android:text="@string/update"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/guideline" />
+        app:layout_constraintStart_toEndOf="@id/gpsButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
