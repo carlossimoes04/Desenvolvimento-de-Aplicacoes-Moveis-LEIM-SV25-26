@@ -133,3 +133,16 @@ Thirteenth entry:
         - O gesto de 'Swipe to Refresh' atualiza a lista corretamente.
 - Result:
     - The code was fully generated and logically validated according to the MVVM architecture. However, physical execution (Deploy/Run) could not be completed by the AI Agent due to the absence of local SDK tools (ADB/Gradlew) in the generation environment. It was recommended to open the project in Android Studio to perform the final compilation and manual deployment to the physical device.
+    - The gradle-wrapper.properties was missing, so I asked the agent to create it.
+
+Fourteenth entry:
+- Goal: Implement the extension features.
+- Prompt used:
+    - Implementa o que é pedido em 09_feature_extensions.md
+- Result: The agent created an implementation plan for the extension features, but did not implement them.
+
+Fifteenth entry:
+- Goal: Implement the extension features, after reading the implementation plan.
+- Prompt used:
+    - Concordo com o plano. Implementa o resto.
+- Result: The agent created an implementation plan for the extension features, but did not implement them.
