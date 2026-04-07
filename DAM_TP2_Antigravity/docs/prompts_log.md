@@ -48,3 +48,14 @@ Sixth entry:
 - Result:
     - Created ImageRepository to abstract API calls from the ViewModel.
 
+Seventh entry:
+- Goal: Design the MainActivity layout.
+- Prompt used:
+    - Por favor, executa o Step 7 do meu docs/08_implementation_plan.md: Desenha o ficheiro activity_main.xml utilizando um ConstraintLayout. O layout deve incluir:
+        - Uma androidx.appcompat.widget.Toolbar no topo para o título.
+        - Um androidx.swiperefreshlayout.widget.SwipeRefreshLayout que envolva o RecyclerView.
+        - Um androidx.recyclerview.widget.RecyclerView para exibir a lista de imagens.
+        - Um ProgressBar (Loading Indicator) centralizado, que será controlado via código para mostrar o estado de carregamento.
+        Garante que todos os componentes têm IDs claros (ex: toolbar, recyclerView, progressBar) conforme planeado em docs/03_screens.md.
+- Result:
+    - Created activity_main.xml with Toolbar, RecyclerView, and ProgressBar.
