@@ -36,3 +36,15 @@ Fifth entry:
     - Por favor, executa o Step 5 do docs/08_implementation_plan.md: Cria uma interface em Kotlin chamada PicsumApiService.kt. Esta interface deve definir um método GET para o endpoint v2/list, que retorne uma lista de objetos ImageItem. Utiliza as anotações do Retrofit para lidar com a chamada e os parâmetros de consulta (query parameters) opcionais page e limit, conforme descrito em docs/07_api_usage.md.
 - Result:
     - Created PicsumApiService interface for Retrofit to fetch image metadata.
+
+Sixth entry:
+- Goal: Create the Repository class.
+- Prompt used:
+    - Por favor, executa o Step 6 do meu docs/08_implementation_plan.md: Cria uma classe em Kotlin chamada ImageRepository.kt. Esta classe deve:
+        - Receber uma instância de PicsumApiService no construtor.
+        - Implementar uma função (ex: getImages) que utilize o serviço para procurar a lista de imagens da API.
+        - Gerir a resposta da rede e devolver os dados de forma que a ViewModel os consiga consumir facilmente (podes usar um padrão de Result ou simplesmente passar a lista).
+        - Seguir a estrutura definida em docs/06_architecture.md para a camada de Repository.
+- Result:
+    - Created ImageRepository to abstract API calls from the ViewModel.
+
