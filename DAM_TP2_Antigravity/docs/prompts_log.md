@@ -1,3 +1,5 @@
+# Prompts Log
+
 First entry:
 - Goal: Generate initial Android project structure.
 - Prompt used: 
@@ -70,3 +72,15 @@ Eighth entry:
         - Atribui IDs claros como imageViewPhoto e textViewAuthor.
 - Result:
     - Created item_image.xml with an ImageView and TextView for list items.
+
+Ninth entry:
+- Goal: Implement the RecyclerView Adapter.
+- Prompt used:
+    - Por favor, executa o Step 9 do meu docs/08_implementation_plan.md: Cria uma classe em Kotlin chamada ImageAdapter.kt. Esta classe deve:
+        - Estender RecyclerView.Adapter e usar um ViewHolder interno.
+        - Receber uma lista de ImageItem no construtor (ou via método submitList).
+        - No onBindViewHolder, utilizar a biblioteca Glide (ou a que configurámos no Step 2) para carregar o download_url no imageViewPhoto.
+        - Atribuir o nome do autor ao textViewAuthor.
+        - Utilizar o layout item_image.xml criado no passo anterior.
+- Result:
+    - Implemented ImageAdapter using Glide for image loading and data binding.
