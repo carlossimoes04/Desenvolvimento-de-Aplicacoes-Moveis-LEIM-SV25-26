@@ -18,9 +18,23 @@ import java.net.URL
 import android.location.LocationManager
 import android.Manifest
 import android.content.pm.PackageManager
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.ViewModelProvider
+
+// adicionados devido à challenge 2.2.2
+import dam_A51696.coolweatherapp.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
+    // ViewBinding: substitui os findViewById
+    private lateinit var binding: ActivityMainBinding
+
+    /**
+     * ViewModel: contém a lógica de negócio
+     * criado com ViewModelProvider para sobreviver a rotações de ecrã
+     */
+    private lateinit var viewModel: WeatherViewModel
 
     private var day = true
     private var lastLat = 38.076f // coordenadas de fallback (Lisboa)
@@ -42,21 +56,25 @@ class MainActivity : AppCompatActivity() {
      */
     private val LOCATION_PERMISSION_REQUEST = 1001
 
-    private fun saveDay(value: Boolean) {
-        getSharedPreferences("prefs", MODE_PRIVATE).edit().putBoolean("day", value).apply()
+    // SharedPreferences
+    private fun savePrefs() {
+        getSharedPreferences("prefs", MODE_PRIVATE).edit()
+            .putBoolean("day", day)
+            .putFloat("lastLat", lastLat)
+            .putFloat("lastLon", lastLon)
+            .apply()
     }
 
-    private fun loadDay(): Boolean {
-        return getSharedPreferences("prefs", MODE_PRIVATE).getBoolean("day", true)
+    private fun loadPrefs() {
+        val prefs = getSharedPreferences("prefs", MODE_PRIVATE)
+        day     = prefs.getBoolean("day", true)
+        lastLat = prefs.getFloat("lastLat", 38.076f)
+        lastLon = prefs.getFloat("lastLon", -9.12f)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        day = loadDay()
-        if (savedInstanceState != null) {
-            lastLat = savedInstanceState.getFloat("lastLat", 38.076f)
-            lastLon = savedInstanceState.getFloat("lastLon", -9.12f)
-        }
+        loadPrefs()
 
         when (resources.configuration.orientation) {
             Configuration.ORIENTATION_PORTRAIT -> {
@@ -71,12 +89,28 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.container)) { v, insets ->
+        // ViewBinding em vez de setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.container) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+
+        // Inicializa o ViewModel
+        viewModel = ViewModelProvider(this)[WeatherViewModel::class.java]
+
+        // Observa os dados meteorológicos (padrão Observer)
+        viewModel.weatherData.observe(this) { weather ->
+            updateUI(weather)
+        }
+
+        // Observa erros
+        viewModel.error.observe(this) { errorMsg ->
+            Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show()
         }
 
         /**
@@ -85,138 +119,93 @@ class MainActivity : AppCompatActivity() {
          */
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
 
-        /**
-         * substitui o fetchWeatherData(lastLat, lastLon).start()
-         * verifica primeiro se a app tem permissão de localização:
-         *  - se não tem: pede permissão ao utilizador (popup do sistema)
-         *  - se já tem: chama getLocationAndFetch() que obtém GPS antes do fetch
-         */
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                LOCATION_PERMISSION_REQUEST
-            )
-        } else {
-            getLocationAndFetch()
+        if (savedInstanceState == null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    LOCATION_PERMISSION_REQUEST
+                )
+            } else {
+                getLocationAndFetch()
+            }
         }
 
-        val updateButton = findViewById<Button>(R.id.updateButton)
-        val latInput = findViewById<EditText>(R.id.latitudeValue)
-        val lonInput = findViewById<EditText>(R.id.longitudeValue)
-
-        updateButton.setOnClickListener {
-            val lat = latInput.text.toString().toFloatOrNull() ?: 38.076f
-            val lon = lonInput.text.toString().toFloatOrNull() ?: -9.12f
+        // Botão UPDATE
+        binding.updateButton.setOnClickListener {
+            val lat = binding.latitudeValue.text.toString().toFloatOrNull() ?: 38.076f
+            val lon = binding.longitudeValue.text.toString().toFloatOrNull() ?: -9.12f
             lastLat = lat
             lastLon = lon
-            fetchWeatherData(lat, lon).start()
+            viewModel.fetchWeather(lat, lon)
         }
 
-        val gpsButton = findViewById<Button>(R.id.gpsButton)
-
-        gpsButton.setOnClickListener {
-            // Verifica se o GPS/localização está ativado no sistema
+        // Botão GPS
+        binding.gpsButton?.setOnClickListener {
             val gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
             val networkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
 
             if (!gpsEnabled && !networkEnabled) {
-                // GPS desligado - mostra popup e não faz nada
                 android.app.AlertDialog.Builder(this)
                     .setTitle("Localização desativada")
                     .setMessage("A localização está desativada. Ativa o GPS nas definições do dispositivo.")
                     .setPositiveButton("OK", null)
                     .show()
             } else {
-                // GPS ligado - obtém localização e atualiza
                 getLocationAndFetch()
             }
         }
     }
 
-    // Guarda o day e coordenadas antes de um recreate
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putFloat("lastLat", lastLat)
-        outState.putFloat("lastLon", lastLon)
-    }
-
-    private fun WeatherAPI_Call(lat: Float ,long : Float) : WeatherData {
-        val reqString = buildString {
-            append("https://api.open-meteo.com/v1/forecast?")
-            append("latitude=${lat}&longitude=${long}&")
-            append("current_weather=true&")
-            append("hourly=temperature_2m,weathercode,pressure_msl,windspeed_10m&")
-            append("daily=sunrise,sunset&timezone=auto")
-        }
-        val url = URL(reqString)
-        url.openStream().use {
-            return Gson().fromJson(InputStreamReader(it, "UTF-8"), WeatherData::class.java)
-        }
-    }
-
-    private fun fetchWeatherData (lat: Float, long : Float) : Thread {
-        return Thread {
-            val weather = WeatherAPI_Call (lat , long)
-            updateUI(weather)
-        }
-    }
-
-    private fun updateUI ( request : WeatherData ) {
-        runOnUiThread {
-
-            val currentTime = request.current_weather.time.substringAfter("T") // ex: "14:00"
-            val sunrise     = request.daily.sunrise[0].substringAfter("T")     // ex: "07:23"
-            val sunset      = request.daily.sunset[0].substringAfter("T")      // ex: "19:45"
-            val newDay      = currentTime in sunrise..sunset
-
-            // Se o dia/noite mudou, guarda e reinicia a activity para aplicar o novo tema
-            if (newDay != day) {
-                day = newDay
-                saveDay(day) // guarda antes do recreate
-                recreate()
-                return@runOnUiThread
-            }
-
-            val weatherImage : ImageView = findViewById(R.id.weatherImage)
-            val pressure: TextView = findViewById(R.id.pressureValue)
-            val windDir    = findViewById<TextView>(R.id.windDirectionValue)
-            val windSpeed  = findViewById<TextView>(R.id.windSpeedValue)
-            val temp       = findViewById<TextView>(R.id.temperatureValue)
-            val time       = findViewById<TextView>(R.id.timeValue)
-
-            pressure.text  = "${request.hourly.pressure_msl[12]} hPa"
-            windDir.text   = "${request.current_weather.winddirection}°"
-            windSpeed.text = "${request.current_weather.windspeed} km/h"
-            temp.text      = "${request.current_weather.temperature} ºC"
-            time.text      = request.current_weather.time
-
-            /**
-             * anteriormente usava o enum WMO_WeatherCode e getWeatherCodeMap()
-             * definidos em WeatherData.kt para obter o nome da imagem
-             *
-             * agora chama getWeatherImage() que lê os arrays do ficheiro weather_codes.xml
-             */
-            val wImage = getWeatherImage(request.current_weather.weathercode)
-            val resID = resources.getIdentifier(wImage, "drawable", packageName)
-            if (resID != 0) {
-                weatherImage.setImageDrawable(getDrawable(resID))
-            }
-        }
-    }
-
     /**
-     * exercício 2.2.1 - obtém a última localização conhecida do dispositivo e inicia o fetch
-     *
-     * Tenta primeiro o provider GPS (mais preciso), e em fallback o NETWORK (menos preciso)
-     * Se nenhum devolver localização, mantém as coordenadas padrão de Lisboa definidas em
-     * lastLat/lastLon
+     * View — atualiza a UI com os dados recebidos do ViewModel via LiveData.
+     * Não contém lógica de negócio — apenas apresentação.
      */
+    private fun updateUI(request: WeatherData) {
+        val currentTime = request.current_weather.time.substringAfter("T")
+        val sunrise     = request.daily.sunrise[0].substringAfter("T")
+        val sunset      = request.daily.sunset[0].substringAfter("T")
+        val newDay      = currentTime in sunrise..sunset
+
+        if (newDay != day) {
+            day = newDay
+            savePrefs()
+            recreate()
+            return
+        }
+
+        binding.pressureValue.text    = "${request.hourly.pressure_msl[12]} hPa"
+        binding.windDirectionValue.text = "${request.current_weather.winddirection}°"
+        binding.windSpeedValue.text   = "${request.current_weather.windspeed} km/h"
+        binding.temperatureValue.text = "${request.current_weather.temperature} ºC"
+        binding.timeValue.text        = request.current_weather.time
+
+        val wImage = getWeatherImage(request.current_weather.weathercode)
+        val resID  = resources.getIdentifier(wImage, "drawable", packageName)
+        if (resID != 0) {
+            binding.weatherImage.setImageDrawable(getDrawable(resID))
+        }
+    }
+
+    private fun getWeatherImage(weatherCode: Int): String? {
+        val codes  = resources.getIntArray(R.array.weather_codes)
+        val images = resources.getStringArray(R.array.weather_images)
+        val index  = codes.indexOfFirst { it == weatherCode }
+        if (index == -1) return null
+        val baseImage = images[index]
+        val dayNightCodes = intArrayOf(0, 1, 2)
+        return if (weatherCode in dayNightCodes) {
+            baseImage + if (day) "day" else "night"
+        } else {
+            baseImage
+        }
+    }
+
     private fun getLocationAndFetch() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED) {
-            fetchWeatherData(lastLat, lastLon).start()
+            viewModel.fetchWeather(lastLat, lastLon)
             return
         }
 
@@ -224,45 +213,35 @@ class MainActivity : AppCompatActivity() {
             ?: locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
 
         if (cached != null) {
-            // Tem cache — usa imediatamente
             lastLat = cached.latitude.toFloat()
             lastLon = cached.longitude.toFloat()
-            findViewById<EditText>(R.id.latitudeValue).setText(lastLat.toString())
-            findViewById<EditText>(R.id.longitudeValue).setText(lastLon.toString())
-            fetchWeatherData(lastLat, lastLon).start()
+            binding.latitudeValue.setText(lastLat.toString())
+            binding.longitudeValue.setText(lastLon.toString())
+            viewModel.fetchWeather(lastLat, lastLon)
         } else {
-            // Sem cache — pede uma localização ao sistema e aguarda
             locationManager.requestSingleUpdate(
                 LocationManager.NETWORK_PROVIDER,
                 { location ->
                     lastLat = location.latitude.toFloat()
                     lastLon = location.longitude.toFloat()
                     runOnUiThread {
-                        findViewById<EditText>(R.id.latitudeValue).setText(lastLat.toString())
-                        findViewById<EditText>(R.id.longitudeValue).setText(lastLon.toString())
+                        binding.latitudeValue.setText(lastLat.toString())
+                        binding.longitudeValue.setText(lastLon.toString())
                     }
-                    fetchWeatherData(lastLat, lastLon).start()
+                    viewModel.fetchWeather(lastLat, lastLon)
                 },
                 null
             )
-            // Fallback após 5 segundos caso o GPS não responda
             android.os.Handler(mainLooper).postDelayed({
-                if (findViewById<EditText>(R.id.latitudeValue).text.isEmpty()) {
-                    findViewById<EditText>(R.id.latitudeValue).setText(lastLat.toString())
-                    findViewById<EditText>(R.id.longitudeValue).setText(lastLon.toString())
-                    fetchWeatherData(lastLat, lastLon).start()
+                if (binding.latitudeValue.text.isEmpty()) {
+                    binding.latitudeValue.setText(lastLat.toString())
+                    binding.longitudeValue.setText(lastLon.toString())
+                    viewModel.fetchWeather(lastLat, lastLon)
                 }
             }, 5000)
         }
     }
 
-    /**
-     * exercício 2.2.1 - callback chamada pelo sistema após o utilizador responder
-     * ao pedido de permissão de localização
-     *
-     * - se aceitar: chama getLocationAndFetch() para usar o GPS
-     * - se recusar: faz fetch com as coordenadas de fallback (Lisboa)
-     */
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
@@ -271,43 +250,7 @@ class MainActivity : AppCompatActivity() {
             grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             getLocationAndFetch()
         } else {
-            // sem permissão: usa coordenadas padrão (Lisboa)
-            fetchWeatherData(lastLat, lastLon).start()
-        }
-    }
-
-    /**
-     * exercício 2.2.1 - devolve o nome do drawable correspondente a um código meteorológico WMO
-     *
-     * substitui o enum WMO_WeatherCode e a função getWeatherCodeMap()
-     * que estavam em WeatherData.kt
-     *
-     * em vez de lógica hardcoded em Kotlin, este lê os dados a partir de dois arrays
-     * paralelos definidos em res/values/weather_codes.xml:
-     *  - R.array.weather_codes - lista de códigos inteiros (ex: 0, 1, 2, 3, ...)
-     *  - R.array.weather_images - nome base do drawable correspondente (ex: "clear_", "rain")
-     *
-     * para os códigos 0, 1 e 2 (céu limpo / parcialmente nublado), o nome da imagem
-     * tem sufixo "day" ou "night" consoante a variável [day]
-     *
-     * @param weatherCode Código WMO recebido da API
-     * @return Nome do drawable a carregar, ou null se o código não existir no XML
-     */
-    private fun getWeatherImage(weatherCode: Int): String? {
-        val codes = resources.getIntArray(R.array.weather_codes)
-        val images = resources.getStringArray(R.array.weather_images)
-
-        val index = codes.indexOfFirst { it == weatherCode }
-        if (index == -1) return null
-
-        val baseImage = images[index]
-
-        // códigos que têm variante dia/noite
-        val dayNightCodes = intArrayOf(0, 1, 2)
-        return if (weatherCode in dayNightCodes) {
-            baseImage + if (day) "day" else "night"
-        } else {
-            baseImage
+            viewModel.fetchWeather(lastLat, lastLon)
         }
     }
 }
