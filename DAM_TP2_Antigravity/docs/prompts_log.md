@@ -59,3 +59,14 @@ Seventh entry:
         Garante que todos os componentes têm IDs claros (ex: toolbar, recyclerView, progressBar) conforme planeado em docs/03_screens.md.
 - Result:
     - Created activity_main.xml with Toolbar, RecyclerView, and ProgressBar.
+
+Eighth entry:
+- Goal: Create the layout for RecyclerView items.
+- Prompt used:
+    - Por favor, executa o Step 8 do meu docs/08_implementation_plan.md: Cria um novo ficheiro de layout XML chamado item_image.xml. Este layout será usado para cada item do RecyclerView e deve conter:
+        - Um MaterialCardView como contentor principal para dar um aspeto moderno (com cantos arredondados e elevação).
+        - Um ImageView para exibir a fotografia (usa android:scaleType="centerCrop").
+        - Um TextView sobreposto ou abaixo da imagem para exibir o nome do autor (author), conforme definido em docs/04_data_model.md.
+        - Atribui IDs claros como imageViewPhoto e textViewAuthor.
+- Result:
+    - Created item_image.xml with an ImageView and TextView for list items.
