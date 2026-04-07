@@ -29,3 +29,10 @@ Fourth entry:
     - Por favor, executa o Step 4 do meu docs/08_implementation_plan.md: Cria a classe de dados ImageItem.kt em Kotlin, seguindo a especificação do ficheiro docs/04_data_model.md. A classe deve incluir os campos id, author e download_url, todos do tipo String. Garante que as anotações do SerializedName do Gson são usadas caso os nomes das variáveis na API Picsum sejam diferentes.
 - Result:
     - Created ImageItem.kt data class to map API response.
+
+Fifth entry:
+- Goal: Implement the API Service interface.
+- Prompt used:
+    - Por favor, executa o Step 5 do docs/08_implementation_plan.md: Cria uma interface em Kotlin chamada PicsumApiService.kt. Esta interface deve definir um método GET para o endpoint v2/list, que retorne uma lista de objetos ImageItem. Utiliza as anotações do Retrofit para lidar com a chamada e os parâmetros de consulta (query parameters) opcionais page e limit, conforme descrito em docs/07_api_usage.md.
+- Result:
+    - Created PicsumApiService interface for Retrofit to fetch image metadata.
