@@ -17,3 +17,8 @@ Second entry:
     - build.gradle configured with necessary dependencies.
 
 Third entry:
+- Goal: Add network permissions.
+- Prompt used:
+    - Por favor, executa o Step 3 do meu docs/08_implementation_plan.md: Adiciona a permissão de INTERNET ao ficheiro AndroidManifest.xml. Além disso, se necessário para a API Picsum em Android 9+, configura o suporte para tráfego em cleartext ou garante que o ficheiro está pronto para comunicações HTTPS.
+- Result:
+    - Internet permission added to the manifest file.
