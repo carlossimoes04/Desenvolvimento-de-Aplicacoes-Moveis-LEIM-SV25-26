@@ -18,6 +18,13 @@ Here you will find direct links to the Practical Assignments (TPs) developed thr
     * [Virtual Library (UI)](./code/VirtualLibrary)
     * [Recipe Buddy (MIP)](./code/RecipeBuddy)
 
+* **TP2 - WeatherApp**
+  * [Report](./docs/report_tp2.md)
+  * [Kotlin](./DAM_TP2)
+  * Android Studio
+    * [CoolWeatherAPP](./code/CoolWeatherAPP)
+    * [PicsumGallery](./DAM_TP2_Antigravity)
+
 ## Tech Stack
 * Kotlin, using IntelliJ Idea 2025.3.2
 * Android Studio Panda 1 (XML Views)
