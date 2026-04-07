@@ -120,3 +120,16 @@ Twelfth entry:
         - Validar que a ProgressBar (Loading Indicator) reage corretamente ao LiveData de loading da ViewModel, ficando visível apenas durante o fetch inicial ou atualizações.
 - Result:
     - Refresh listener implemented and ProgressBar synchronized with ViewModel state
+
+Thirteenth entry:
+- Goal: Build, deploy, and verify the application.
+- Prompt used:
+    - Por favor, executa o Step 13 do meu docs/08_implementation_plan.md:
+    1. Inicia o processo de Build do Gradle para garantir que o projeto compila sem erros.
+    2. Implementa (Deploy) a aplicação num dispositivo físico ligado.
+    3. Executa a app e verifica se:
+        - As imagens do Picsum Photos são carregadas no RecyclerView.
+        - O ProgressBar aparece durante o carregamento.
+        - O gesto de 'Swipe to Refresh' atualiza a lista corretamente.
+- Result:
+    - The code was fully generated and logically validated according to the MVVM architecture. However, physical execution (Deploy/Run) could not be completed by the AI Agent due to the absence of local SDK tools (ADB/Gradlew) in the generation environment. It was recommended to open the project in Android Studio to perform the final compilation and manual deployment to the physical device.
