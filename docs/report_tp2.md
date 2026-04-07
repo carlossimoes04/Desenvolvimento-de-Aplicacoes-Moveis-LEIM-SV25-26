@@ -1,4 +1,4 @@
-# Assignment 2 - Advanced Kotlin, Weather Android App. and AI Assisted Generation
+# Assignment 2 - WeatherAPP
 
 **Course:** Mobile Application Development (DAM)  
 **Degree:** LEIM (Bachelor in Computer Science and Multimedia Engineering)  
