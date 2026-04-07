@@ -12,30 +12,51 @@ import com.bumptech.glide.Glide
 import dam.a51696.picsumgallery.R
 import dam.a51696.picsumgallery.model.ImageItem
 
-class ImageAdapter : ListAdapter<ImageItem, ImageAdapter.ImageViewHolder>(ImageDiffCallback()) {
+class ImageAdapter(
+    private val onFavoriteClick: (ImageItem) -> Unit
+) : ListAdapter<ImageItem, ImageAdapter.ImageViewHolder>(ImageDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_image, parent, false)
-        return ImageViewHolder(view)
+        return ImageViewHolder(view, onFavoriteClick)
     }
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
-    class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ImageViewHolder(
+        itemView: View, 
+        private val onFavoriteClick: (ImageItem) -> Unit
+    ) : RecyclerView.ViewHolder(itemView) {
         private val imageViewPhoto: ImageView = itemView.findViewById(R.id.imageViewPhoto)
         private val textViewAuthor: TextView = itemView.findViewById(R.id.textViewAuthor)
+        private val buttonFavorite: android.widget.ImageButton = itemView.findViewById(R.id.buttonFavorite)
 
         fun bind(imageItem: ImageItem) {
             textViewAuthor.text = imageItem.author
             
-            // Aqui usamos o Glide, tal como no Step 2, para carregar o URL para a ImageView
             Glide.with(itemView.context)
                 .load(imageItem.downloadUrl)
                 .centerCrop()
                 .into(imageViewPhoto)
+
+            // Emitir evento Heart
+            buttonFavorite.setOnClickListener {
+                onFavoriteClick(imageItem)
+            }
+
+            // Abrir ecrã de Detalhes
+            itemView.setOnClickListener {
+                val intent = dam.a51696.picsumgallery.ImageDetailsActivity.newIntent(
+                    context = itemView.context,
+                    id = imageItem.id,
+                    author = imageItem.author,
+                    url = imageItem.downloadUrl
+                )
+                itemView.context.startActivity(intent)
+            }
         }
     }
 
