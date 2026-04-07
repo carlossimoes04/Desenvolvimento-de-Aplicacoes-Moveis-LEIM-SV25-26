@@ -110,3 +110,13 @@ Eleventh entry:
         - Chamar viewModel.fetchImages() no onCreate para carregar os dados iniciais.
 - Result:
     - MainActivity is now observing ViewModel and updating the UI with API data.
+
+Twelfth entry:
+- Goal: Implement refresh functionality and loading logic.
+- Prompt used:
+    - Por favor, executa o Step 12 do meu docs/08_implementation_plan.md: Finaliza a lógica de interação na MainActivity.kt. Deves:
+        - Configurar o setOnRefreshListener do SwipeRefreshLayout para chamar viewModel.fetchImages().
+        - Garantir que, quando os dados terminarem de carregar, o círculo de atualização do SwipeRefreshLayout desapareça (isRefreshing = false).
+        - Validar que a ProgressBar (Loading Indicator) reage corretamente ao LiveData de loading da ViewModel, ficando visível apenas durante o fetch inicial ou atualizações.
+- Result:
+    - Refresh listener implemented and ProgressBar synchronized with ViewModel state

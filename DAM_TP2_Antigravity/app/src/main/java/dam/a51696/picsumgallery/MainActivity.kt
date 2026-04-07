@@ -57,16 +57,19 @@ class MainActivity : AppCompatActivity() {
         // 4. Observar Mudanças na Lista!
         viewModel.images.observe(this) { imagesList ->
             adapter.submitList(imagesList) // magia do DiffUtil fará animação e recontagem
-            binding.swipeRefreshLayout.isRefreshing = false // se o swipe girava, forçamos paragem
         }
 
         // 5. Observar Global Loading state
         viewModel.isLoading.observe(this) { isLoading ->
-            // Usaremos a ProgressBar central apenas se o display estiver 100% vazio e sem swipe
-            if (isLoading && adapter.currentList.isEmpty() && !binding.swipeRefreshLayout.isRefreshing) {
-                binding.progressBar.visibility = View.VISIBLE
+            if (isLoading) {
+                // Mostrar a ProgressBar apanes se for o loading inicial (lista vazia e sem swipe a decorrer)
+                if (adapter.currentList.isEmpty() && !binding.swipeRefreshLayout.isRefreshing) {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
             } else {
+                // Quando o loading esgota (independentemente de sucesso ou erro)
                 binding.progressBar.visibility = View.GONE
+                binding.swipeRefreshLayout.isRefreshing = false
             }
         }
         
