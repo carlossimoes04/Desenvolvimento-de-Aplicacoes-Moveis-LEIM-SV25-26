@@ -3,7 +3,7 @@
 **Course:** Mobile Application Development (DAM)  
 **Degree:** LEIM (Bachelor in Computer Science and Multimedia Engineering)  
 **Student:** Carlos Simões, A51696, 61D  
-**Teacher:** Pedro Fazenda, Ana Duarte Correia, António Teófilo  
+**Teacher:** Pedro Fazenda
 **Date:** April 7, 2026  
 **Repository URL:** https://github.com/carlossimoes04/Desenvolvimento-de-Aplicacoes-Moveis-LEIM-SV25-26
 
