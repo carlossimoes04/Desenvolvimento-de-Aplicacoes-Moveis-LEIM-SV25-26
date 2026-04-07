@@ -96,3 +96,17 @@ Tenth entry:
         - Seguir o padrão de arquitetura descrito em docs/06_architecture.md.
 - Result:
     - Implemented MainViewModel with LiveData for image list and loading state.
+
+Eleventh entry:
+- Goal: Connect MainActivity to the ViewModel and observe data.
+- Prompt used:
+    - Por favor, executa o Step 11 do meu docs/08_implementation_plan.md: Configura a classe MainActivity.kt. Esta classe deve:
+        - Inicializar a Toolbar, o RecyclerView e o SwipeRefreshLayout.
+        - Instanciar a MainViewModel (usando uma Factory, se o repositório for injetado no construtor).
+        - Configurar o ImageAdapter no RecyclerView.
+        - Observar os LiveData da ViewModel:
+            - Quando a lista de imagens mudar, atualizar os dados do Adapter.
+            - Quando o estado de loading mudar, mostrar ou esconder a ProgressBar.
+        - Chamar viewModel.fetchImages() no onCreate para carregar os dados iniciais.
+- Result:
+    - MainActivity is now observing ViewModel and updating the UI with API data.
