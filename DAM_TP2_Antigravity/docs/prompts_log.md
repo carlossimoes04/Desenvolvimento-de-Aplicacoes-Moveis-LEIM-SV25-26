@@ -84,3 +84,15 @@ Ninth entry:
         - Utilizar o layout item_image.xml criado no passo anterior.
 - Result:
     - Implemented ImageAdapter using Glide for image loading and data binding.
+
+Tenth entry:
+- Goal: Create the ViewModel to manage UI state.
+- Prompt used:
+    - Por favor, executa o Step 10 do meu docs/08_implementation_plan.md: Cria a classe MainViewModel.kt. Esta classe deve:
+        - Estender ViewModel().
+        - Receber o ImageRepository no construtor (ou via Factory).
+        - Expor um LiveData<List<ImageItem>> para a lista de imagens e um LiveData<Boolean> para o estado do carregamento (loading).
+        - Implementar uma função fetchImages() que peça os dados ao repositório e atualize os LiveData correspondentes.
+        - Seguir o padrão de arquitetura descrito em docs/06_architecture.md.
+- Result:
+    - Implemented MainViewModel with LiveData for image list and loading state.
