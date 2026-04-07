@@ -22,3 +22,10 @@ Third entry:
     - Por favor, executa o Step 3 do meu docs/08_implementation_plan.md: Adiciona a permissão de INTERNET ao ficheiro AndroidManifest.xml. Além disso, se necessário para a API Picsum em Android 9+, configura o suporte para tráfego em cleartext ou garante que o ficheiro está pronto para comunicações HTTPS.
 - Result:
     - Internet permission added to the manifest file.
+
+Fourth entry:
+- Goal: Create the Data Model class.
+- Prompt used:
+    - Por favor, executa o Step 4 do meu docs/08_implementation_plan.md: Cria a classe de dados ImageItem.kt em Kotlin, seguindo a especificação do ficheiro docs/04_data_model.md. A classe deve incluir os campos id, author e download_url, todos do tipo String. Garante que as anotações do SerializedName do Gson são usadas caso os nomes das variáveis na API Picsum sejam diferentes.
+- Result:
+    - Created ImageItem.kt data class to map API response.
