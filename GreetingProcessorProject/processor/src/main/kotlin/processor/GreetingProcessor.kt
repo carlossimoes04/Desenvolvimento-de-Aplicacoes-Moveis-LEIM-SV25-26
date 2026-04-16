@@ -45,8 +45,9 @@ class GreetingProcessor : AbstractProcessor() {
                 ClassName(packageName, originalClassName)).build()
             )
             .addProperty(
-                PropertySpec.builder("original", ClassName(packageName,
-                    originalClassName)).build()
+                PropertySpec.builder("original", ClassName(packageName, originalClassName))
+                    .initializer("original")
+                    .build()
             )
             .addModifiers(KModifier.PUBLIC, KModifier.FINAL)
 
