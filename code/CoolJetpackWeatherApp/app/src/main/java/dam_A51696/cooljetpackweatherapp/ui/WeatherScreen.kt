@@ -11,6 +11,21 @@ import dam_A51696.cooljetpackweatherapp.data.WMO_WeatherCode
 import dam_A51696.cooljetpackweatherapp.data.getWeatherCodeMap
 import dam_A51696.cooljetpackweatherapp.viewmodel.WeatherViewModel
 
+// imports para a interface
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
 @Composable
 fun WeatherUI(weatherViewModel: WeatherViewModel = viewModel()) {
     val weatherUIState by weatherViewModel.uiState.collectAsState()
@@ -99,7 +114,46 @@ fun PortraitWeatherUI(
     onLongitudeChange: (String) -> Unit,
     onUpdateButtonClick: () -> Unit,
 ) {
-    // ToDo
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        if (wIcon != 0) {
+            Image(
+                painter = painterResource(id = wIcon),
+                contentDescription = "Weather Icon",
+                modifier = Modifier.size(120.dp)
+            )
+        }
+
+        CoordinatesCard(
+            latitude = latitude,
+            longitude = longitude,
+            onLatitudeChange = onLatitudeChange,
+            onLongitudeChange = onLongitudeChange
+        )
+
+        WeatherCard(
+            temperature = temperature,
+            windSpeed = windSpeed,
+            windDirection = windDirection,
+            seaLevelPressure = seaLevelPressure,
+            time = time
+        )
+
+        Button(
+            onClick = onUpdateButtonClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text(text = "Update Weather", fontSize = 16.sp)
+        }
+    }
 }
 
 @Composable
