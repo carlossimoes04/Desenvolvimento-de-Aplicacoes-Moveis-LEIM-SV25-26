@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 fun WeatherCard(
     temperature: Float,
     windSpeed: Float,
-    windDirection: Int,
+    windDirection: Float,
     seaLevelPressure: Float,
     time: String,
     modifier: Modifier = Modifier

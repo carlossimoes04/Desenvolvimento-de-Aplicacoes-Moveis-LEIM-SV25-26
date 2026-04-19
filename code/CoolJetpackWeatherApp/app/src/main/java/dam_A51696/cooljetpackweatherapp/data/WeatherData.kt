@@ -20,19 +20,19 @@ Este processo chama-se Serialização.
 
 @Serializable
 data class WeatherData (
-    var latitude:String,
-    var longitude:String,
+    var latitude:Float,
+    var longitude:Float,
     var timezone:String,
     var current_weather:CurrentWeather,
     var hourly:Hourly,
-    var daily:Daily
+    var daily:Daily? = null
 )
 
 @Serializable
 data class CurrentWeather (
     var temperature:Float,
     var windspeed:Float,
-    var winddirection:Int,
+    var winddirection:Float,
     var weathercode:Int,
     var time:String
 )
