@@ -167,5 +167,53 @@ fun LandscapeWeatherUI(
     onLongitudeChange: (String) -> Unit,
     onUpdateButtonClick: () -> Unit,
 ) {
-    // ToDo
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (wIcon != 0) {
+                Image(
+                    painter = painterResource(id = wIcon),
+                    contentDescription = "Weather Icon",
+                    modifier = Modifier.size(80.dp)
+                )
+            }
+
+            CoordinatesCard(
+                latitude = latitude,
+                longitude = longitude,
+                onLatitudeChange = onLatitudeChange,
+                onLongitudeChange = onLongitudeChange,
+                modifier = Modifier.weight(1f)
+            )
+
+            WeatherCard(
+                temperature = temperature,
+                windSpeed = windSpeed,
+                windDirection = windDirection,
+                seaLevelPressure = seaLevelPressure,
+                time = time,
+                modifier = Modifier.weight(1f)
+            )
+        }
+
+        Button(
+            onClick = onUpdateButtonClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text(text = "Update Weather", fontSize = 16.sp)
+        }
+    }
 }
