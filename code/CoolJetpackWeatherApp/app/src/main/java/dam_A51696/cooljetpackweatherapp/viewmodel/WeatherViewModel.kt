@@ -42,10 +42,7 @@ class WeatherViewModel : ViewModel(){
             // o 'let' executa o código dentro das chavetas e chama ao objeto recebido 'weather'
             data?.let { weather ->
                 val currentTime = weather.current_weather.time // string da hora atual
-                val currentHour = currentTime.substringBefore(":") + ":00" // string da hora atual
-                // currentHour funciona fazendo um corte no texto original exatamente onde estão os dois pontos
-                // (deitando fora os minutos) e colando ":00" no final para forçar a hora a ficar certa
-                val hourIndex = weather.hourly.time.indexOf(currentHour) // índice da hora atual na lista de horas
+                val hourIndex = weather.hourly.time.indexOf(currentTime) // índice da hora atual na lista de horas
                 val pressure = if (hourIndex >= 0) // calcula a pressão atmosférica
                     // se encontrou a hora na lista
                     weather.hourly.pressure_msl[hourIndex].toFloat() // procura a pressão correspondente
