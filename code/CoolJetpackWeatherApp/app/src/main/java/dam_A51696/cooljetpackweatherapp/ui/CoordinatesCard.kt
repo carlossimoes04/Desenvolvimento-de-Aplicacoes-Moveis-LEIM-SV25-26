@@ -10,6 +10,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import dam_A51696.cooljetpackweatherapp.R
 
 @Composable
 fun CoordinatesCard(
@@ -29,7 +31,7 @@ fun CoordinatesCard(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Coordinates",
+                text = stringResource(id = R.string.coordinates_title),
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp
             )
@@ -40,7 +42,7 @@ fun CoordinatesCard(
                     latitudeText = it
                     onLatitudeChange(it)
                 },
-                label = { Text("Latitude") },
+                label = { Text(stringResource(id = R.string.latitude_label)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
@@ -52,7 +54,7 @@ fun CoordinatesCard(
                     longitudeText = it
                     onLongitudeChange(it)
                 },
-                label = { Text("Longitude") },
+                label = { Text(stringResource(id = R.string.longitude_label)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
