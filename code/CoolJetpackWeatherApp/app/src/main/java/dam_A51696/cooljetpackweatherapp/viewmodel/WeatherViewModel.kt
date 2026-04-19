@@ -41,9 +41,15 @@ class WeatherViewModel : ViewModel(){
             // o '?' verifica se os dados não são nulos, caso não sejam
             // o 'let' executa o código dentro das chavetas e chama ao objeto recebido 'weather'
             data?.let { weather ->
+                // atenção: CurrentWeather é atualizada de 15 em 15 minutos
                 val currentTime = weather.current_weather.time // string da hora atual
-                val hourIndex = weather.hourly.time.indexOf(currentTime) // índice da hora atual na lista de horas
-                val pressure = if (hourIndex >= 0) // calcula a pressão atmosférica
+                // como a API fornece dados em horas certas, corta-se os minutos exatos
+                // e força-se o ":00" (ex: "14:15" passa a "14:00") para a pesquisa
+                val searchHour = currentTime.substringBefore(":") + ":00"
+                // índice da hora arredondada a procurar na lista horária
+                // de maneira a obter dados da sea level pressure
+                val hourIndex = weather.hourly.time.indexOf(searchHour)
+                val pressure = if (hourIndex >= 0) // procura a sea level pressure de acordo com a hora
                     // se encontrou a hora na lista
                     weather.hourly.pressure_msl[hourIndex].toFloat() // procura a pressão correspondente
                 else 0f // se não encontrou a hora na lista, a pressão é 0 por segurança
