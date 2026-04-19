@@ -22,6 +22,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+import androidx.compose.ui.res.stringResource
+import dam_A51696.cooljetpackweatherapp.R
+
 @Composable
 fun WeatherUI(weatherViewModel: WeatherViewModel = viewModel()) {
     val weatherUIState by weatherViewModel.uiState.collectAsState()
@@ -120,7 +123,7 @@ fun PortraitWeatherUI(
         if (wIcon != 0) {
             Image(
                 painter = painterResource(id = wIcon),
-                contentDescription = "Weather Icon",
+                contentDescription = stringResource(id = R.string.weather_icon_desc),
                 modifier = Modifier.size(120.dp)
             )
         }
@@ -147,7 +150,7 @@ fun PortraitWeatherUI(
                 .height(50.dp),
             shape = RoundedCornerShape(12.dp)
         ) {
-            Text(text = "Update Weather", fontSize = 16.sp)
+            Text(text = stringResource(id = R.string.update_weather_btn), fontSize = 16.sp)
         }
     }
 }
@@ -183,7 +186,7 @@ fun LandscapeWeatherUI(
             if (wIcon != 0) {
                 Image(
                     painter = painterResource(id = wIcon),
-                    contentDescription = "Weather Icon",
+                    contentDescription = stringResource(id = R.string.weather_icon_desc),
                     modifier = Modifier.size(80.dp)
                 )
             }
@@ -213,7 +216,7 @@ fun LandscapeWeatherUI(
                 .height(50.dp),
             shape = RoundedCornerShape(12.dp)
         ) {
-            Text(text = "Update Weather", fontSize = 16.sp)
+            Text(text = stringResource(id = R.string.update_weather_btn), fontSize = 16.sp)
         }
     }
 }

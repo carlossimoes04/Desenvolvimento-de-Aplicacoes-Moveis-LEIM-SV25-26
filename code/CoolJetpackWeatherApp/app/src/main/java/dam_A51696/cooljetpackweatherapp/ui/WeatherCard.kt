@@ -7,6 +7,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import dam_A51696.cooljetpackweatherapp.R
 
 @Composable
 fun WeatherCard(
@@ -23,11 +25,11 @@ fun WeatherCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            WeatherRow(label = "Sea Level Pressure", value = "$seaLevelPressure hPa")
-            WeatherRow(label = "Wind Direction",     value = "$windDirection°")
-            WeatherRow(label = "Wind Speed",         value = "$windSpeed km/h")
-            WeatherRow(label = "Temperature",        value = "$temperature°C")
-            WeatherRow(label = "Time",               value = time)
+            WeatherRow(label = stringResource(id = R.string.sea_level_pressure), value = "$seaLevelPressure hPa")
+            WeatherRow(label = stringResource(id = R.string.wind_direction),     value = "$windDirection°")
+            WeatherRow(label = stringResource(id = R.string.wind_speed),         value = "$windSpeed km/h")
+            WeatherRow(label = stringResource(id = R.string.temperature),        value = "$temperature°C")
+            WeatherRow(label = stringResource(id = R.string.time),               value = time)
         }
     }
 }

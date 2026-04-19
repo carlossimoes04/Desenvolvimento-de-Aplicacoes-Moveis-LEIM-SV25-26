@@ -123,7 +123,9 @@ fun buildPipeline(block: Pipeline.() -> Unit): Pipeline {
     // dentro deste bloco (block), a instância de Pipeline passa a ser o "this" implícito
     // isto permite chamar métodos da Pipeline (como addStage) diretamente dentro das chavetas,
     // sem se precisar de referenciar o objeto explicitamente (ex: it.addStage())
-    return Pipeline().apply(block)
+    val pipeline = Pipeline()
+    pipeline.block()
+    return pipeline
 }
 
 fun main() {
