@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     id("org.jetbrains.kotlin.plugin.serialization")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -57,6 +58,10 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
     //Serialização
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    //----------------------------------------------
+    // Google Maps para Jetpack Compose
+    implementation("com.google.maps.android:maps-compose:4.3.3")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
     //----------------------------------------------
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
