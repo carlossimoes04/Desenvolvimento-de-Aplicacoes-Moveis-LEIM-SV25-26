@@ -13,4 +13,7 @@
 
     <string name="update_weather_btn">Update Weather</string>
     <string name="weather_icon_desc">Weather Icon</string>
+    <string name="pick_desc">Pick Location on Map</string>
+    <string name="confirm_location_btn">Confirm Location</string>
+    <string name="chosen_location">Chosen Location</string>
 </resources>

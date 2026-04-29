@@ -14,4 +14,7 @@
 
     <string name="update_weather_btn">Atualizar Meteorologia</string>
     <string name="weather_icon_desc">Ícone do Tempo</string>
+    <string name="pick_desc">Escolher uma Localização no Mapa</string>
+    <string name="confirm_location_btn">Confirmar Localização</string>
+    <string name="chosen_location">Localização Escolhida</string>
 </resources>
