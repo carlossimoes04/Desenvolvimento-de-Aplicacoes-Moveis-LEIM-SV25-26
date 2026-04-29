@@ -15,5 +15,5 @@ data class WeatherUIState(
     val weathercode: Int = 0,
     val seaLevelPressure: Float = 0f,
     val time: String = "",
-    val favorites: List<FavoriteLocation> = emptyList() // lista de lugares favoritos (começa vazia)
+    val favorites: List<FavoriteLocation> = emptyList() // lista de lugares favoritos
 )

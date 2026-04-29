@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import dam_A51696.cooljetpackweatherapp.data.WeatherApiClient
+import dam_A51696.cooljetpackweatherapp.ui.FavoriteLocation
 import dam_A51696.cooljetpackweatherapp.ui.WeatherUIState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -71,5 +72,27 @@ class WeatherViewModel : ViewModel(){
                 }
             }
         }
+    }
+
+    fun addFavorite(name: String) { // adiciona um novo favorito à lista de favoritos
+        val currentLat = _uiState.value.latitude // lê a latitude atual guardada no estado da UI
+        val currentLon = _uiState.value.longitude // lê a longitude atual guardada no estado da UI
+        val newFavorite = FavoriteLocation(name, currentLat, currentLon) // cria um novo favorito
+
+        _uiState.update { currentState ->
+            // adiciona o novo favorito à lista que já existia
+            currentState.copy(favorites = currentState.favorites + newFavorite)
+        }
+    }
+
+    fun selectFavorite(favorite: FavoriteLocation) { // ao selecionar uma localização favorita
+        _uiState.update { currentState -> // atualiza o estado da UI
+            currentState.copy( // cria uma cópia exata do estado atual
+                latitude = favorite.latitude, // substitui a latitude pela latitude do favorito
+                longitude = favorite.longitude // substitui a longitude pela longitude do favorito
+            )
+        }
+        // chama a função fetchWeather() para obter os dados da metereologia do lugar selecionado à API
+        fetchWeather()
     }
 }
