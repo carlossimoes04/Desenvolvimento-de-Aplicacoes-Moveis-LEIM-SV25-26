@@ -41,7 +41,7 @@ fun FavoritesSection(
         } else {
             LazyRow( // lista horizontal com scroll para mostrar os favoritos
                 horizontalArrangement = Arrangement.spacedBy(8.dp), // espaçamento de 8dp entre cada opção de local guardado
-                contentPadding = PaddingValues(vertical = 8.dp) // margem vertical de 8dp na lista
+                contentPadding = PaddingValues(vertical = 1.dp) // margem vertical de 8dp na lista
             ) {
                 items(favorites) { favorite -> // itera sobre cada favorito da lista
                     ElevatedFilterChip(

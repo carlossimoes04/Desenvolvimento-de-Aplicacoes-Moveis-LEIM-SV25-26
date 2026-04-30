@@ -1,7 +1,9 @@
 package dam_A51696.cooljetpackweatherapp.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dam_A51696.cooljetpackweatherapp.data.FavoritesRepository
 import kotlinx.coroutines.launch
 import dam_A51696.cooljetpackweatherapp.data.WeatherApiClient
 import dam_A51696.cooljetpackweatherapp.ui.FavoriteLocation
@@ -11,11 +13,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class WeatherViewModel : ViewModel(){
+class WeatherViewModel(private val context: Context) : ViewModel(){
 
     // Estado da UI
     private val _uiState = MutableStateFlow(WeatherUIState())
     val uiState: StateFlow<WeatherUIState> = _uiState.asStateFlow()
+
+    init {
+        // Carrega os favoritos ao iniciar
+        viewModelScope.launch {
+            FavoritesRepository.loadFavorites(context).collect { saved ->
+                _uiState.update { it.copy(favorites = saved) }
+            }
+        }
+    }
 
     // Atualizar a Latitude
     fun updateLatitude(newLatitude: Float) {
@@ -75,14 +86,18 @@ class WeatherViewModel : ViewModel(){
         }
     }
 
-    fun addFavorite(name: String) { // adiciona um novo favorito à lista de favoritos
-        val currentLat = _uiState.value.latitude // lê a latitude atual guardada no estado da UI
-        val currentLon = _uiState.value.longitude // lê a longitude atual guardada no estado da UI
+    fun addFavorite(name: String) { // adiciona um novo favorito à lista
+        val currentLat = _uiState.value.latitude // lê a latitude atual
+        val currentLon = _uiState.value.longitude // lê a longitude atual
         val newFavorite = FavoriteLocation(name, currentLat, currentLon) // cria um novo favorito
+        val updated = _uiState.value.favorites + newFavorite // adiciona o novo favorito à lista
 
-        _uiState.update { currentState ->
-            // adiciona o novo favorito à lista que já existia
-            currentState.copy(favorites = currentState.favorites + newFavorite)
+        _uiState.update { currentState -> // atualiza o estado da UI
+            currentState.copy(favorites = updated) // substitui a lista de favoritos
+        }
+
+        viewModelScope.launch { // cria uma corrotina para guardar a lista de favoritos
+            FavoritesRepository.saveFavorites(context, updated) // guarda a lista de favoritos
         }
     }
 

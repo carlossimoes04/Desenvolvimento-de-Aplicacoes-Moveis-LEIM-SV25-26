@@ -1,5 +1,8 @@
 package dam_A51696.cooljetpackweatherapp.ui
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class FavoriteLocation( // data class criada para guardar as informações acerca de um lugar favorito
     val name: String,
     val latitude: Float,

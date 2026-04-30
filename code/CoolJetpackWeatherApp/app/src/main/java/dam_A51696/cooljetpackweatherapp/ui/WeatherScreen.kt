@@ -1,5 +1,6 @@
 package dam_A51696.cooljetpackweatherapp.ui
 
+import android.content.Context
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -25,10 +26,22 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import dam_A51696.cooljetpackweatherapp.R
 
+class WeatherViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return WeatherViewModel(context.applicationContext) as T
+    }
+}
+
 @Composable
-fun WeatherUI(weatherViewModel: WeatherViewModel = viewModel()) {
+fun WeatherUI() {
+    val context = LocalContext.current
+    val weatherViewModel: WeatherViewModel = viewModel(
+        factory = WeatherViewModelFactory(context)
+    )
     val weatherUIState by weatherViewModel.uiState.collectAsState() // observa o estado da UI do ViewModel, recompõe sempre que muda
     val latitude = weatherUIState.latitude // latitude atual
     val longitude = weatherUIState.longitude // longitude atual
@@ -53,7 +66,6 @@ fun WeatherUI(weatherViewModel: WeatherViewModel = viewModel()) {
         else -> wCode?.image // para todos os outros estados do tempo a imagem é a mesma de dia e de noite
     }
 
-    val context = LocalContext.current // contexto necessário para aceder aos recursos da app
     val wIcon = context.resources.getIdentifier(wImage, "drawable", context.packageName) // obtém o ID do recurso drawable a partir do nome da imagem
 
     if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) { // se o dispositivo estiver em modo paisagem
