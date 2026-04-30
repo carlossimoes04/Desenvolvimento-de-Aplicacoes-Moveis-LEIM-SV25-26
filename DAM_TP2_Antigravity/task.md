@@ -1,0 +1,13 @@
+- `[x]` **Step 1:** Create a new Android project using Kotlin and XML Views. (Picsum Gallery)
+- `[x]` **Step 2:** Configure the `build.gradle` file with necessary dependencies.
+- `[x]` **Step 3:** Add internet permissions to `AndroidManifest.xml`.
+- `[x]` **Step 4:** Create the `ImageItem` data model class.
+- `[x]` **Step 5:** Implement the API Service interface.
+- `[x]` **Step 6:** Create the Repository class.
+- `[x]` **Step 7:** Design the `activity_main.xml` layout.
+- `[x]` **Step 8:** Create a custom XML layout for the `RecyclerView` items.
+- `[x]` **Step 9:** Implement the `RecyclerView` Adapter.
+- `[x]` **Step 10:** Create the `MainViewModel`.
+- `[x]` **Step 11:** Connect `MainActivity` to the `ViewModel`.
+- `[x]` **Step 12:** Implement the refresh functionality and loading indicator.
+- `[x]` **Step 13:** Build and run the application to verify.

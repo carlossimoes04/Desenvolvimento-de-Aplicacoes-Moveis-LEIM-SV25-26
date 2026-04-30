@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Cool Weather APP</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="sea_level_pressure">Sea Level Pressure</string>
+    <string name="wind_direction">Wind Direction</string>
+    <string name="wind_speed">Wind Speed</string>
+    <string name="temperature">Temperature</string>
+    <string name="time">Time</string>
+    <string name="update">Update</string>
+    <string name="edit_text_longitude">Write the longitude</string>
+    <string name="hint_longitude">-9.12</string>
+    <string name="edit_text_latitude">Write the latitude</string>
+    <string name="hint_latitude">38.76</string>
+    <string name="sea_level_pressure_text">--</string>
+    <string name="wind_direction_value_text">--</string>
+    <string name="wind_speed_value_text">--</string>
+    <string name="temperature_value_text">--</string>
+    <string name="time_value_text">--</string>
+    <string name="weather_image_description">Current weather icon</string>
+    <string name="gps_text">Use GPS</string>
+</resources>
