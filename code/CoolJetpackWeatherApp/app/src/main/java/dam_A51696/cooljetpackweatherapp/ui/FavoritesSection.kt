@@ -10,8 +10,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import dam_A51696.cooljetpackweatherapp.R
 
 @Composable
 fun FavoritesSection(
@@ -28,16 +30,16 @@ fun FavoritesSection(
             horizontalArrangement = Arrangement.SpaceBetween, // título à esquerda, botão de adicionar à direita
             verticalAlignment = Alignment.CenterVertically // alinha ao centro verticalmente
         ) {
-            Text("Favorite Locations", fontWeight = FontWeight.Bold) // título da secção a negrito
+            Text(text = stringResource(id = R.string.fav_locations), fontWeight = FontWeight.Bold) // título da secção a negrito
 
             // botão de Adicionar Favorito
             IconButton(onClick = { showDialog = true }) { // ao clicar, mostra o diálogo de adicionar favorito
-                Icon(Icons.Default.Add, contentDescription = "Add Favorite") // icon de "+"
+                Icon(Icons.Default.Add, contentDescription = stringResource(id = R.string.add_fav)) // icon de "+"
             }
         }
 
         if (favorites.isEmpty()) { // se não houver favoritos guardados
-            Text("No favorites saved yet.", style = MaterialTheme.typography.bodySmall) // mensagem de lista vazia
+            Text(stringResource(id = R.string.no_favs), style = MaterialTheme.typography.bodySmall) // mensagem de lista vazia
         } else {
             LazyRow( // lista horizontal com scroll para mostrar os favoritos
                 horizontalArrangement = Arrangement.spacedBy(8.dp), // espaçamento de 8dp entre cada opção de local guardado
@@ -58,12 +60,12 @@ fun FavoritesSection(
     if (showDialog) { // mostra o diálogo apenas quando showDialog for true
         AlertDialog(
             onDismissRequest = { showDialog = false }, // fecha o diálogo ao clicar fora dele
-            title = { Text("Save Location") }, // título do diálogo
+            title = { Text(text = stringResource(id = R.string.save_location)) }, // título do diálogo
             text = {
                 OutlinedTextField(
                     value = newLocationName, // valor atual do campo de texto
                     onValueChange = { newLocationName = it }, // atualiza o nome à medida que o utilizador escreve
-                    label = { Text("Location Name (e.g., Home, Paris)") }, // etiqueta do campo
+                    label = { Text(text = stringResource(id = R.string.loc_name)) }, // etiqueta do campo
                     singleLine = true // impede que o campo expanda para múltiplas linhas
                 )
             },
@@ -75,11 +77,11 @@ fun FavoritesSection(
                         showDialog = false // fecha o diálogo
                     }
                 }) {
-                    Text("Save") // texto do botão de confirmar
+                    Text(text = stringResource(id = R.string.save_button)) // texto do botão de confirmar
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showDialog = false }) { Text("Cancel") } // fecha o diálogo sem guardar
+                TextButton(onClick = { showDialog = false }) { Text(text = stringResource(id = R.string.cancel_button)) } // fecha o diálogo sem guardar
             }
         )
     }
