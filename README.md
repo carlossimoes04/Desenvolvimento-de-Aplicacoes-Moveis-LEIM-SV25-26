@@ -29,7 +29,7 @@ Here you will find direct links to the Practical Assignments (TPs) developed thr
   * [Report](./docs/report_tp3.md)
   * [Kotlin](./GreetingProcessorProject)
   * Android Studio
-    * [CoolJetpackWeatherAPP](./code/CoolJetpackWeatherAPP)
+    * [CoolJetpackWeatherAPP](./code/CoolJetpackWeatherApp)
     * [PicsumGalleryCompose](./DAM_TP3_Antigravity)
 
 ## Tech Stack
