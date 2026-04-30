@@ -15,5 +15,6 @@ data class WeatherUIState(
     val weathercode: Int = 0,
     val seaLevelPressure: Float = 0f,
     val time: String = "",
-    val favorites: List<FavoriteLocation> = emptyList() // lista de lugares favoritos
+    val favorites: List<FavoriteLocation> = emptyList(), // lista de lugares favoritos
+    val isDay: Boolean = true // indica se o tempo é dia ou noite
 )

@@ -67,7 +67,8 @@ class WeatherViewModel : ViewModel(){
                         winddirection = weather.current_weather.winddirection,
                         weathercode = weather.current_weather.weathercode,
                         seaLevelPressure = pressure,
-                        time = currentTime
+                        time = currentTime,
+                        isDay = weather.current_weather.is_day == 1
                     )
                 }
             }

@@ -24,8 +24,7 @@ data class WeatherData (
     var longitude:Float,
     var timezone:String,
     var current_weather:CurrentWeather,
-    var hourly:Hourly,
-    var daily:Daily? = null
+    var hourly:Hourly
 )
 
 @Serializable
@@ -34,7 +33,8 @@ data class CurrentWeather (
     var windspeed:Float,
     var winddirection:Float,
     var weathercode:Int,
-    var time:String
+    var time:String,
+    var is_day:Int // 1 = dia, 0 = noite
 )
 
 @Serializable
@@ -44,13 +44,6 @@ data class Hourly (
     var weathercode:ArrayList<Int>,
     var pressure_msl:ArrayList<Double>
 )
-
-@Serializable
-data class Daily( // criado para se saber o nascer e pôr do sol, para se saber se é de dia ou de noite
-    var sunrise:ArrayList<String>,   // ex: "2024-03-10T07:23"
-    var sunset:ArrayList<String>     // ex: "2024-03-10T19:45"
-)
-
 
 enum class WMO_WeatherCode(var code : Int, var image : String) {
     CLEAR_SKY(0 ,"clear_") ,

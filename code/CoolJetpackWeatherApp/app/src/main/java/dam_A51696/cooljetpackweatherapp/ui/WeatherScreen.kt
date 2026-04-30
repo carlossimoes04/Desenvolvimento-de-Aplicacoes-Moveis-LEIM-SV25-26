@@ -42,7 +42,7 @@ fun WeatherUI(weatherViewModel: WeatherViewModel = viewModel()) {
 
     val configuration = LocalConfiguration.current // configuração do dispositivo (orientação, tamanho do ecrã, etc.)
 
-    val day = true // Must change this in the future
+    val day = weatherUIState.isDay
     val mapt = getWeatherCodeMap() // obtém o mapa que associa códigos WMO a informações do estado do tempo
     val wCode = mapt.get(weatherCode) // obtém o objeto WMO correspondente ao código atual
     val wImage = when (wCode) { // escolhe o nome da imagem consoante o estado do tempo e se é dia ou noite
@@ -198,9 +198,8 @@ fun LandscapeWeatherUI(
     Row(
         modifier = Modifier
             .fillMaxSize()
-            .safeDrawingPadding()
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(24.dp)
+            .safeDrawingPadding(),
+        horizontalArrangement = Arrangement.spacedBy(20.dp)
     ) {
 
         Column(
@@ -208,7 +207,7 @@ fun LandscapeWeatherUI(
                 .weight(1f)
                 .fillMaxHeight()
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top)
+            verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top)
         ) {
             CoordinatesCard(
                 latitude = latitude,
@@ -248,8 +247,8 @@ fun LandscapeWeatherUI(
                     painter = painterResource(id = wIcon),
                     contentDescription = stringResource(id = R.string.weather_icon_desc),
                     modifier = Modifier
-                        .size(100.dp)
-                        .padding(bottom = 16.dp)
+                        .size(145.dp)
+                        .padding(bottom = 20.dp)
                 )
             }
 
@@ -259,7 +258,9 @@ fun LandscapeWeatherUI(
                 windDirection = windDirection,
                 seaLevelPressure = seaLevelPressure,
                 time = time,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 100.dp)
             )
         }
     }
