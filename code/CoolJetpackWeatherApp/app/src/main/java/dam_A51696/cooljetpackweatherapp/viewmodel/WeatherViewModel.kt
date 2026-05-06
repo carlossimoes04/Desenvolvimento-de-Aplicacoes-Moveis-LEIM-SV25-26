@@ -1,20 +1,32 @@
 package dam_A51696.cooljetpackweatherapp.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dam_A51696.cooljetpackweatherapp.data.FavoritesRepository
 import kotlinx.coroutines.launch
 import dam_A51696.cooljetpackweatherapp.data.WeatherApiClient
+import dam_A51696.cooljetpackweatherapp.ui.FavoriteLocation
 import dam_A51696.cooljetpackweatherapp.ui.WeatherUIState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class WeatherViewModel : ViewModel(){
+class WeatherViewModel(private val context: Context) : ViewModel(){
 
     // Estado da UI
     private val _uiState = MutableStateFlow(WeatherUIState())
     val uiState: StateFlow<WeatherUIState> = _uiState.asStateFlow()
+
+    init {
+        // Carrega os favoritos ao iniciar
+        viewModelScope.launch {
+            FavoritesRepository.loadFavorites(context).collect { saved ->
+                _uiState.update { it.copy(favorites = saved) }
+            }
+        }
+    }
 
     // Atualizar a Latitude
     fun updateLatitude(newLatitude: Float) {
@@ -66,10 +78,37 @@ class WeatherViewModel : ViewModel(){
                         winddirection = weather.current_weather.winddirection,
                         weathercode = weather.current_weather.weathercode,
                         seaLevelPressure = pressure,
-                        time = currentTime
+                        time = currentTime,
+                        isDay = weather.current_weather.is_day == 1
                     )
                 }
             }
         }
+    }
+
+    fun addFavorite(name: String) { // adiciona um novo favorito à lista
+        val currentLat = _uiState.value.latitude // lê a latitude atual
+        val currentLon = _uiState.value.longitude // lê a longitude atual
+        val newFavorite = FavoriteLocation(name, currentLat, currentLon) // cria um novo favorito
+        val updated = _uiState.value.favorites + newFavorite // adiciona o novo favorito à lista
+
+        _uiState.update { currentState -> // atualiza o estado da UI
+            currentState.copy(favorites = updated) // substitui a lista de favoritos
+        }
+
+        viewModelScope.launch { // cria uma corrotina para guardar a lista de favoritos
+            FavoritesRepository.saveFavorites(context, updated) // guarda a lista de favoritos
+        }
+    }
+
+    fun selectFavorite(favorite: FavoriteLocation) { // ao selecionar uma localização favorita
+        _uiState.update { currentState -> // atualiza o estado da UI
+            currentState.copy( // cria uma cópia exata do estado atual
+                latitude = favorite.latitude, // substitui a latitude pela latitude do favorito
+                longitude = favorite.longitude // substitui a longitude pela longitude do favorito
+            )
+        }
+        // chama a função fetchWeather() para obter os dados da metereologia do lugar selecionado à API
+        fetchWeather()
     }
 }

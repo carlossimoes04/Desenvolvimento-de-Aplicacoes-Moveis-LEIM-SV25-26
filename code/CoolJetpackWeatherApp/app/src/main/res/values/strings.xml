@@ -13,4 +13,14 @@
 
     <string name="update_weather_btn">Update Weather</string>
     <string name="weather_icon_desc">Weather Icon</string>
+    <string name="pick_desc">Pick Location on Map</string>
+    <string name="confirm_location_btn">Confirm Location</string>
+    <string name="chosen_location">Chosen Location</string>
+    <string name="fav_locations">Favorite Locations</string>
+    <string name="add_fav">Add Favorite</string>
+    <string name="no_favs">No favorites saved yet.</string>
+    <string name="save_location">Save Location</string>
+    <string name="loc_name">Location Name (e.g., Home, Paris)</string>
+    <string name="save_button">Save</string>
+    <string name="cancel_button">Cancel</string>
 </resources>

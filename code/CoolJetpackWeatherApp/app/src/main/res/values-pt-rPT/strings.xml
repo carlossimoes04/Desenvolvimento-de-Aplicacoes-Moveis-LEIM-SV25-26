@@ -14,4 +14,14 @@
 
     <string name="update_weather_btn">Atualizar Meteorologia</string>
     <string name="weather_icon_desc">Ícone do Tempo</string>
+    <string name="pick_desc">Escolher uma Localização no Mapa</string>
+    <string name="confirm_location_btn">Confirmar Localização</string>
+    <string name="chosen_location">Localização Escolhida</string>
+    <string name="fav_locations">Localizações favoritas</string>
+    <string name="add_fav">Adicionar favorito</string>
+    <string name="no_favs">Sem favoritos por agora.</string>
+    <string name="save_location">Guardar favorito</string>
+    <string name="loc_name">Nome da localização (exemplo: Casa, Paris, etc)</string>
+    <string name="save_button">Guardar</string>
+    <string name="cancel_button">Cancelar</string>
 </resources>

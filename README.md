@@ -25,6 +25,13 @@ Here you will find direct links to the Practical Assignments (TPs) developed thr
     * [CoolWeatherAPP](./code/CoolWeatherAPP)
     * [PicsumGallery](./DAM_TP2_Antigravity)
 
+* **TP3 - JPCompose**
+  * [Report](./docs/report_tp3.md)
+  * [Kotlin](./GreetingProcessorProject)
+  * Android Studio
+    * [CoolJetpackWeatherAPP](./code/CoolJetpackWeatherApp)
+    * [PicsumGalleryCompose](./DAM_TP3_Antigravity)
+
 ## Tech Stack
 * Kotlin, using IntelliJ Idea 2025.3.2
 * Android Studio Panda 1 (XML Views)
