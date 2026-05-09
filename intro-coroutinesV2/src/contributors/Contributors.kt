@@ -3,6 +3,7 @@ package contributors
 import contributors.Contributors.LoadingStatus.*
 import contributors.Variant.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.StateFlow
 import tasks.*
 import java.awt.event.ActionListener
 import javax.swing.SwingUtilities
@@ -24,6 +25,8 @@ interface Contributors: CoroutineScope {
 
     val job: Job
 
+    val loadingState: StateFlow<LoadingStateData>
+
     override val coroutineContext: CoroutineContext
         get() = job + Dispatchers.Main
 
@@ -43,6 +46,8 @@ interface Contributors: CoroutineScope {
 
         // Load stored params (user & password values)
         loadInitialParams()
+        // foi necessário adicionar isto para que o flow seja observado e a UI possa ser atualizada via StateFlow
+        observeLoadingStatus()
     }
 
     fun loadContributors() {
@@ -113,42 +118,42 @@ interface Contributors: CoroutineScope {
         }
     }
 
-    private enum class LoadingStatus { COMPLETED, CANCELED, IN_PROGRESS }
+    enum class LoadingStatus { INIT, COMPLETED, CANCELED, IN_PROGRESS }
+
+    data class LoadingStateData (
+        val status: LoadingStatus = LoadingStatus.INIT,
+        val startTime: Long? = null,
+        val elapsedTime: String = ""
+    )
+
+    fun updateLoadingStatus ( newStatus : LoadingStateData )
+
+    fun observeLoadingStatus()
 
     private fun clearResults() {
         updateContributors(listOf())
-        updateLoadingStatus(IN_PROGRESS)
+        updateLoadingStatus(LoadingStateData(status = IN_PROGRESS))
         setActionsStatus(newLoadingEnabled = false)
     }
 
-    private fun updateResults(
-        users: List<User>,
+    private fun updateResults (
+        users: List <User >,
         startTime: Long,
         completed: Boolean = true
     ) {
         updateContributors(users)
-        updateLoadingStatus(if (completed) COMPLETED else IN_PROGRESS, startTime)
+        val status = if (completed) COMPLETED else IN_PROGRESS
+        val elapsedTime = calculateElapsedTime(startTime)
+        updateLoadingStatus(LoadingStateData(status = status, startTime =
+            startTime, elapsedTime = elapsedTime))
         if (completed) {
             setActionsStatus(newLoadingEnabled = true)
         }
     }
 
-    private fun updateLoadingStatus(
-        status: LoadingStatus,
-        startTime: Long? = null
-    ) {
-        val time = if (startTime != null) {
-            val time = System.currentTimeMillis() - startTime
-            "${(time / 1000)}.${time % 1000 / 100} sec"
-        } else ""
-
-        val text = "Loading status: " +
-                when (status) {
-                    COMPLETED -> "completed in $time"
-                    IN_PROGRESS -> "in progress $time"
-                    CANCELED -> "canceled"
-                }
-        setLoadingStatus(text, status == IN_PROGRESS)
+    private fun calculateElapsedTime ( startTime : Long ) : String {
+        val time = System.currentTimeMillis() - startTime
+        return "${(time / 1000)}.${time % 1000 / 100} sec "
     }
 
     private fun Job.setUpCancellation() {
@@ -160,7 +165,7 @@ interface Contributors: CoroutineScope {
         // cancel the loading job if the 'cancel' button was clicked
         val listener = ActionListener {
             loadingJob.cancel()
-            updateLoadingStatus(CANCELED)
+            updateLoadingStatus(LoadingStateData(status = CANCELED))
         }
         addCancelListener(listener)
 
