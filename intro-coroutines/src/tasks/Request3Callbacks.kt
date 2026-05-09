@@ -7,20 +7,27 @@ import retrofit2.Response
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
+/*
+O código original chama updateResults() fora dos callbacks, o que significa que é executado
+imediatamente, antes de qualquer resposta ter chegado. É preciso garantir que updateResults() só
+é chamado quando todas as respostas tiverem chegado.
+ */
 fun loadContributorsCallbacks(service: GitHubService, req: RequestData, updateResults: (List<User>) -> Unit) {
     service.getOrgReposCall(req.org).onResponse { responseRepos ->
         logRepos(req, responseRepos)
         val repos = responseRepos.bodyList()
         val allUsers = mutableListOf<User>()
+        var counter = 0 // contador que irá ser usado para saber se já se passou pelos repos todos
         for (repo in repos) {
             service.getRepoContributorsCall(req.org, repo.name).onResponse { responseUsers ->
                 logUsers(repo, responseUsers)
                 val users = responseUsers.bodyList()
+                counter ++ // incrementar o contador
                 allUsers += users
+                // caso o valor do contador seja igual ao número de repos, faz-se o updateResults, dentro dos callbacks
+                if (counter == repos.size) updateResults(allUsers.aggregate())
             }
         }
-        // TODO: Why this code doesn't work? How to fix that?
-        updateResults(allUsers.aggregate())
     }
 }
 
