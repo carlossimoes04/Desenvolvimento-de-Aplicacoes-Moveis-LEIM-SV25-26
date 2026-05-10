@@ -3,6 +3,7 @@ package contributors
 import contributors.Contributors.LoadingStatus.*
 import contributors.Variant.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.StateFlow
 import tasks.*
 import java.awt.event.ActionListener
@@ -107,8 +108,24 @@ interface Contributors: CoroutineScope {
                 }.setUpCancellation()
             }
             CHANNELS -> {  // Performing requests concurrently and showing progress
-                launch(Dispatchers.Default) {
+                /* launch(Dispatchers.Default) {
                     loadContributorsChannels(service, req) { users, completed ->
+                        withContext(Dispatchers.Main) {
+                            updateResults(users, startTime, completed)
+                        }
+                    }
+                }.setUpCancellation() */
+                launch(Dispatchers.Default) {
+                    val progressChannel = Channel<Pair<List<User>, Boolean>>(Channel.UNLIMITED)
+
+                    launch(Dispatchers.Default) {
+                        loadContributorsChannels(service, req) { users, completed ->
+                            progressChannel.send(users to completed)
+                        }
+                        progressChannel.close()
+                    }
+
+                    for ((users, completed) in progressChannel) {
                         withContext(Dispatchers.Main) {
                             updateResults(users, startTime, completed)
                         }
