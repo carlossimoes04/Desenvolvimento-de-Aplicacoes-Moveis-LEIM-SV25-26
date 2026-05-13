@@ -22,7 +22,8 @@ class AIAssistantFactory {
                 "OPENAI-CLASSES" -> AIAssistantOpenAIClasses(properties)
                 "GEMINI-CLASSES" -> AIAssistantGeminiClasses(properties)
                 "KIMI" -> AIAssistantKimi(properties)
-                else -> throw IllegalArgumentException("Invalid AI model type specified in configuration. Valid values are 'OPENAI', 'GEMINI', 'OPENAI-CLASSES', 'GEMINI-CLASSES', or 'KIMI'.")
+                "DEEPSEEK" -> AIAssistantDeepSeek(properties)
+                else -> throw IllegalArgumentException("Invalid AI model type specified in configuration. Valid values are 'OPENAI', 'GEMINI', 'OPENAI-CLASSES', 'GEMINI-CLASSES', 'KIMI', or 'DEEPSEEK'.")
             }
         }
     }
