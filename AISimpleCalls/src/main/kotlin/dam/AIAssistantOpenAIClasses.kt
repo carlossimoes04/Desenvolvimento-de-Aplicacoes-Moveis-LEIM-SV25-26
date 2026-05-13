@@ -58,7 +58,12 @@ class AIAssistantOpenAIClasses(override val properties: Properties) : AIAssistan
             Message(role = "system", content = "You are a friendly and helpful assistant."),
             Message(role = "user", content = prompt)
         )
-        val openAIRequest = OpenAIRequest(model = model, messages = messages)
+        val openAIRequest = OpenAIRequest(
+            model = model,
+            messages = messages,
+            temperature = getTemperatureOrDefault(0.7),
+            max_tokens = getMaxTokensOrDefault(800)
+        )
 
         // Convert to JSON string using Gson
         val requestBody = gson.toJson(openAIRequest)

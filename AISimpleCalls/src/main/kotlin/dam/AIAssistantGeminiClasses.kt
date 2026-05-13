@@ -73,8 +73,8 @@ class AIAssistantGeminiClasses(override val properties: Properties) : AIAssistan
         val geminiRequest = GeminiRequest(
             contents = listOf(content)
             , generationConfig = GenerationConfig(
-                temperature = 0.7,
-                maxOutputTokens = 800
+                temperature = getTemperatureOrDefault(0.7),
+                maxOutputTokens = getMaxTokensOrDefault(800)
         ))
 
         // Convert to JSON string using Gson

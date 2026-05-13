@@ -118,6 +118,24 @@ interface AIAssistant {
     }
 
     /**
+     * Reads an optional temperature value from config.properties.
+     * If the property is undefined or invalid, returns the provided default.
+     */
+    fun getTemperatureOrDefault(defaultValue: Double): Double {
+        val configured = properties.getProperty("TEMPERATURE")?.trim()?.toDoubleOrNull()
+        return configured ?: defaultValue
+    }
+
+    /**
+     * Reads an optional max tokens value from config.properties.
+     * If the property is undefined or invalid, returns the provided default.
+     */
+    fun getMaxTokensOrDefault(defaultValue: Int): Int {
+        val configured = properties.getProperty("MAX_TOKENS")?.trim()?.toIntOrNull()
+        return configured?.takeIf { it > 0 } ?: defaultValue
+    }
+
+    /**
      * Calls the Gemini API with an exponential backoff retry mechanism.
      * This method will automatically retry failed requests due to rate limiting (HTTP 429),
      * implementing an exponential backoff strategy to avoid overwhelming the API.

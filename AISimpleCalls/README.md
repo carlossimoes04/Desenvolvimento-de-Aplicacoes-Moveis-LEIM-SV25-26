@@ -38,3 +38,5 @@ The `config.properties` file may contain the following settings:
 - `GEMINI_API_KEY=...`
 - `AI_LLM=...` <span style="color: gray;">// Possible values: OPENAI, GEMINI; defaults to OPENAI</span>
 - `LOG_LEVEL=...` <span style="color: gray;">// Possible values: OFF, ERROR, WARN, INFO, DEBUG, TRACE; defaults to OFF</span>
+- `TEMPERATURE=...` <span style="color: gray;">// Optional numeric value (e.g., 0.7). If undefined, provider defaults are used.</span>
+- `MAX_TOKENS=...` <span style="color: gray;">// Optional positive integer (e.g., 800). If undefined, provider defaults are used.</span>
