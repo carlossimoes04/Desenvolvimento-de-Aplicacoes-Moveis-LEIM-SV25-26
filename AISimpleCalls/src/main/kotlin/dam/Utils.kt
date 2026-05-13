@@ -41,12 +41,14 @@ private fun loadProperties(): Properties {
 
             // Check if we have at least one API key
             if (properties.getProperty("OPENAI_API_KEY").isNullOrBlank() &&
-                properties.getProperty("GEMINI_API_KEY").isNullOrBlank()
+                properties.getProperty("GEMINI_API_KEY").isNullOrBlank() &&
+                properties.getProperty("NVIDIA_KIMI_API_KEY").isNullOrBlank() &&
+                properties.getProperty("NVIDIA_DEEPSEEK_API_KEY").isNullOrBlank()
             ) {
                 println("⚠️ No API keys found in configuration file")
                 println("⚠️ Please add at least one API key to $configFilePath")
             } else {
-                val apiKeys = listOf("OPENAI_API_KEY", "GEMINI_API_KEY").filter {
+                val apiKeys = listOf("OPENAI_API_KEY", "GEMINI_API_KEY", "NVIDIA_KIMI_API_KEY", "NVIDIA_DEEPSEEK_API_KEY").filter {
                     properties.getProperty(it)?.isNotBlank() == true
                 }.toList()
 

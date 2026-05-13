@@ -7,6 +7,8 @@ import org.json.JSONException
 import org.json.JSONObject
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.io.IOException
+import java.net.SocketTimeoutException
 import java.util.Properties
 import kotlin.math.pow
 
@@ -137,9 +139,18 @@ interface AIAssistant {
             } catch (e: Exception) {
                 logger.error("Error message: ${e.message}")
 
-                // Only retry on rate-limiting errors (HTTP 429)
-                if (e.message?.contains("429") == true) {
-                    logger.warn("Error 429: Too Many Requests. Will delay and retry.")
+                // Retry on rate-limiting and transient network errors.
+                val isRateLimit = e.message?.contains("429") == true
+                val isTransientNetworkError = e is SocketTimeoutException || e is IOException
+
+                if (isRateLimit || isTransientNetworkError) {
+                    val reason = when {
+                        isRateLimit -> "429 Too Many Requests"
+                        e is SocketTimeoutException -> "Socket timeout"
+                        else -> "Transient network error"
+                    }
+
+                    logger.warn("$reason. Will delay and retry.")
                     attempts++
 
                     // Calculate exponential backoff delay: baseDelay * 2^attempts

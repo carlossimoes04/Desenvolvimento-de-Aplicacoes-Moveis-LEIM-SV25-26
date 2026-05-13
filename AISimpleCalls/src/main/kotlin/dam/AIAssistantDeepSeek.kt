@@ -20,9 +20,10 @@ class AIAssistantDeepSeek(override val properties: Properties) : AIAssistant {
 
     override val client: okhttp3.OkHttpClient
         get() = okhttp3.OkHttpClient.Builder()
-            .readTimeout(120, java.util.concurrent.TimeUnit.SECONDS)
+            .readTimeout(180, java.util.concurrent.TimeUnit.SECONDS)
             .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
             .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+            .callTimeout(210, java.util.concurrent.TimeUnit.SECONDS)
             .build()
 
     /**
