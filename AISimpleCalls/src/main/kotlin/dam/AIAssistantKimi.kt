@@ -42,7 +42,7 @@ class AIAssistantKimi(override val properties: Properties) : AIAssistant {
             .put("temperature", getTemperatureOrDefault(1.0))
             .put("top_p", 1.0)
             .put("stream", false)
-            .put("chat_template_kwargs", JSONObject().put("thinking", true))
+            .put("chat_template_kwargs", JSONObject().put("thinking", false)) // true para ligar o thinking | false para desligar
             .toString()
 
         return Request.Builder()

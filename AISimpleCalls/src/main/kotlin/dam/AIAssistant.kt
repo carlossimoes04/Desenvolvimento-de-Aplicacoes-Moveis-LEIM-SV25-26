@@ -12,6 +12,12 @@ import java.net.SocketTimeoutException
 import java.util.Properties
 import kotlin.math.pow
 
+// necessário para 3.4 Task 4
+data class SentimentResult(
+    val rating: Int,
+    val justification: String
+)
+
 /**
  * AIAssistant interface defines the contract for different AI assistant implementations.
  * Any class implementing this interface must provide methods for processing user input
@@ -279,6 +285,50 @@ interface AIAssistant {
      */
     fun buildRequest(prompt: String): Request
 
+    // // necessário para 3.4 Task 4
+    suspend fun analyzeSentiment(text: String): SentimentResult {
+        val prompt = """
+            You are a sentiment analysis engine.
+            Analyze the sentiment of the following text and respond ONLY with a valid JSON object.
+            No preamble, no explanation outside the JSON, no markdown backticks.
+            
+            The sentiment scale is:
+            1 = Very Negative
+            2 = Negative
+            3 = Slightly Negative
+            4 = Neutral
+            5 = Slightly Positive
+            6 = Positive
+            7 = Very Positive
+            
+            Respond strictly in this format:
+            {"rating": <integer 1-7>, "justification": "<brief explanation>"}
+            
+            Text to analyze: "$text"
+        """.trimIndent()
+
+        val raw = apiCallWithBackoff(prompt)
+        return parseSentimentResult(raw)
+    }
+
+    // necessário para 3.4 Task 4
+    fun parseSentimentResult(raw: String): SentimentResult {
+        // limpa possíveis backticks que o modelo possa devolver mesmo assim
+        val clean = raw.trim()
+            .removePrefix("```json")
+            .removePrefix("```")
+            .removeSuffix("```")
+            .trim()
+        return try {
+            val json = JSONObject(clean)
+            SentimentResult(
+                rating = json.getInt("rating"),
+                justification = json.getString("justification")
+            )
+        } catch (e: JSONException) {
+            throw Exception("Failed to parse sentiment JSON: $clean", e)
+        }
+    }
 }
 
 ///**
