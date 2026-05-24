@@ -1,0 +1,76 @@
+package dam_A51696.pantrychef.presentation.auth
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dam_A51696.pantrychef.domain.repository.AuthRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+sealed class AuthState {
+    object Idle : AuthState()
+    object Loading : AuthState()
+    object Success : AuthState()
+    data class Error(val message: String) : AuthState()
+}
+
+@HiltViewModel
+class AuthViewModel @Inject constructor(
+    private val authRepository: AuthRepository
+) : ViewModel() {
+
+    private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
+    val authState: StateFlow<AuthState> = _authState.asStateFlow()
+
+    val currentUser = authRepository.currentUser
+
+    fun login(email: String, pass: String) {
+        if (email.isBlank() || pass.isBlank()) {
+            _authState.value = AuthState.Error("Preenche todos os campos.")
+            return
+        }
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            val result = authRepository.login(email, pass)
+            if (result.isSuccess) {
+                _authState.value = AuthState.Success
+            } else {
+                _authState.value = AuthState.Error(result.exceptionOrNull()?.message ?: "Erro no Login")
+            }
+        }
+    }
+
+    fun signUp(email: String, pass: String, passConfirm: String) {
+        if (email.isBlank() || pass.isBlank() || passConfirm.isBlank()) {
+            _authState.value = AuthState.Error("Preenche todos os campos.")
+            return
+        }
+        if (pass != passConfirm) {
+            _authState.value = AuthState.Error("As passwords não coincidem.")
+            return
+        }
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            val result = authRepository.signUp(email, pass)
+            if (result.isSuccess) {
+                _authState.value = AuthState.Success
+            } else {
+                _authState.value = AuthState.Error(result.exceptionOrNull()?.message ?: "Erro no Registo")
+            }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            authRepository.logout()
+            _authState.value = AuthState.Idle
+        }
+    }
+
+    fun resetState() {
+        _authState.value = AuthState.Idle
+    }
+}
