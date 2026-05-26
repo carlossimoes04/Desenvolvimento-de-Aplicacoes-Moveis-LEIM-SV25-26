@@ -10,22 +10,35 @@ import javax.lang.model.SourceVersion
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.TypeElement
 
+/**
+ * Processador de anotações que procura por métodos anotados com @Extract
+ * e gera uma classe final (Extractor) que implementa a lógica das Expressões Regulares.
+ */
+// regista automaticamente este processador no META-INF para que o compilador o consiga encontrar (via kapt)
 @AutoService(Processor::class) // para o kapt o encontrar
+// define a versão de Java suportada
 @SupportedSourceVersion(SourceVersion.RELEASE_25)
+// define que este processador acorda apenas quando encontra a anotação "annotations.Extract"
 @SupportedAnnotationTypes("annotations.Extract") // procurar pela anotação Extract
 class RegexProcessor : AbstractProcessor() {
 
     override fun process(annotations: MutableSet<out TypeElement>, roundEnv: RoundEnvironment): Boolean {
+
+        // dicionário (map) para agrupar as funções anotadas, dividindo-as pela classe a que pertencem
         val classMethodMap = mutableMapOf<TypeElement, MutableList<ExecutableElement>>()
 
         // procurar os elementos anotados com @Extract
         for (element in roundEnv.getElementsAnnotatedWith(Extract::class.java)) {
+            // confirma que o elemento encontrado é um método
             if (element is ExecutableElement) {
+                // descobre a classe e onde esse método está
                 val enclosingClass = element.enclosingElement as TypeElement
+                // adiciona este método à lista de métodos daquela classe no dicionário
                 classMethodMap.computeIfAbsent(enclosingClass) { mutableListOf() }.add(element)
             }
         }
 
+        // para cada classe encontrada com métodos @Extract, manda gerar a classe Extractor respetiva
         for ((classElement, methods) in classMethodMap) {
             generateKotlinExtractorClass(classElement, methods)
         }
