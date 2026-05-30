@@ -128,11 +128,21 @@ fun AppNavigation() {
                 ShoppingListScreen()
             }
             composable(Screen.Favorites.route) {
-                FavoritesScreen()
+                FavoritesScreen(
+                    // esta função diz à AppNavigation para mudar de ecrã quando o Utilizador clica numa receita
+                    onNavigateToRecipe = { recipeId ->
+                        // cria a rota para o RecipeDetail usando o ID da receita escolhida
+                        navController.navigate(Screen.RecipeDetail.createRoute(recipeId))
+                    }
+                )
             }
             composable(Screen.RecipeDetail.route) { backStackEntry ->
                 val recipeId = backStackEntry.arguments?.getString("recipeId")
-                RecipeDetailScreen(recipeId = recipeId)
+                RecipeDetailScreen(
+                    recipeId = recipeId,
+                    // o navController encarrega-se de retroceder um passo na navegação (Pop backstack)
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
         }
     }

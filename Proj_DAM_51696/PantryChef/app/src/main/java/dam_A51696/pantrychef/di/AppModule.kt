@@ -54,6 +54,12 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideFavoriteRepository(): dam_A51696.pantrychef.domain.repository.FavoriteRepository {
+        return dam_A51696.pantrychef.data.repository.FavoriteRepositoryImpl()
+    }
+
+    @Provides
+    @Singleton
     fun provideAuthRepository(): dam_A51696.pantrychef.domain.repository.AuthRepository {
         return dam_A51696.pantrychef.data.repository.AuthRepositoryImpl()
     }

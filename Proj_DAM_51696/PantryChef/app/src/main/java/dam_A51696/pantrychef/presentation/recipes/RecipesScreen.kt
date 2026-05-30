@@ -18,7 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.List
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Search
@@ -72,6 +72,7 @@ fun RecipesScreen(
                 is RecipesUiState.Success -> {
                     RecipesContent(
                         bestMatch = state.bestMatch,
+                        bestMatchUsedIngredients = state.bestMatchUsedIngredients,
                         recipes = state.recipes,
                         onNavigateToRecipe = onNavigateToRecipe
                     )
@@ -82,7 +83,12 @@ fun RecipesScreen(
 }
 
 @Composable
-fun RecipesContent(bestMatch: Recipe?, recipes: List<Recipe>, onNavigateToRecipe: (String) -> Unit) {
+fun RecipesContent(
+    bestMatch: Recipe?,
+    bestMatchUsedIngredients: List<String>,
+    recipes: List<Recipe>,
+    onNavigateToRecipe: (String) -> Unit
+) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(start = 24.dp, end = 24.dp, bottom = 80.dp)
@@ -161,7 +167,11 @@ fun RecipesContent(bestMatch: Recipe?, recipes: List<Recipe>, onNavigateToRecipe
                     Text(text = "Refresh", color = ForestGreen, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                 }
                 
-                BestMatchCard(recipe = bestMatch, onClick = { onNavigateToRecipe(bestMatch.idMeal) })
+                BestMatchCard(
+                    recipe = bestMatch,
+                    usedIngredients = bestMatchUsedIngredients,
+                    onClick = { onNavigateToRecipe(bestMatch.idMeal) }
+                )
                 Spacer(modifier = Modifier.height(32.dp))
             }
         }
@@ -196,34 +206,42 @@ fun RecipesContent(bestMatch: Recipe?, recipes: List<Recipe>, onNavigateToRecipe
     }
 }
 
+// cartão da receita com melhor match para os ingredientes do utilizador
 @Composable
-fun BestMatchCard(recipe: Recipe, onClick: () -> Unit) {
+fun BestMatchCard(
+    recipe: Recipe,
+    usedIngredients: List<String>,
+    onClick: () -> Unit
+) {
+    // container principal
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() },
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            .clickable { onClick() }, // ocupa toda a largura e permite clicar
+        shape = RoundedCornerShape(24.dp), // cantos arredondados
+        colors = CardDefaults.cardColors(containerColor = White), // cor de fundo branca
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp) // sombra
     ) {
+        // coluna que agrupa a imagem e textos
         Column {
+            // uma box que permite sobrepôr a etiqueta "BEST MATCH" em cima da imagem
             Box {
-                AsyncImage(
-                    model = recipe.strMealThumb,
-                    contentDescription = recipe.strMeal,
+                AsyncImage( // faz o pedido à API para carregar a imagem
+                    model = recipe.strMealThumb, // URL da API
+                    contentDescription = recipe.strMeal, // para acessibilidade
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp),
-                    contentScale = ContentScale.Crop
+                        .height(200.dp), // altura fixa de 200dp
+                    contentScale = ContentScale.Crop // corta as bordas para preencher o espaço total sem distorcer
                 )
-                Surface(
-                    color = LightForestGreen,
-                    shape = RoundedCornerShape(12.dp),
+                Surface( // etiqueta "BEST MATCH" que sobrepõe a imagem
+                    color = LightForestGreen, // cor de fundo
+                    shape = RoundedCornerShape(12.dp), // cantos arredondados
                     modifier = Modifier
                         .padding(16.dp)
-                        .align(Alignment.BottomStart)
+                        .align(Alignment.BottomStart) // posiciona no canto inferior esquerdo
                 ) {
-                    Text(
+                    Text( // texto da etiqueta
                         text = "BEST MATCH",
                         color = ForestGreen,
                         fontWeight = FontWeight.Bold,
@@ -232,30 +250,42 @@ fun BestMatchCard(recipe: Recipe, onClick: () -> Unit) {
                     )
                 }
             }
-            Column(modifier = Modifier.padding(20.dp)) {
-                Text(
+            Column(modifier = Modifier.padding(20.dp)) { // área abaixo da imagem que contém as letras
+                Text( // título da receita
                     text = recipe.strMeal,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.List, contentDescription = null, modifier = Modifier.size(16.dp), tint = GrayText)
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = "20 min", color = GrayText, fontSize = 14.sp)
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text(text = "Beginner", color = GrayText, fontSize = 14.sp)
-                }
+
+                // espaço extra para manter a proporção da UI agradável
                 Spacer(modifier = Modifier.height(16.dp))
-                androidx.compose.material3.Divider(color = CreamBackground)
+                androidx.compose.material3.Divider(color = CreamBackground) // linha divisória
                 Spacer(modifier = Modifier.height(16.dp))
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "USES 3 PANTRY ITEMS", color = GrayText, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    // lógica para formatar o texto que vai ser lido (Ex: "USES: CHICKEN, GARLIC")
+                    val textToShow = if (usedIngredients.isEmpty()) {
+                        "USES 0 PANTRY ITEMS"
+                    } else {
+                        "USES: " + usedIngredients.joinToString(", ").uppercase()
+                    }
+
+                    Text(
+                        text = textToShow,
+                        color = GrayText,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp,
+                        maxLines = 1, // garante que o texto não ocupa mais do que uma linha para não partir o cartão
+                        overflow = TextOverflow.Ellipsis, // coloca "..." no final caso a lista de ingredientes não caiba no ecrã
+                        modifier = Modifier.weight(1f).padding(end = 8.dp) // empurra as bolinhas da decoração para a direita
+                    )
+
+                    // bolas decorativas que simulam os ingredientes
                     Row(horizontalArrangement = Arrangement.spacedBy(-8.dp)) {
                         Box(modifier = Modifier.size(24.dp).background(PrimaryOrange, CircleShape))
                         Box(modifier = Modifier.size(24.dp).background(LightOrange, CircleShape))
@@ -291,8 +321,6 @@ fun RecipeGridCard(recipe: Recipe, modifier: Modifier = Modifier, onClick: () ->
                     color = Color.Black,
                     maxLines = 2
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "15 MIN • EASY", color = GrayText, fontSize = 10.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
