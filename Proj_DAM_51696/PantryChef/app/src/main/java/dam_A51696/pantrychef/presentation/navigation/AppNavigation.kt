@@ -30,6 +30,7 @@ import dam_A51696.pantrychef.presentation.auth.LoginScreen
 import dam_A51696.pantrychef.presentation.auth.SignUpScreen
 import dam_A51696.pantrychef.presentation.theme.ForestGreen
 import com.google.firebase.auth.FirebaseAuth
+import dam_A51696.pantrychef.presentation.recipes.IngredientRecipesScreen
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector?) {
     object Login : Screen("login", "Login", null)
@@ -40,6 +41,9 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector?
     object Favorites : Screen("favorites", "Favorites", Icons.Default.Favorite)
     object RecipeDetail : Screen("recipe_detail/{recipeId}", "Recipe Detail", null) {
         fun createRoute(recipeId: String) = "recipe_detail/$recipeId"
+    }
+    object IngredientRecipes : Screen("ingredient_recipes/{ingredientName}", "Ingredient Recipes", null) {
+        fun createRoute(ingredientName: String) = "ingredient_recipes/$ingredientName"
     }
 }
 
@@ -121,6 +125,10 @@ fun AppNavigation() {
                 RecipesScreen(
                     onNavigateToRecipe = { recipeId ->
                         navController.navigate(Screen.RecipeDetail.createRoute(recipeId))
+                    },
+                    // manda o utilizador para o novo ecrã
+                    onNavigateToIngredientViewMore = { ingredientName ->
+                        navController.navigate(Screen.IngredientRecipes.createRoute(ingredientName))
                     }
                 )
             }
@@ -142,6 +150,14 @@ fun AppNavigation() {
                     recipeId = recipeId,
                     // o navController encarrega-se de retroceder um passo na navegação (Pop backstack)
                     onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            composable(Screen.IngredientRecipes.route) { backStackEntry ->
+                IngredientRecipesScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToRecipe = { recipeId ->
+                        navController.navigate(Screen.RecipeDetail.createRoute(recipeId))
+                    }
                 )
             }
         }

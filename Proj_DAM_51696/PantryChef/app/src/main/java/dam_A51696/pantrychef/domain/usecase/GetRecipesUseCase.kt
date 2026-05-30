@@ -28,13 +28,7 @@ class GetRecipesUseCase @Inject constructor(
             deferredRecipes.awaitAll()
                 .flatten() // Junta as várias listas de receitas (uma por ingrediente) numa única lista gigante
                 .distinctBy { it.idMeal } // Remove receitas duplicadas (ex: se frango e cenoura derem o mesmo prato)
-                .shuffled() // Baralha um pouco a lista final para a app parecer diferente e dinâmica sempre que abres
+                .shuffled()
         }
     }
 }
-
-/**
- * Devido ao uso de async e awaitAll, se o utilizador tiver 3 ingredientes a expirar, 
- * a app não vai pedir as receitas do 1º ingrediente, esperar, depois pedir as do 2º, esperar, etc.
- * Em vez disso, a app dispara os 3 pedidos em simultâneo. Isto faz com que a app carregue as sugestões mais rápido!
- */

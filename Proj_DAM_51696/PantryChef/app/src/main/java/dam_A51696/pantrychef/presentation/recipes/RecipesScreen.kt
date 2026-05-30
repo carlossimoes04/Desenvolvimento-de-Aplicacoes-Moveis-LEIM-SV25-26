@@ -33,6 +33,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.remember
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -54,9 +58,11 @@ import dam_A51696.pantrychef.presentation.theme.White
 @Composable
 fun RecipesScreen(
     onNavigateToRecipe: (String) -> Unit,
+    onNavigateToIngredientViewMore: (String) -> Unit,
     viewModel: RecipesViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val collapsedCategories by viewModel.collapsedCategories.collectAsState()
 
     Scaffold(
         containerColor = CreamBackground
@@ -73,8 +79,11 @@ fun RecipesScreen(
                     RecipesContent(
                         bestMatch = state.bestMatch,
                         bestMatchUsedIngredients = state.bestMatchUsedIngredients,
-                        recipes = state.recipes,
-                        onNavigateToRecipe = onNavigateToRecipe
+                        groupedRecipes = state.groupedRecipes,
+                        collapsedCategories = collapsedCategories, // passa o estado para o conteúdo
+                        onToggleCategory = { viewModel.toggleCategory(it) }, // envia a ação de clique para o ViewModel
+                        onNavigateToRecipe = onNavigateToRecipe,
+                        onNavigateToIngredientViewMore = onNavigateToIngredientViewMore
                     )
                 }
             }
@@ -86,9 +95,13 @@ fun RecipesScreen(
 fun RecipesContent(
     bestMatch: Recipe?,
     bestMatchUsedIngredients: List<String>,
-    recipes: List<Recipe>,
-    onNavigateToRecipe: (String) -> Unit
+    groupedRecipes: Map<String, List<Recipe>>,
+    collapsedCategories: Set<String>, // recebe o estado de colapso das categorias
+    onToggleCategory: (String) -> Unit, // recebe a ação de clicar
+    onNavigateToRecipe: (String) -> Unit,
+    onNavigateToIngredientViewMore: (String) -> Unit
 ) {
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(start = 24.dp, end = 24.dp, bottom = 80.dp)
@@ -125,7 +138,7 @@ fun RecipesContent(
             Spacer(modifier = Modifier.height(32.dp))
         }
 
-        if (bestMatch == null && recipes.isEmpty()) {
+        if (bestMatch == null) {
             item {
                 Column(
                     modifier = Modifier
@@ -159,48 +172,121 @@ fun RecipesContent(
 
         if (bestMatch != null) {
             item {
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 16.dp)) {
-                    Icon(Icons.Default.Warning, contentDescription = null, tint = PrimaryOrange, modifier = Modifier.size(16.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Warning,
+                        contentDescription = null,
+                        tint = PrimaryOrange,
+                        modifier = Modifier.size(16.dp)
+                    )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "USE THESE FIRST", color = GrayText, fontWeight = FontWeight.SemiBold, fontSize = 12.sp, letterSpacing = 1.sp)
-                    Spacer(modifier = Modifier.weight(1f))
-                    Text(text = "Refresh", color = ForestGreen, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                    Text(text = "USE THESE FIRST",
+                        color = GrayText,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 12.sp,
+                        letterSpacing = 1.sp
+                    )
                 }
-                
                 BestMatchCard(
                     recipe = bestMatch,
                     usedIngredients = bestMatchUsedIngredients,
-                    onClick = { onNavigateToRecipe(bestMatch.idMeal) }
+                    onClick = {
+                        onNavigateToRecipe(bestMatch.idMeal)
+                    }
                 )
                 Spacer(modifier = Modifier.height(32.dp))
             }
         }
 
-        if (recipes.isNotEmpty()) {
+        if (groupedRecipes.isNotEmpty()) {
             item {
                 Text(
-                    text = "DISCOVER MORE",
+                    "DISCOVER MORE",
                     color = GrayText,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 12.sp,
                     letterSpacing = 1.sp,
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    modifier = Modifier.padding(bottom = 8.dp)
                 )
             }
-            
-            // Simulating a Grid with pairs because LazyColumn items can't directly be GridCells easily without a specialized library or custom math
-            val pairs = recipes.chunked(2)
-            items(pairs.size) { index ->
-                val pair = pairs[index]
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    RecipeGridCard(recipe = pair[0], modifier = Modifier.weight(1f), onClick = { onNavigateToRecipe(pair[0].idMeal) })
-                    if (pair.size > 1) {
-                        RecipeGridCard(recipe = pair[1], modifier = Modifier.weight(1f), onClick = { onNavigateToRecipe(pair[1].idMeal) })
-                    } else {
-                        Spacer(modifier = Modifier.weight(1f))
+            // para cada categoria (ingrediente -> lista)
+            groupedRecipes.forEach { (ingredientName, recipesList) ->
+                val isExpanded = !collapsedCategories.contains(ingredientName) // vê se está aberto
+
+                // cabeçalho da categoria
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onToggleCategory(ingredientName) } // avisa o ViewModel que o utilizador clicou
+                            .padding(vertical = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = ingredientName.replaceFirstChar { it.uppercase() }, // põe a primeira letra maiúscula
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = ForestGreen
+                        )
+                        Icon(
+                            imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                            contentDescription = "Expand/Collapse",
+                            tint = GrayText
+                        )
                     }
                 }
-                Spacer(modifier = Modifier.height(16.dp))
+
+                // se estiver aberto, desenha a grelha das receitas
+                if (isExpanded) {
+                    val recipesToShow = recipesList.take(6) // mostra um máximo de 6 receitas nesta aba
+                    val pairs = recipesToShow.chunked(2) // divide para grelha
+
+                    items(pairs.size) { index ->
+                        val pair = pairs[index]
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            RecipeGridCard(
+                                recipe = pair[0],
+                                modifier = Modifier.weight(1f),
+                                onClick = { onNavigateToRecipe(pair[0].idMeal) }
+                            )
+                            if (pair.size > 1) {
+                                RecipeGridCard(
+                                    recipe = pair[1],
+                                    modifier = Modifier.weight(1f),
+                                    onClick = { onNavigateToRecipe(pair[1].idMeal) }
+                                )
+                            } else {
+                                Spacer(modifier = Modifier.weight(1f))
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+
+                    // se existirem mais do que 6 receitas, aparece o botão VIEW MORE
+                    if (recipesList.size > 6) {
+                        item {
+                            Text(
+                                text = "View More",
+                                color = PrimaryOrange,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { onNavigateToIngredientViewMore(ingredientName) } // vai para o ecrã novo
+                                    .padding(vertical = 8.dp),
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+                    }
+                }
             }
         }
     }

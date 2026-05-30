@@ -7,7 +7,7 @@ import dam_A51696.pantrychef.domain.model.Recipe
 import dam_A51696.pantrychef.domain.repository.PantryRepository
 import dam_A51696.pantrychef.domain.usecase.GetExpiringIngredientsUseCase
 import dam_A51696.pantrychef.domain.usecase.GetRecipeDetailUseCase
-import dam_A51696.pantrychef.domain.usecase.GetRecipesUseCase
+import dam_A51696.pantrychef.domain.repository.RecipeRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +21,8 @@ sealed class RecipesUiState {
     data class Success(
         val bestMatch: Recipe?,
         val bestMatchUsedIngredients: List<String>,
-        val recipes: List<Recipe>
+        // as receitas agora são guardadas como mapa -> ex: "Rice" = [Receita1, Receita2]
+        val groupedRecipes: Map<String, List<Recipe>>
     ) : RecipesUiState()
     data class Error(val message: String) : RecipesUiState()
 }
@@ -29,13 +30,28 @@ sealed class RecipesUiState {
 @HiltViewModel
 class RecipesViewModel @Inject constructor(
     private val getExpiringIngredientsUseCase: GetExpiringIngredientsUseCase,
-    private val getRecipesUseCase: GetRecipesUseCase,
+    private val recipeRepository: RecipeRepository,
     private val getRecipeDetailUseCase: GetRecipeDetailUseCase,
     private val pantryRepository: PantryRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<RecipesUiState>(RecipesUiState.Loading)
     val uiState: StateFlow<RecipesUiState> = _uiState.asStateFlow()
+
+    // guarda os ingredientes que o utilizador escondeu manualmente
+    // como começa vazio, significa que por defeito vêm todos abertos
+    private val _collapsedCategories = MutableStateFlow<Set<String>>(emptySet())
+    val collapsedCategories: StateFlow<Set<String>> = _collapsedCategories.asStateFlow()
+
+    fun toggleCategory(ingredient: String) {
+        val current = _collapsedCategories.value.toMutableSet()
+        if (current.contains(ingredient)) {
+            current.remove(ingredient) // se já estava fechado, abre-o
+        } else {
+            current.add(ingredient) // se estava aberto, fecha-o
+        }
+        _collapsedCategories.value = current
+    }
 
     init {
         fetchRecipes()
@@ -45,46 +61,53 @@ class RecipesViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = RecipesUiState.Loading
             try {
-                // procurar os ingredientes a expirar
-                getExpiringIngredientsUseCase(3).collectLatest { ingredients ->
+                // procurar os top 5 ingredientes a expirar
+                getExpiringIngredientsUseCase(5).collectLatest { ingredients ->
                     val ingredientNames = ingredients.map { it.name }
-                    
-                    // procurar a lista de receitas baseada nesses ingredientes
-                    val recipes = getRecipesUseCase(ingredientNames)
-                    
-                    if (recipes.isNotEmpty()) {
-                        val bestMatchRecipe = recipes.first()
 
-                        // ler os detalhes da receita, para saber a lista de todos os ingredientes que ela precisa
+                    val groupedMap = mutableMapOf<String, List<Recipe>>()
+
+                    // pedir as receitas individualmente por ingrediente e guardar no mapa
+                    for (name in ingredientNames) {
+                        val recipesForIngredient = recipeRepository.getRecipesByIngredient(name)
+                        if (recipesForIngredient.isNotEmpty()) {
+                            groupedMap[name] = recipesForIngredient
+                        }
+                    }
+
+                    if (groupedMap.isNotEmpty()) {
+                        // a Best Match passa a ser a primeira receita do ingrediente mais urgente (o primeiro do mapa)
+                        val firstCategory = groupedMap.keys.first()
+                        val bestMatchRecipe = groupedMap[firstCategory]!!.first()
+
+                        // lógica de procurar quais ingredientes da despensa são usados pela Best Match
                         val recipeDetail = getRecipeDetailUseCase(bestMatchRecipe.idMeal)
-
-                        // ler a despensa | obtém-se toda a despensa | o .first() lê o Firebase apenas uma vez em vez de ficar à escuta
                         val allPantryItems = pantryRepository.getAllIngredients().first()
 
-                        // comparar as duas listas
                         val matchingNames = mutableListOf<String>()
                         if (recipeDetail != null) {
-                            // pega-se no nome dos ingredientes da receita e põe-se em minúsculas para comparar mais facilmente
                             val recipeIngredientsNames = recipeDetail.ingredients.map { it.first.lowercase() }
-
-                            // para cada item da despensa do utilizador
                             allPantryItems.forEach { pantryItem ->
-                                // vê-se se o nome do item da despensa faz parte dos ingredientes da receita
-                                // ex: receita pede "Chicken Breast" e o utilizador tem "Chicken" -> match
                                 if (recipeIngredientsNames.any { it.contains(pantryItem.name.lowercase()) }) {
                                     matchingNames.add(pantryItem.name)
                                 }
                             }
                         }
 
-                        // envia a lista para a UI
+                        // remover a Best Match de dentro do grupo para que não apareça repetida na "Discover More"
+                        val updatedFirstCategoryList = groupedMap[firstCategory]!!.filter { it.idMeal != bestMatchRecipe.idMeal }
+                        if (updatedFirstCategoryList.isEmpty()) {
+                            groupedMap.remove(firstCategory) // Se o grupo ficar vazio, apaga o grupo
+                        } else {
+                            groupedMap[firstCategory] = updatedFirstCategoryList
+                        }
                         _uiState.value = RecipesUiState.Success(
                             bestMatch = bestMatchRecipe,
-                            bestMatchUsedIngredients = matchingNames.distinct(), // Impede repetições
-                            recipes = recipes.drop(1)
+                            bestMatchUsedIngredients = matchingNames.distinct(),
+                            groupedRecipes = groupedMap // Passar o mapa para a UI!
                         )
                     } else {
-                        _uiState.value = RecipesUiState.Success(null, emptyList(), emptyList())
+                        _uiState.value = RecipesUiState.Success(null, emptyList(), emptyMap())
                     }
                 }
             } catch (e: Exception) {
