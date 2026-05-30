@@ -76,11 +76,12 @@ class RegexProcessor : AbstractProcessor() {
 
             // constrói a função (ex: override fun getName(): String? { ... })
             val funcBuilder = FunSpec.builder(methodName)
-                .addModifiers(KModifier.OVERRIDE)
-                .returns(String::class.asTypeName().copy(nullable = true))
+                .addModifiers(KModifier.OVERRIDE) // adicionar override pois as funções vão sobrescrever os métodos abstratos
+                .returns(String::class.asTypeName().copy(nullable = true)) // retorna "String?"
                 // aqui injeta-se o Regex para procurar no texto
-                .addStatement("val match = Regex(%S).find(input)", regexPattern)
-                .addStatement("return match?.groupValues?.get(1)")
+                .addStatement("val match = Regex(%S).find(input)", regexPattern) //"%S" placeholder onde é colocado o valor do regexPattern | input é o parâmetro que a classe recebe no construtor
+                .addStatement("return match?.groupValues?.get(1)") // linha de return | usa "?." para evitar null pointer exceptions (retorna null se não houver match)
+                // "get(1)" acede ao primeiro grupo de captura do regex (o que está entre parênteses) | ex.: regex "Name: (.+)" -> "Name: João" - "João" é o primeiro grupo
 
             classBuilder.addFunction(funcBuilder.build())
         }
