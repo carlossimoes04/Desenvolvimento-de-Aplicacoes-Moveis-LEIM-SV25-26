@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="Theme.PicsumGalleryCompose" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- 4. Alterado o parent para Theme.MaterialComponents para suportar o AppCompatActivity -->
+    <style name="Theme.PicsumGalleryCompose" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
 </resources>

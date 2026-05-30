@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- 1. Permissão de Internet Adicionada -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -11,17 +14,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PicsumGalleryCompose">
+
+        <!-- 2. Caminho completo para a MainActivity para evitar o ClassNotFoundException -->
         <activity
-            android:name=".MainActivity"
+            android:name="dam.a51696.picsumgallery.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.PicsumGalleryCompose">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- 3. Declaração da ImageDetailsActivity adicionada -->
+        <activity
+            android:name="dam.a51696.picsumgallery.ImageDetailsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.PicsumGalleryCompose" />
+
     </application>
 
 </manifest>
