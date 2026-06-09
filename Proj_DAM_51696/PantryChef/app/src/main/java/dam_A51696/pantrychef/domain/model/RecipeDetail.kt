@@ -6,5 +6,5 @@ data class RecipeDetail(
     val strMealThumb: String,
     val strInstructions: String,
     val strYoutube: String,
-    val ingredients: List<Pair<String, String>> // Pair of Ingredient Name and Measure
+    val ingredients: List<Pair<String, String>> // par ingrediente, medida
 )

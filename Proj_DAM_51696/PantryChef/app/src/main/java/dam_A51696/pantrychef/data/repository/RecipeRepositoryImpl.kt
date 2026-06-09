@@ -4,37 +4,68 @@ import dam_A51696.pantrychef.data.remote.api.MealDbApi
 import dam_A51696.pantrychef.data.remote.dto.toDomain
 import dam_A51696.pantrychef.domain.model.Recipe
 import dam_A51696.pantrychef.domain.repository.RecipeRepository
-import javax.inject.Inject
+import dam_A51696.pantrychef.domain.model.RecipeDetail
 
-// Recebe a interface da API injetada pelo Hilt
-class RecipeRepositoryImpl @Inject constructor(
+/**
+ * Implementação do [RecipeRepository] que utiliza a API [MealDbApi]
+ * para obter receitas a partir da internet
+ *
+ * @property api Interface do Retrofit para realizar as chamadas de rede
+ */
+class RecipeRepositoryImpl (
     private val api: MealDbApi
 ) : RecipeRepository {
 
+    /**
+     * Procura receitas na API que contenham o ingrediente fornecido
+     *
+     * @param ingredient O nome do ingrediente para pesquisa
+     * @return Uma lista de objetos [Recipe]
+     */
     override suspend fun getRecipesByIngredient(ingredient: String): List<Recipe> {
         return try {
-            // Faz o pedido de rede usando o nome do ingrediente
+            // executa o pedido com o nome do ingrediente
             val response = api.getRecipesByIngredient(ingredient)
-            
-            // Se "meals" for nulo, a API não encontrou nada, devolve-se emptyList()
-            // Caso contrário, mapeia-se o MealDto para Recipe puro
+            // converte a lista de DTOs para o modelo de domínio ou devolve uma
+            // lista sem elementos se a API não encontrar receitas
             response.meals?.map { it.toDomain() } ?: emptyList()
-            
+
         } catch (e: Exception) {
+            // regista a falha no terminal e devolve uma lista sem elementos
+            // para evitar que a aplicação pare
             e.printStackTrace()
-            // Se houver um erro (ex: telemóvel sem internet), evita-se que a app vá abaixo (Crash) e 
-            // devolve-se apenas uma lista vazia por agora
             emptyList()
         }
     }
 
-    override suspend fun getRecipeById(id: String): dam_A51696.pantrychef.domain.model.RecipeDetail? {
+    /**
+     * Obtém os detalhes de uma receita na API através do seu id
+     *
+     * @param id O identificador da receita
+     * @return O objeto [RecipeDetail] correspondente ou null se ocorrer um erro
+     */
+    override suspend fun getRecipeById(id: String): RecipeDetail? {
         return try {
+            // executa o pedido para obter os detalhes da receita
             val response = api.getRecipeById(id)
+            // converte a resposta da API para o modelo de detalhes da receita
             response.toDomain()
         } catch (e: Exception) {
+            // regista a falha no terminal e devolve null para evitar paragens na aplicação
             e.printStackTrace()
             null
         }
     }
 }
+
+/*
+ * Esta classe é a implementação do RecipeRepository, que utiliza a
+ * interface MealDbApi para comunicar com a API de receitas.
+ *
+ * Coloquei as operações dentro de blocos try-catch porque a ligação à internet
+ * ou a API podem falhar, o que evita paragens na aplicação ao retornar uma lista
+ * sem elementos ou o valor null.
+ *
+ * A interface MealDbApi é recebida no construtor para se poder
+ * fazer os pedidos à rede sem instanciar o Retrofit dentro desta classe
+ */

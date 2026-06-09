@@ -14,66 +14,100 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import com.google.firebase.auth.FirebaseAuth
-import javax.inject.Inject
 
-class PantryRepositoryImpl @Inject constructor() : PantryRepository {
+/**
+ * Implementação do [PantryRepository] que utiliza o Firebase Realtime Database
+ * para gerir os ingredientes da despensa do utilizador
+ */
+class PantryRepositoryImpl : PantryRepository {
 
+    /**
+     * Obtém a referência do Firebase para a despensa do utilizador
+     *
+     * @return [DatabaseReference] apontando para "users/$userId/pantry"
+     */
     private fun getDatabaseRef(): DatabaseReference {
+        // obtém o ID do utilizador ou usa um valor por defeito se não houver login
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "unauthenticated"
+        // retorna a referência da pasta de despensa do utilizador na base de dados
         return FirebaseDatabase.getInstance().getReference("users/$userId/pantry")
     }
 
+    /**
+     * Adiciona um ingrediente à despensa
+     *
+     * @param ingredient O ingrediente a adicionar
+     */
     override suspend fun addIngredient(ingredient: Ingredient) {
+        // obtém a referência da pasta de despensa
         val ref = getDatabaseRef()
-        val newRef = ref.push() // Gera automaticamente uma chave alfanumérica única
-        
-        // Converte-se o domínio para DTO, injetando o novo ID que o Firebase gerou
+        // cria uma referência para o ingrediente
+        val newRef = ref.push()
+        // converte o modelo em DTO e atribui o ID gerado pela Firebase
         val ingredientDto = ingredient.toDto().copy(id = newRef.key ?: "")
-        
-        // Guarda na nuvem
+        // adiciona o ingrediente à base de dados
         newRef.setValue(ingredientDto) 
     }
 
-    // Retorna um Flow contínuo (um canal que envia dados automaticamente sempre que o Firebase mudar)
+    /**
+     * Obtém todos os ingredientes da despensa em tempo real,
+     * ordenados pela data de validade
+     *
+     * @return Um [Flow] contendo a lista de ingredientes
+     */
     override fun getAllIngredients(): Flow<List<Ingredient>> = callbackFlow {
+        // obtém a referência da pasta de despensa
         val ref = getDatabaseRef()
-        // Pede-se ao Firebase para enviar os dados ordenados pela data de expiração (crescente)
+        // pede ao firebase para ordenar os dados pela data de validade
         val query = ref.orderByChild("expirationDate")
-
+        // cria um listener para saber se os dados mudaram
         val listener = object : ValueEventListener {
+            // executa sempre que os dados mudam no firebase
             override fun onDataChange(snapshot: DataSnapshot) {
-                // Para cada nó (ingrediente) no Firebase, converte do JSON para IngredientFirebaseDto, 
-                // e logo a seguir converte para o modelo de Domínio (toDomain)
+                // mapeia os elementos
                 val ingredients = snapshot.children.mapNotNull { 
                     it.getValue(IngredientFirebaseDto::class.java)?.toDomain() 
                 }
-                
-                // Emite a lista pronta para quem estiver a "ouvir" (ex: o ViewModel)
+                // envia a lista para o fluxo
                 trySend(ingredients) 
             }
-
+            // fecha o fluxo se ocorrer uma falha na leitura
             override fun onCancelled(error: DatabaseError) {
-                close(error.toException()) // Fecha o canal em caso de erro de leitura
+                close(error.toException())
             }
         }
-
+        // associa o listener à query de ordenação
         query.addValueEventListener(listener)
-        
-        // Quando o Ecrã for fechado e já não precisar dos dados, 
-        // desconecta-se do Firebase para não gastar bateria/dados da net
+        // remove o listener quando o fluxo deixa de ser observado
         awaitClose { query.removeEventListener(listener) }
     }
 
+    /**
+     * Remove um ingrediente da despensa
+     *
+     * @param ingredient O ingrediente a remover
+     */
     override suspend fun deleteIngredient(ingredient: Ingredient) {
         getDatabaseRef().child(ingredient.id).removeValue()
     }
 
+    /**
+     * Atualiza os dados de um ingrediente
+     *
+     * @param ingredient O ingrediente a atualizar
+     */
     override suspend fun updateIngredient(ingredient: Ingredient) {
         getDatabaseRef().child(ingredient.id).setValue(ingredient.toDto())
     }
 }
 
-/**
- * Foi adicionada a anotação @Inject constructor() no repositório. 
- * Isto avisa o Hilt de como ele deve construir este repositório caso algum ViewModel precise dele.
+/*
+ * Esta classe é a implementação do PantryRepository onde é gerida a despensa de ingredientes
+ *
+ * Para ler a lista utilizei callbackFlow com um ValueEventListener porque é necessário observar as
+ * alterações de dados em tempo real, o que permite atualizar a interface sem recarregar o ecrã
+ *
+ * Adicionei a função orderByChild para receber os elementos ordenados por
+ * validade diretamente da BD, de modo que a aplicação não tenha de
+ * ordenar a lista na memória
  */
