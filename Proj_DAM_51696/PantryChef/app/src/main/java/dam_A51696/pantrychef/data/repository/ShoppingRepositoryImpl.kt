@@ -109,6 +109,7 @@ class ShoppingRepositoryImpl : ShoppingRepository {
  * Para ler os itens usei callbackFlow com um ValueEventListener porque é preciso
  * observar alterações de dados em tempo real, o que permite atualizar a interface
  * sem recarregar o ecrã
+ * https://developer.android.com/kotlin/flow?hl=pt-br#callback
  *
  * Nas operações de escrita utilizo a referência da base de dados com o id
  * de cada elemento para atualizar ou remover dados sob chaves no Realtime Database

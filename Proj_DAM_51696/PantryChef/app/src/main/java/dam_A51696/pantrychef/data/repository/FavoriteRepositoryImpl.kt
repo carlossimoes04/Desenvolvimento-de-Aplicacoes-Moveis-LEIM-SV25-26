@@ -125,6 +125,7 @@ class FavoriteRepositoryImpl : FavoriteRepository {
  * Para obter os favoritos e verificar se uma receita está marcada, utilizei callbackFlow porque
  * é preciso converter os listeners do Firebase em fluxos, o que permite enviar atualizações
  * para a interface sempre que os dados sofrem alterações na base de dados
+ * https://developer.android.com/kotlin/flow?hl=pt-br#callback
  *
  * Utiliza-se o id da receita como chave no Firebase, de modo que a mesma receita
  * não seja guardada em duplicado

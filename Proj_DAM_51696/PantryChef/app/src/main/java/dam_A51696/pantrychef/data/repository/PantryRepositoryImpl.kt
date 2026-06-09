@@ -106,6 +106,7 @@ class PantryRepositoryImpl : PantryRepository {
  *
  * Para ler a lista utilizei callbackFlow com um ValueEventListener porque é necessário observar as
  * alterações de dados em tempo real, o que permite atualizar a interface sem recarregar o ecrã
+ * https://developer.android.com/kotlin/flow?hl=pt-br#callback
  *
  * Adicionei a função orderByChild para receber os elementos ordenados por
  * validade diretamente da BD, de modo que a aplicação não tenha de

@@ -83,9 +83,10 @@ class AuthRepositoryImpl : AuthRepository {
  * Esta classe é a implementação concreta do AuthRepository e é aqui que é utilizado o Firebase
  * Authentication para fazer login, registo e logout
  *
- * Para o currentUser usei callbackFlow porque o Firebase usa listeners (callbacks)
- * para notificar mudanças de autenticação, e eu preciso de converter isso num Flow para o
+ * Para o currentUser usei callbackFlow porque o Firebase usa callbacks para notificar
+ * mudanças de autenticação, e foi preciso converter isso num Flow para o
  * resto da aplicação poder observar de forma reativa
+ * https://developer.android.com/kotlin/flow?hl=pt-br#callback
  *
  * As funções login e signUp devolvem Result porque assim quem chama estas funções consegue
  * tratar o sucesso e o erro sem precisar de try-catch

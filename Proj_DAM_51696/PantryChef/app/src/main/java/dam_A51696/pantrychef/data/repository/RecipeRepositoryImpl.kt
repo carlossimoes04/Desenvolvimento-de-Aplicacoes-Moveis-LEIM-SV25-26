@@ -60,12 +60,18 @@ class RecipeRepositoryImpl (
 
 /*
  * Esta classe é a implementação do RecipeRepository, que utiliza a
- * interface MealDbApi para comunicar com a API de receitas.
+ * interface MealDbApi para comunicar com a API de receitas
  *
- * Coloquei as operações dentro de blocos try-catch porque a ligação à internet
- * ou a API podem falhar, o que evita paragens na aplicação ao retornar uma lista
- * sem elementos ou o valor null.
+ * As funções são suspend e as operações estão dentro de blocos try-catch porque
+ * a ligação à internet ou a API podem falhar, o que evita paragens na aplicação
+ * ao retornar uma lista sem elementos ou o valor null
  *
  * A interface MealDbApi é recebida no construtor para se poder
  * fazer os pedidos à rede sem instanciar o Retrofit dentro desta classe
+ *
+ * Aqui não se usam callbackFlows porque quando a resposta de um pedido é recebida,
+ * a ligação termina, pelo que não existem mais callbacks para observar. Além disso,
+ * como o Retrofit suporta coroutines, basta usar funções suspend (como foi implementado)
+ * que devolvem a lista ou o detalhe diretamente, sem necessidade de utilizar callbackFlows
+ * ou outros flows
  */
