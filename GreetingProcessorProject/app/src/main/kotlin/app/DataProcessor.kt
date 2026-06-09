@@ -12,12 +12,14 @@ abstract class DataProcessor(val input: String) {
 
     // indica ao KAPT que neste método é feita a extração de letras ou números logo a seguir à palavra 'Name: '
     // o (\w+) é o "grupo de captura" do Regex que apanha a palavra do nome
+    // (\w+) -> \w: qualquer letra (maiúscula ou minúscula), qualquer número e _ | +: um ou mais
     @Extract(regex = "Name: (\\w+)")
     // a função não tem corpo, só tem assinatura e diz que deverá devolver uma String (ou null)
     abstract fun getName(): String?
 
     // indica ao KAPT que neste método é feita a extração do resto da frase logo a seguir a 'Address: '
     // o (.+) é o "grupo de captura" do Regex que apanha toda a morada
+    // (.+) -> .: qualquer caráter, exceto quebras de linha \n | +: um ou mais
     @Extract(regex = "Address: (.+)")
     abstract fun getAddress(): String?
 }

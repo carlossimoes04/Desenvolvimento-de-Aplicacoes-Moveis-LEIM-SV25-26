@@ -61,7 +61,7 @@ class RegexProcessor : AbstractProcessor() {
 
         // criador da classe
         val classBuilder = TypeSpec.classBuilder(extractorClassName) // atribuir o nome da classe, que será "DataProcessorExtractor"
-            .primaryConstructor(constructor) // criar o construtor
+            .primaryConstructor(constructor) // definir o construtor principal da classe
             .superclass(ClassName(packageName, ogClassName)) // define a classe a superclasse "DataProcessor"
             .addSuperclassConstructorParameter("input") // adicionar "input" como parâmetro da superclass
             .addModifiers(KModifier.PUBLIC) // adiciona a palavra chave "Public" antes do nome da classe
