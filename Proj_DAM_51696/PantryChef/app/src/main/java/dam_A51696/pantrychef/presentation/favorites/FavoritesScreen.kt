@@ -58,6 +58,14 @@ fun FavoritesScreen(
     // fica a "escutar" constantemente (collectAsState) qualquer mudança de estado emitida pelo ViewModel
     val uiState by viewModel.uiState.collectAsState()
 
+    /*
+    A função collectAsState() é essencial no Jetpack Compose para converter um fluxo de dados
+    assíncrono (como Flow ou StateFlow) num State do Compose
+
+    Isso permite que a interface reaja e seja atualizada (recomposta) automaticamente
+    sempre que o dado mudar
+     */
+
     // o Scaffold define a área base do ecrã (e permite adicionar barras de navegação futuramente)
     Scaffold(
         containerColor = CreamBackground
