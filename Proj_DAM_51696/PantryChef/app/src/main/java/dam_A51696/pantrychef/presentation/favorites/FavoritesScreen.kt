@@ -36,6 +36,18 @@ import dam_A51696.pantrychef.presentation.theme.CreamBackground
 import dam_A51696.pantrychef.presentation.theme.ForestGreen
 import dam_A51696.pantrychef.presentation.theme.GrayText
 
+/**
+ * Componente Composable que serve de ecrã para exibir a lista de receitas favoritas do utilizador
+ *
+ * Observa o estado proveniente da [FavoritesViewModel] e desenha os componentes adequados:
+ * - um indicador de progresso,
+ * - um ecrã de erro,
+ * - um ecrã vazio ou a grelha de receitas favoritas
+ *
+ * @param onNavigateToRecipe Callback invocado quando o utilizador clica numa receita
+ * para ver os seus detalhes
+ * @param viewModel A instância de [FavoritesViewModel] que fornece o estado de UI
+ */
 @Composable
 fun FavoritesScreen(
     // parâmetro: uma função que diz ao sistema o que fazer quando se clica numa receita (navegar)
@@ -64,7 +76,8 @@ fun FavoritesScreen(
                 // se der erro
                 is FavoritesUiState.Error -> {
                     // mostra-se o texto de erro a vermelho no centro do ecrã
-                    Text(text = "Error: ${state.message}", color = Color.Red, modifier = Modifier.align(Alignment.Center))
+                    Text(text = "Error: ${state.message}", color = Color.Red,
+                        modifier = Modifier.align(Alignment.Center))
                 }
 
                 // se tiver carregado os dados com sucesso
@@ -80,7 +93,13 @@ fun FavoritesScreen(
     }
 }
 
-// sub-componente (privado) responsável por desenhar apenas a lista visual de favoritos
+/**
+ * Componente Composable responsável por desenhar a lista de receitas
+ * favoritas numa grelha de duas colunas
+ *
+ * @param recipes Lista de receitas favoritas obtidas da base de dados
+ * @param onNavigateToRecipe Callback invocado para navegar até à página da receita selecionada
+ */
 @Composable
 fun FavoritesContent(recipes: List<Recipe>, onNavigateToRecipe: (String) -> Unit) {
     // LazyColumn é equivalente à RecyclerView
@@ -88,7 +107,8 @@ fun FavoritesContent(recipes: List<Recipe>, onNavigateToRecipe: (String) -> Unit
     LazyColumn(
         // ocupa todo o espaço disponível
         modifier = Modifier.fillMaxSize(),
-        // define as margens interiores: 24dp dos lados e 80dp em baixo (para não ficar tapado pelo bottom menu)
+        // define as margens interiores: 24dp dos lados e 80dp em baixo
+        // (para não ficar tapado pelo bottom menu)
         contentPadding = PaddingValues(start = 24.dp, end = 24.dp, bottom = 80.dp)
     ) {
 
@@ -118,11 +138,17 @@ fun FavoritesContent(recipes: List<Recipe>, onNavigateToRecipe: (String) -> Unit
                     modifier = Modifier.fillMaxWidth().padding(top = 48.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(text = "No Favorites Yet", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                    Text(
+                        text = "No Favorites Yet",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black)
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "Save your favorite recipes so they appear here.",
-                        fontSize = 14.sp, color = GrayText, textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        fontSize = 14.sp,
+                        color = GrayText,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
                 }
             }
@@ -138,19 +164,24 @@ fun FavoritesContent(recipes: List<Recipe>, onNavigateToRecipe: (String) -> Unit
                 val pair = pairs[index] // obtém o par atual
 
                 // uma linha (Row) horizontal que distribui o espaço por igual
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)) {
 
                     // colaca-se a 1ª receita do par à esquerda
                     // reutiliza-se o "RecipeGridCard"
                     // o Modifier.weight(1f) garante que ocupa metade do ecrã
-                    RecipeGridCard(recipe = pair[0], modifier = Modifier.weight(1f), onClick = { onNavigateToRecipe(pair[0].idMeal) })
+                    RecipeGridCard(recipe = pair[0], modifier = Modifier.weight(1f),
+                        onClick = { onNavigateToRecipe(pair[0].idMeal) })
 
-                    // verifica-se se há uma 2ª receita neste par (se a lista total era ímpar, o último par tem apenas 1 elemento)
+                    // verifica-se se há uma 2ª receita neste par (se a lista total era ímpar,
+                    // o último par tem apenas 1 elemento)
                     if (pair.size > 1) {
                         // se houver, coloca-se à direita
-                        RecipeGridCard(recipe = pair[1], modifier = Modifier.weight(1f), onClick = { onNavigateToRecipe(pair[1].idMeal) })
+                        RecipeGridCard(recipe = pair[1], modifier = Modifier.weight(1f),
+                            onClick = { onNavigateToRecipe(pair[1].idMeal) })
                     } else {
-                        // se não houver 2ª receita, coloca-se um espaço transparente vazio para manter o alinhamento
+                        // se não houver 2ª receita, coloca-se um espaço transparente vazio
+                        // para manter o alinhamento
                         Spacer(modifier = Modifier.weight(1f))
                     }
                 }
@@ -160,3 +191,23 @@ fun FavoritesContent(recipes: List<Recipe>, onNavigateToRecipe: (String) -> Unit
         }
     }
 }
+
+
+/**
+ * Desenvolvi este ecrã com o intuito de apresentar uma lista organizada de todas
+ * as receitas que o utilizador guardou como favoritas na aplicação Pantry Chef
+ *
+ * Decisões de Implementação
+ * - Scaffold e Padding:
+ *      Optei por usar um Scaffold para definir o contentor base do ecrã, respeitando
+ *      o padding do sistema para garantir que os elementos não colidem com o menu inferior
+ * - Tratamento de Estados (when):
+ *      Estruturei o ecrã para lidar com os três estados possíveis de forma reativa (Loading,
+ *      Error, Success), proporcionando feedbacks adequados a cada um
+ * - chunked(2) e Grelha Bidimensional:
+ *      Decidi particionar a lista de receitas em blocos de dois elementos para simular uma
+ *      grelha bidimensional numa LazyColumn, contornando a necessidade de uma LazyVerticalGrid
+ * - Reutilização de Componentes:
+ *      Reutilizei o componente RecipeGridCard para desenhar cada receita da lista de forma
+ *      homogénea, tirando partido do peso (Modifier.weight(1f)) para preencher a linha uniformemente
+ */
