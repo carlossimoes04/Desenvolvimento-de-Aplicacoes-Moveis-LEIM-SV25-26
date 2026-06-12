@@ -25,6 +25,11 @@ interface RecipeRepository {
      * @return O objeto [RecipeDetail] correspondente ou null se ocorrer um erro
      */
     suspend fun getRecipeById(id: String): RecipeDetail?
+
+    /**
+     * Obtém uma receita completamente aleatória da API
+     */
+    suspend fun getRandomRecipe(): Recipe?
 }
 
 /*

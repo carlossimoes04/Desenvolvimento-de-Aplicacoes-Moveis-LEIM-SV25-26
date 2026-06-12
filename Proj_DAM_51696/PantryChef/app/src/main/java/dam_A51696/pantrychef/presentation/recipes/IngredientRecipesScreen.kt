@@ -83,7 +83,7 @@ fun IngredientRecipesScreen(
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             // cabeçalho do ecrã com botão de voltar
             Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 24.dp, start = 24.dp, end = 24.dp, bottom = 16.dp),
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(

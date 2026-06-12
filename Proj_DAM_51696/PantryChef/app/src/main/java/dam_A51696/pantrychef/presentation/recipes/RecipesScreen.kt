@@ -37,6 +37,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -59,6 +60,7 @@ import dam_A51696.pantrychef.presentation.theme.White
 fun RecipesScreen(
     onNavigateToRecipe: (String) -> Unit,
     onNavigateToIngredientViewMore: (String) -> Unit,
+    onNavigateToSearch: () -> Unit,
     viewModel: RecipesViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -67,7 +69,7 @@ fun RecipesScreen(
     Scaffold(
         containerColor = CreamBackground
     ) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding)) {
+        Box(modifier = Modifier.fillMaxSize()) {
             when (val state = uiState) {
                 is RecipesUiState.Loading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = ForestGreen)
@@ -80,10 +82,13 @@ fun RecipesScreen(
                         bestMatch = state.bestMatch,
                         bestMatchUsedIngredients = state.bestMatchUsedIngredients,
                         groupedRecipes = state.groupedRecipes,
+                        noRecipeIngredients = state.noRecipeIngredients, // passa os ingredientes sem receitas para o conteúdo
                         collapsedCategories = collapsedCategories, // passa o estado para o conteúdo
                         onToggleCategory = { viewModel.toggleCategory(it) }, // envia a ação de clique para o ViewModel
+                        onNavigateToSearch = onNavigateToSearch,
                         onNavigateToRecipe = onNavigateToRecipe,
-                        onNavigateToIngredientViewMore = onNavigateToIngredientViewMore
+                        onNavigateToIngredientViewMore = onNavigateToIngredientViewMore,
+                        paddingValues = padding
                     )
                 }
             }
@@ -91,23 +96,31 @@ fun RecipesScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipesContent(
     bestMatch: Recipe?,
     bestMatchUsedIngredients: List<String>,
     groupedRecipes: Map<String, List<Recipe>>,
+    noRecipeIngredients: List<String>,
     collapsedCategories: Set<String>, // recebe o estado de colapso das categorias
     onToggleCategory: (String) -> Unit, // recebe a ação de clicar
+    onNavigateToSearch: () -> Unit,
     onNavigateToRecipe: (String) -> Unit,
-    onNavigateToIngredientViewMore: (String) -> Unit
+    onNavigateToIngredientViewMore: (String) -> Unit,
+    paddingValues: PaddingValues
 ) {
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(start = 24.dp, end = 24.dp, bottom = 80.dp)
+        contentPadding = PaddingValues(
+            start = 24.dp, 
+            end = 24.dp,
+            top = paddingValues.calculateTopPadding(),
+            bottom = paddingValues.calculateBottomPadding()
+        )
     ) {
         item {
-            Spacer(modifier = Modifier.height(32.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -127,48 +140,44 @@ fun RecipesContent(
                     )
                 }
                 IconButton(
-                    onClick = { /* TODO Filter */ },
+                    onClick = { onNavigateToSearch() },
                     modifier = Modifier
                         .size(48.dp)
                         .background(White, CircleShape)
                 ) {
-                    Icon(Icons.Outlined.Search, contentDescription = "Filter", tint = ForestGreen) // Placeholder icon
+                    Icon(Icons.Outlined.Search, contentDescription = "Search", tint = ForestGreen)
                 }
             }
             Spacer(modifier = Modifier.height(32.dp))
         }
 
-        if (bestMatch == null) {
+        if (noRecipeIngredients.isNotEmpty()) {
             item {
-                Column(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 48.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .padding(bottom = 24.dp)
+                        .background(LightOrange, RoundedCornerShape(12.dp))
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        Icons.Default.Search, 
-                        contentDescription = null, 
-                        modifier = Modifier.size(64.dp), 
-                        tint = GrayText
+                        Icons.Default.Warning,
+                        contentDescription = "Warning",
+                        tint = PrimaryOrange,
+                        modifier = Modifier.size(24.dp)
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "No Recipes Found",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "We couldn't find recipes matching your expiring ingredients. Try adding items with English names (e.g., 'Chicken', 'Cream').",
+                        text = "We couldn't find recipes for: ${noRecipeIngredients.joinToString(", ")}",
+                        color = ForestGreen,
                         fontSize = 14.sp,
-                        color = GrayText,
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        fontWeight = FontWeight.Medium
                     )
                 }
             }
         }
+
 
         if (bestMatch != null) {
             item {
@@ -201,17 +210,18 @@ fun RecipesContent(
             }
         }
 
+        item {
+            Text(
+                "DISCOVER MORE",
+                color = GrayText,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 12.sp,
+                letterSpacing = 1.sp,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
+
         if (groupedRecipes.isNotEmpty()) {
-            item {
-                Text(
-                    "DISCOVER MORE",
-                    color = GrayText,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 12.sp,
-                    letterSpacing = 1.sp,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
             // para cada categoria (ingrediente -> lista)
             groupedRecipes.forEach { (ingredientName, recipesList) ->
                 val isExpanded = !collapsedCategories.contains(ingredientName) // vê se está aberto
@@ -286,6 +296,21 @@ fun RecipesContent(
                             Spacer(modifier = Modifier.height(16.dp))
                         }
                     }
+                }
+            }
+        } else {
+            // mostra a msg de que não existem receitas para os ingredientes a expirar
+            item {
+                Column(
+                    modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Nothing to show. Add ingredients to your Pantry.",
+                        color = GrayText,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             }
         }

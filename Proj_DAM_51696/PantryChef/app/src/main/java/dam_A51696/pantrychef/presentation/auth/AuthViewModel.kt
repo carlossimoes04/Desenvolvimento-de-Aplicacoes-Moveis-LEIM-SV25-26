@@ -72,12 +72,13 @@ class AuthViewModel @Inject constructor(
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
 
     /**
-     * Fluxo que disponibiliza os dados do utilizador atualmente
-     * autenticado a partir do repositório
+     * Verifica de forma síncrona se existe um utilizador com sessão ativa
      *
-     * Permite à UI monitorizar se existe um utilizador com sessão iniciada
+     * Evita chamadas diretas a bibliotecas externas (como o Firebase) na
+     * camada de apresentação (UI)
      */
-    val currentUser = authRepository.currentUser
+    val isUserLoggedIn: Boolean
+        get() = authRepository.getCurrentUserSync() != null
 
     /**
      * Efetua a tentativa de login de um utilizador utilizando
@@ -191,4 +192,7 @@ class AuthViewModel @Inject constructor(
  * - resetState():
  *      Permite à UI repor o estado para Idle para não arrastar erros anteriores
  *      de um ecrã para o outro
+ * - isUserLoggedIn:
+ *      Propriedade síncrona que expõe se existe uma sessão ativa sem expor dependências
+ *      internas de frameworks (como o Firebase) à camada visual
  */

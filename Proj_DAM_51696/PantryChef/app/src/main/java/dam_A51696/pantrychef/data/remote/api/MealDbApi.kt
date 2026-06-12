@@ -20,6 +20,10 @@ interface MealDbApi {
         // o "@Query("i")" vai transformar isto em -> lookup.php?i=id_da_receita
         @Query("i") id: String
     ): RecipeDetailResponseDto
+
+    // faz-se um pedido GET à terminação random.php
+    @GET("random.php")
+    suspend fun getRandomRecipe(): MealResponseDto
 }
 
 /**

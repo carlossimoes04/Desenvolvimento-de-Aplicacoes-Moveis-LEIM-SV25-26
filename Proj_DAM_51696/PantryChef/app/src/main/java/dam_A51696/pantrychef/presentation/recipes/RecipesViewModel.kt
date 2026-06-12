@@ -22,7 +22,8 @@ sealed class RecipesUiState {
         val bestMatch: Recipe?,
         val bestMatchUsedIngredients: List<String>,
         // as receitas agora são guardadas como mapa -> ex: "Rice" = [Receita1, Receita2]
-        val groupedRecipes: Map<String, List<Recipe>>
+        val groupedRecipes: Map<String, List<Recipe>>,
+        val noRecipeIngredients: List<String> = emptyList()
     ) : RecipesUiState()
     data class Error(val message: String) : RecipesUiState()
 }
@@ -66,12 +67,16 @@ class RecipesViewModel @Inject constructor(
                     val ingredientNames = ingredients.map { it.name }
 
                     val groupedMap = mutableMapOf<String, List<Recipe>>()
+                    val emptyIngredients = mutableListOf<String>() // ingredientes que não têm receitas
 
                     // pedir as receitas individualmente por ingrediente e guardar no mapa
                     for (name in ingredientNames) {
                         val recipesForIngredient = recipeRepository.getRecipesByIngredient(name)
                         if (recipesForIngredient.isNotEmpty()) {
                             groupedMap[name] = recipesForIngredient
+                        } else {
+                            // adiciona o ingrediente à lista de ingredientes sem receitas
+                            emptyIngredients.add(name)
                         }
                     }
 
@@ -104,10 +109,33 @@ class RecipesViewModel @Inject constructor(
                         _uiState.value = RecipesUiState.Success(
                             bestMatch = bestMatchRecipe,
                             bestMatchUsedIngredients = matchingNames.distinct(),
-                            groupedRecipes = groupedMap // Passar o mapa para a UI!
+                            groupedRecipes = groupedMap, // Passar o mapa para a UI!
+                            noRecipeIngredients = emptyIngredients
                         )
                     } else {
-                        _uiState.value = RecipesUiState.Success(null, emptyList(), emptyMap())
+                        // caso não existam receitas para os ingredientes a expirar
+                        val randomRecipe = recipeRepository.getRandomRecipe()
+                        
+                        val matchingNames = mutableListOf<String>()
+                        if (randomRecipe != null) {
+                            val recipeDetail = getRecipeDetailUseCase(randomRecipe.idMeal)
+                            val allPantryItems = pantryRepository.getAllIngredients().first()
+                            if (recipeDetail != null) {
+                                val recipeIngredientsNames = recipeDetail.ingredients.map { it.first.lowercase() }
+                                allPantryItems.forEach { pantryItem ->
+                                    if (recipeIngredientsNames.any { it.contains(pantryItem.name.lowercase()) }) {
+                                        matchingNames.add(pantryItem.name)
+                                    }
+                                }
+                            }
+                        }
+
+                        _uiState.value = RecipesUiState.Success(
+                            bestMatch = randomRecipe,
+                            bestMatchUsedIngredients = matchingNames.distinct(),
+                            groupedRecipes = emptyMap(),
+                            noRecipeIngredients = emptyIngredients
+                        )
                     }
                 }
             } catch (e: Exception) {

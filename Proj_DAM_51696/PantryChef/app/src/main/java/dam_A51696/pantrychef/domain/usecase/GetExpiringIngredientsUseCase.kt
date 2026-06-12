@@ -21,11 +21,13 @@ class GetExpiringIngredientsUseCase @Inject constructor(
      * @return Um [Flow] contendo a lista de ingredientes
      */
     operator fun invoke(limit: Int = 3): Flow<List<Ingredient>> {
-        // obtém o fluxo de ingredientes e aplica uma transformação à lista
+        val currentTime = System.currentTimeMillis()
+        val dayInMillis = 1000 * 60 * 60 * 24L
+
         return pantryRepository.getAllIngredients().map { allIngredients ->
-            // seleciona a quantidade de elementos definida no parâmetro limit
-            allIngredients.take(limit)
-            
+            allIngredients
+                .filter { it.expirationDate >= currentTime }
+                .take(limit)
         }
     }
 }

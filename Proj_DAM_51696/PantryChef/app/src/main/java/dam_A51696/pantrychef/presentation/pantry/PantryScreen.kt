@@ -78,8 +78,26 @@ fun PantryScreen(viewModel: PantryViewModel = hiltViewModel()) {
     val ingredients by viewModel.ingredients.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
     var ingredientToEdit by remember { mutableStateOf<Ingredient?>(null) }
-    val expiringSoon = ingredients.filter { it.expirationDate < System.currentTimeMillis() + 4 * 24 * 60 * 60 * 1000L } // < 4 days
-    val goodToGo = ingredients.filter { !expiringSoon.contains(it) }
+
+    val currentTime = System.currentTimeMillis()
+    val dayInMillis = 1000 * 60 * 60 * 24L
+
+    // expirados - diferença de dias é menor que 0
+    val expired = ingredients.filter {
+        ((it.expirationDate - currentTime) / dayInMillis).toInt() < 0
+    }
+
+    // a expirar - diferença de dias está entre 0 e 3 (expira hoje, amanhã ou nos próximos 3 dias)
+    val expiringSoon = ingredients.filter {
+        val days = ((it.expirationDate - currentTime) / dayInMillis).toInt()
+        days in 0..3
+    }
+
+    // bons: diferença de dias é 4 ou mais
+    val goodToGo = ingredients.filter {
+        val days = ((it.expirationDate - currentTime) / dayInMillis).toInt()
+        days >= 4
+    }
 
     Scaffold(
         containerColor = CreamBackground,
@@ -95,13 +113,15 @@ fun PantryScreen(viewModel: PantryViewModel = hiltViewModel()) {
     ) { padding ->
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 24.dp),
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 80.dp)
+                .fillMaxSize(),
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                start = 24.dp,
+                end = 24.dp,
+                top = padding.calculateTopPadding(),
+                bottom = padding.calculateBottomPadding()
+            )
         ) {
             item {
-                Spacer(modifier = Modifier.height(32.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -141,7 +161,7 @@ fun PantryScreen(viewModel: PantryViewModel = hiltViewModel()) {
                     placeholder = { Text("Search Ingredients...", color = GrayText) },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = GrayText) },
                     shape = RoundedCornerShape(24.dp),
-                    colors = androidx.compose.material3.TextFieldDefaults.colors(
+                    colors = TextFieldDefaults.colors(
                         focusedContainerColor = White,
                         unfocusedContainerColor = White,
                         unfocusedIndicatorColor = Color.Transparent,
@@ -149,6 +169,22 @@ fun PantryScreen(viewModel: PantryViewModel = hiltViewModel()) {
                     )
                 )
                 Spacer(modifier = Modifier.height(24.dp))
+            }
+
+            if (expired.isNotEmpty()) {
+                item {
+                    SectionHeader(title = "EXPIRED", icon = Icons.Default.Warning, color = Color.Red)
+                }
+                items(expired) { ingredient ->
+                    IngredientCard(
+                        ingredient = ingredient,
+                        tagText = formatExpiringDate(ingredient.expirationDate),
+                        tagBgColor = Color(0xFFFFEBEB), // Fundo vermelho muito clarinho
+                        tagTextColor = Color.Red,
+                        onEdit = { ingredientToEdit = ingredient },
+                        onDelete = { viewModel.deleteIngredient(ingredient) }
+                    )
+                }
             }
 
             if (expiringSoon.isNotEmpty()) {
@@ -365,7 +401,7 @@ fun AddIngredientDialog(onDismiss: () -> Unit, onAdd: (String, Double, String, L
                         dateStr = it
                         dateError = false 
                     },
-                    label = { Text("Expiration (DD/MM/YYYY, MM/YYYY, YYYY)") }, 
+                    label = { Text("Expiration (DD/MM/YYYY, DD/MM, MM/YYYY, YYYY)") },
                     modifier = Modifier.fillMaxWidth(),
                     isError = dateError
                 )
@@ -380,31 +416,49 @@ fun AddIngredientDialog(onDismiss: () -> Unit, onAdd: (String, Double, String, L
                     val qty = quantity.toDoubleOrNull() ?: 0.0
                     
                     var expirationMs: Long? = null
-                    val formats = listOf(
-                        SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()),
-                        SimpleDateFormat("MM/yyyy", Locale.getDefault()),
-                        SimpleDateFormat("yyyy", Locale.getDefault())
+
+                    // padrões de datas
+                    val patterns = listOf(
+                        "dd/MM/yyyy",
+                        "dd/MM",
+                        "MM/yyyy",
+                        "yyyy"
                     )
-                    
-                    for (format in formats) {
+
+                    for (pattern in patterns) {
                         try {
+                            val format = SimpleDateFormat(pattern, Locale.getDefault())
                             format.isLenient = false
                             val parsedDate = format.parse(dateStr)
+
                             if (parsedDate != null) {
-                                expirationMs = parsedDate.time
-                                break
+                                // se o formato que funcionou foi o "dd/MM", ajusta-se o ano para o ano atual
+                                if (pattern == "dd/MM") {
+                                    val currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
+                                    val calendar = java.util.Calendar.getInstance()
+                                    calendar.time = parsedDate
+                                    calendar.set(java.util.Calendar.YEAR, currentYear)
+                                    expirationMs = calendar.timeInMillis
+                                } else {
+                                    // caso contrário, guarda-se o tempo normal
+                                    expirationMs = parsedDate.time
+                                }
+                                break // assim que encontra um que funcione, sai do ciclo
                             }
                         } catch (e: Exception) {
-                            // try next format
+                            // se der erro, tenta o próximo formato
                         }
                     }
+
 
                     if (expirationMs == null) {
                         dateError = true
                         return@Button
                     }
 
+                    // se tudo estiver certo e os campos preenchidos, guarda
                     if (name.isNotBlank() && quantity.isNotBlank() && unit.isNotBlank()) {
+                        // no AddIngredientDialog é onAdd(), no EditIngredientDialog é onUpdate()
                         onAdd(name, qty, unit, expirationMs)
                     }
                 },
@@ -464,7 +518,7 @@ fun EditIngredientDialog(
                         dateStr = it
                         dateError = false 
                     },
-                    label = { Text("Expiration (DD/MM/YYYY, MM/YYYY, YYYY)") }, 
+                    label = { Text("Expiration (DD/MM/YYYY, DD/MM, MM/YYYY, YYYY)") }, 
                     modifier = Modifier.fillMaxWidth(),
                     isError = dateError
                 )
@@ -479,18 +533,30 @@ fun EditIngredientDialog(
                     val qty = quantity.toDoubleOrNull() ?: 0.0
                     
                     var expirationMs: Long? = null
-                    val formats = listOf(
-                        SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()),
-                        SimpleDateFormat("MM/yyyy", Locale.getDefault()),
-                        SimpleDateFormat("yyyy", Locale.getDefault())
+
+                    val patterns = listOf(
+                        "dd/MM/yyyy",
+                        "dd/MM",
+                        "MM/yyyy",
+                        "yyyy"
                     )
                     
-                    for (f in formats) {
+                    for (pattern in patterns) {
                         try {
-                            f.isLenient = false
-                            val parsedDate = f.parse(dateStr)
+                            val format = SimpleDateFormat(pattern, Locale.getDefault())
+                            format.isLenient = false
+                            val parsedDate = format.parse(dateStr)
+                            
                             if (parsedDate != null) {
-                                expirationMs = parsedDate.time
+                                if (pattern == "dd/MM") {
+                                    val currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
+                                    val calendar = java.util.Calendar.getInstance()
+                                    calendar.time = parsedDate
+                                    calendar.set(java.util.Calendar.YEAR, currentYear)
+                                    expirationMs = calendar.timeInMillis
+                                } else {
+                                    expirationMs = parsedDate.time
+                                }
                                 break
                             }
                         } catch (e: Exception) {

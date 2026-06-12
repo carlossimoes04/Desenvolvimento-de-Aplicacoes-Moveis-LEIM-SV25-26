@@ -16,11 +16,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import dam_A51696.pantrychef.presentation.auth.AuthViewModel
 import dam_A51696.pantrychef.presentation.favorites.FavoritesScreen
 import dam_A51696.pantrychef.presentation.pantry.PantryScreen
 import dam_A51696.pantrychef.presentation.recipes.RecipeDetailScreen
@@ -29,8 +31,8 @@ import dam_A51696.pantrychef.presentation.shopping.ShoppingListScreen
 import dam_A51696.pantrychef.presentation.auth.LoginScreen
 import dam_A51696.pantrychef.presentation.auth.SignUpScreen
 import dam_A51696.pantrychef.presentation.theme.ForestGreen
-import com.google.firebase.auth.FirebaseAuth
 import dam_A51696.pantrychef.presentation.recipes.IngredientRecipesScreen
+import dam_A51696.pantrychef.presentation.search.SearchScreen
 
 /**
  * Representa um destino de navegação (ecrã) na aplicação Pantry Chef
@@ -55,6 +57,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector?
     object IngredientRecipes : Screen("ingredient_recipes/{ingredientName}", "Ingredient Recipes", null) {
         fun createRoute(ingredientName: String) = "ingredient_recipes/$ingredientName"
     } // página de receitas que utilizam um ingrediente específico
+    object Search : Screen("search", "Search", null) // página de pesquisa
 }
 
 /**
@@ -71,15 +74,17 @@ val bottomNavItems = listOf(
 /**
  * Componente Composable central encarregue de configurar o NavHost da aplicação,
  * gerir a barra de navegação inferior (bottomBar) e declarar as rotas válidas de navegação
+ *
+ * @param authViewModel A ViewModel de autenticação injetada para verificar o estado da sessão
  */
 @Composable
-fun AppNavigation() {
+fun AppNavigation(authViewModel: AuthViewModel = hiltViewModel()) {
     // cria e recorda o controlador de navegação para gerir o histórico de ecrãs
     val navController = rememberNavController()
     // obtém a instância atual do firebase auth para verificar se o utilizador está autenticado
-    val currentUser = FirebaseAuth.getInstance().currentUser
+    val isUserLoggedIn = authViewModel.isUserLoggedIn
     // define o ecrã inicial: se estiver autenticado vai para a despensa, senão vai para o login
-    val startDest = if (currentUser != null) Screen.Pantry.route else Screen.Login.route
+    val startDest = if (isUserLoggedIn) Screen.Pantry.route else Screen.Login.route
 
     Scaffold(
         bottomBar = {
@@ -179,6 +184,9 @@ fun AppNavigation() {
                     // envia o utilizador para o novo ecrã filtrado por ingrediente
                     onNavigateToIngredientViewMore = { ingredientName ->
                         navController.navigate(Screen.IngredientRecipes.createRoute(ingredientName))
+                    },
+                    onNavigateToSearch = {
+                        navController.navigate(Screen.Search.route)
                     }
                 )
             }
@@ -205,6 +213,15 @@ fun AppNavigation() {
                     recipeId = recipeId,
                     // o navController encarrega-se de retroceder um passo na navegação (Pop backstack)
                     onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            // rota do ecrã de pesquisa global
+            composable(Screen.Search.route) {
+                SearchScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToRecipe = { recipeId ->
+                        navController.navigate(Screen.RecipeDetail.createRoute(recipeId))
+                    }
                 )
             }
             // rota do ecrã de receitas associadas a um ingrediente
@@ -234,10 +251,10 @@ fun AppNavigation() {
  *      Implementei uma lógica condicional na bottomBar para mostrar o menu de navegação
  *      inferior apenas nos ecrãs de destino principal (Pantry, Recipes, Shopping, Favorites),
  *      ocultando-o em fluxos como o login ou os detalhes da receita
- * - FirebaseAuth Start Destination:
- *      Decidi verificar o utilizador atualmente autenticado (currentUser) no arranque para
- *      determinar dinamicamente se o ecrã inicial deve ser o Login ou a Despensa (Pantry),
- *      melhorando a usabilidade da app
+ * - isUserLoggedIn via AuthViewModel:
+ *      Substituí a chamada direta ao FirebaseAuth pela propriedade isUserLoggedIn
+ *      da AuthViewModel, eliminando a dependência direta da Firebase na UI e respeitando
+ *      o padrão MVVM
  * - PopUpTo e SingleTop:
  *      Configurei as opções de navegação da barra inferior (popUpTo e launchSingleTop)
  *      para evitar a acumulação excessiva de instâncias duplicadas de ecrãs na pilha,

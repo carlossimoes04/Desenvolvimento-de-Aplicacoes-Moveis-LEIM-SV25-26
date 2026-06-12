@@ -71,9 +71,13 @@ fun ShoppingListScreen(
     ) { padding ->
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 32.dp)
+                .fillMaxSize(),
+            contentPadding = PaddingValues(
+                start = 24.dp,
+                end = 24.dp,
+                top = padding.calculateTopPadding(),
+                bottom = padding.calculateBottomPadding()
+            )
         ) {
             item {
                 Row(

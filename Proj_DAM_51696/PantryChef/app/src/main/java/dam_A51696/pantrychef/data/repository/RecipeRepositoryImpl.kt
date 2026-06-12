@@ -56,6 +56,19 @@ class RecipeRepositoryImpl (
             null
         }
     }
+
+    /**
+     * Pede uma receita aleatória
+     */
+    override suspend fun getRandomRecipe(): Recipe? {
+        return try {
+            val response = api.getRandomRecipe()
+            response.meals?.firstOrNull()?.toDomain()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
 }
 
 /*

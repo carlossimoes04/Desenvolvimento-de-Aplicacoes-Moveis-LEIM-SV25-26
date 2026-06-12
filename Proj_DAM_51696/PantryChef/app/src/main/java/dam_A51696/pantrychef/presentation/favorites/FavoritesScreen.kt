@@ -71,7 +71,7 @@ fun FavoritesScreen(
         containerColor = CreamBackground
     ) { padding ->
         // uma caixa (Box) que ocupa o ecrã todo e não se sobrepõe ao menu de baixo (devido ao padding)
-        Box(modifier = Modifier.fillMaxSize().padding(padding)) {
+        Box(modifier = Modifier.fillMaxSize()) {
             // qual é o estado atual que vem do ViewModel?
             when (val state = uiState) {
 
@@ -93,7 +93,8 @@ fun FavoritesScreen(
                     // chama-se a função que desenha a lista visual, passando-lhe a lista de receitas
                     FavoritesContent(
                         recipes = state.recipes,
-                        onNavigateToRecipe = onNavigateToRecipe
+                        onNavigateToRecipe = onNavigateToRecipe,
+                        paddingValues = padding
                     )
                 }
             }
@@ -109,7 +110,11 @@ fun FavoritesScreen(
  * @param onNavigateToRecipe Callback invocado para navegar até à página da receita selecionada
  */
 @Composable
-fun FavoritesContent(recipes: List<Recipe>, onNavigateToRecipe: (String) -> Unit) {
+fun FavoritesContent(
+    recipes: List<Recipe>, 
+    onNavigateToRecipe: (String) -> Unit,
+    paddingValues: PaddingValues
+) {
     // LazyColumn é equivalente à RecyclerView
     // apenas carrega para a memória as receitas visíveis no ecrã
     LazyColumn(
@@ -117,13 +122,16 @@ fun FavoritesContent(recipes: List<Recipe>, onNavigateToRecipe: (String) -> Unit
         modifier = Modifier.fillMaxSize(),
         // define as margens interiores: 24dp dos lados e 80dp em baixo
         // (para não ficar tapado pelo bottom menu)
-        contentPadding = PaddingValues(start = 24.dp, end = 24.dp, bottom = 80.dp)
+        contentPadding = PaddingValues(
+            start = 24.dp, 
+            end = 24.dp, 
+            top = paddingValues.calculateTopPadding(),
+            bottom = paddingValues.calculateBottomPadding()
+        )
     ) {
 
         // o cabeçalho (título) da página
         item {
-            // espaçamento em branco de 32dp
-            Spacer(modifier = Modifier.height(32.dp))
             Text(
                 text = "Favorite Recipes",
                 fontSize = 32.sp,
