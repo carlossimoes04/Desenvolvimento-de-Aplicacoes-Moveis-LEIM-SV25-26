@@ -11,19 +11,6 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
-private val DarkColorScheme = darkColorScheme(
-    primary = ForestGreen,
-    secondary = MutedGreen,
-    tertiary = PrimaryOrange,
-    background = DarkText,
-    surface = DarkText,
-    onPrimary = White,
-    onSecondary = White,
-    onTertiary = White,
-    onBackground = CreamBackground,
-    onSurface = CreamBackground
-)
-
 private val LightColorScheme = lightColorScheme(
     primary = ForestGreen,
     secondary = MutedGreen,
@@ -39,19 +26,12 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun PantryChefTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = false,
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    val colorScheme = LightColorScheme
 
     MaterialTheme(
         colorScheme = colorScheme,

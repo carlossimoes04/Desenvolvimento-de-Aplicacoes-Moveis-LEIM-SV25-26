@@ -95,7 +95,9 @@ fun AppNavigation(authViewModel: AuthViewModel = hiltViewModel()) {
 
             // mostra a barra inferior apenas nos ecrãs principais
             if (currentRoute in bottomNavItems.map { it.route }) {
-                NavigationBar {
+                NavigationBar (
+                    containerColor = dam_A51696.pantrychef.presentation.theme.CreamBackground
+                ) {
                     // percorre cada um dos ecrãs definidos para o menu inferior
                     bottomNavItems.forEach { screen ->
                         NavigationBarItem(
