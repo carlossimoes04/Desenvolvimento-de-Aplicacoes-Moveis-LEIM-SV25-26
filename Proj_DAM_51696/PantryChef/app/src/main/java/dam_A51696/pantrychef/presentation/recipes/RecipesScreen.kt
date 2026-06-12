@@ -56,6 +56,18 @@ import dam_A51696.pantrychef.presentation.theme.PrimaryOrange
 import dam_A51696.pantrychef.presentation.theme.LightOrange
 import dam_A51696.pantrychef.presentation.theme.White
 
+
+/**
+ * Ecrã base das receitas sugeridas
+ *
+ * Recebe o estado do viewmodel e encaminha a lógica visual correta
+ * consoante a app esteja a carregar, dê erro ou tenha sucesso nos resultados
+ *
+ * @param onNavigateToRecipe função ativada para navegar para os detalhes de uma receita específica
+ * @param onNavigateToIngredientViewMore função para saltar para a grelha completa de receitas de um só ingrediente
+ * @param onNavigateToSearch função acionada ao clicar na lupa para abrir o ecrã manual de pesquisa
+ * @param viewModel viewmodel injetado que liga a UI à camada de dados e lida com as operações lógicas
+ */
 @Composable
 fun RecipesScreen(
     onNavigateToRecipe: (String) -> Unit,
@@ -63,21 +75,28 @@ fun RecipesScreen(
     onNavigateToSearch: () -> Unit,
     viewModel: RecipesViewModel = hiltViewModel()
 ) {
+    // fica de olho no estado atual (ex: Success, Error, Loading)
     val uiState by viewModel.uiState.collectAsState()
+    // lê o estado que diz quais categorias do menu "Discover More" estão fechadas
     val collapsedCategories by viewModel.collapsedCategories.collectAsState()
 
+    // fundo principal do ecrã com a cor creme que definimos
     Scaffold(
         containerColor = CreamBackground
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize()) {
+            // avalia o tipo de estado que recebemos do ViewModel
             when (val state = uiState) {
                 is RecipesUiState.Loading -> {
+                    // se estiver a carregar a API, desenha uma rodinha ao centro
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = ForestGreen)
                 }
                 is RecipesUiState.Error -> {
+                    // se falhar a internet ou afins, atira a mensagem de erro para o ecrã a vermelho
                     Text(text = "Error: ${state.message}", color = Color.Red, modifier = Modifier.align(Alignment.Center))
                 }
                 is RecipesUiState.Success -> {
+                    // se houver sucesso, chama finalmente a função gigante que desenha os elementos reais
                     RecipesContent(
                         bestMatch = state.bestMatch,
                         bestMatchUsedIngredients = state.bestMatchUsedIngredients,
@@ -96,6 +115,21 @@ fun RecipesScreen(
     }
 }
 
+/**
+ * Interface principal das receitas quando o carregamento é concluído
+ * Agrega a receira prioritária ("Best Match") e todas as categorias por ingrediente no menu
+ *
+ * @param bestMatch receita sugerida prioritária porque o ingrediente vai expirar (pode ser null)
+ * @param bestMatchUsedIngredients lista de ingredientes da nossa despensa que estão a ser usados no "best match"
+ * @param groupedRecipes lista chave-valor que agrupa cada nome de ingrediente à sua lista de receitas recomendadas
+ * @param noRecipeIngredients ingredientes da despensa urgentes para os quais a API devolveu 0 resultados
+ * @param collapsedCategories as categorias que o utilizador escolheu encolher clicando na seta
+ * @param onToggleCategory evento acionado ao clicar no título ou seta de uma categoria
+ * @param onNavigateToSearch ativada na lupa de pesquisa
+ * @param onNavigateToRecipe ativada num cartão individual
+ * @param onNavigateToIngredientViewMore ativada ao clicar no "View More" para ver mais de 6
+ * @param paddingValues calcula as margens das barras de sistema
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipesContent(
@@ -111,8 +145,10 @@ fun RecipesContent(
     paddingValues: PaddingValues
 ) {
 
+    // a lista infinita onde deitamos o resto das funcionalidades
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
+        // usa-se o padding system no topo e em baixo para não haver elementos cobertos pela câmara
         contentPadding = PaddingValues(
             start = 24.dp, 
             end = 24.dp,
@@ -121,6 +157,7 @@ fun RecipesContent(
         )
     ) {
         item {
+            // zona do topo com o grande título e o ícone de pesquisa
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -139,6 +176,7 @@ fun RecipesContent(
                         color = GrayText
                     )
                 }
+                // botão redondo branco da lupa
                 IconButton(
                     onClick = { onNavigateToSearch() },
                     modifier = Modifier
@@ -151,8 +189,10 @@ fun RecipesContent(
             Spacer(modifier = Modifier.height(32.dp))
         }
 
+        // verifica se há algum ingrediente para o qual a api não tem receitas
         if (noRecipeIngredients.isNotEmpty()) {
             item {
+                // mostra a caixa cor de laranja de perigo com essa informação
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -169,6 +209,7 @@ fun RecipesContent(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
+                        // faz uma string com vírgulas de todos os ingredientes
                         text = "We couldn't find recipes for: ${noRecipeIngredients.joinToString(", ")}",
                         color = ForestGreen,
                         fontSize = 14.sp,
@@ -178,9 +219,10 @@ fun RecipesContent(
             }
         }
 
-
+        // se de facto a app conseguiu apurar um "melhor candidato", desenha a zona toda
         if (bestMatch != null) {
             item {
+                // mini cabeçalho antes do best match
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(bottom = 16.dp)
@@ -199,6 +241,7 @@ fun RecipesContent(
                         letterSpacing = 1.sp
                     )
                 }
+                // renderiza o cartão grande e envia a lógica visual lá para dentro
                 BestMatchCard(
                     recipe = bestMatch,
                     usedIngredients = bestMatchUsedIngredients,
@@ -211,6 +254,7 @@ fun RecipesContent(
         }
 
         item {
+            // título de base fixo no separador de descobertas
             Text(
                 "DISCOVER MORE",
                 color = GrayText,
@@ -221,13 +265,14 @@ fun RecipesContent(
             )
         }
 
+        // começa as listagens de todos os grupos de receitas obtidos
         if (groupedRecipes.isNotEmpty()) {
-            // para cada categoria (ingrediente -> lista)
+            // por cada ingrediente e a sua data source de receitas associadas
             groupedRecipes.forEach { (ingredientName, recipesList) ->
-                val isExpanded = !collapsedCategories.contains(ingredientName) // vê se está aberto
-
-                // cabeçalho da categoria
+                // boolean gerado por verificar se este ingrediente existe no Set de nomes escondidos
+                val isExpanded = !collapsedCategories.contains(ingredientName)
                 item {
+                    // cabeçalho interativo que esconde a lista (clicável na linha inteira)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -242,6 +287,7 @@ fun RecipesContent(
                             fontWeight = FontWeight.Bold,
                             color = ForestGreen
                         )
+                        // mostra seta para cima se tiver aberto, ou baixo se tiver escondido
                         Icon(
                             imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                             contentDescription = "Expand/Collapse",
@@ -250,22 +296,27 @@ fun RecipesContent(
                     }
                 }
 
-                // se estiver aberto, desenha a grelha das receitas
+                // se não tiver fechado no menu, calcula o corpo
                 if (isExpanded) {
                     val recipesToShow = recipesList.take(6) // mostra um máximo de 6 receitas nesta aba
-                    val pairs = recipesToShow.chunked(2) // divide para grelha
+                    val pairs = recipesToShow.chunked(2) // divide para grelha em pares
 
+                    // loop pelo tamanho dos pares
                     items(pairs.size) { index ->
                         val pair = pairs[index]
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
+                            // primeiro da linha
                             RecipeGridCard(
                                 recipe = pair[0],
-                                modifier = Modifier.weight(1f),
+                                modifier = Modifier.weight(1f), // o weight dá força igual
+                                // na margem e tamanho a ambas as partes
                                 onClick = { onNavigateToRecipe(pair[0].idMeal) }
                             )
+                            // como se dividiu em 2, é preciso garantir que a linha tem
+                            // uma segunda receita
                             if (pair.size > 1) {
                                 RecipeGridCard(
                                     recipe = pair[1],
@@ -273,15 +324,19 @@ fun RecipesContent(
                                     onClick = { onNavigateToRecipe(pair[1].idMeal) }
                                 )
                             } else {
+                                // se houver uma receita impar e isolada
+                                // (ex. só temos 5 receitas de batata, e este é o fim)
+                                // põe-se um espaço falso
                                 Spacer(modifier = Modifier.weight(1f))
                             }
                         }
                         Spacer(modifier = Modifier.height(16.dp))
                     }
 
-                    // se existirem mais do que 6 receitas, aparece o botão VIEW MORE
+                    // se existirem mais do que 6 receitas, aparece o botão View More
                     if (recipesList.size > 6) {
                         item {
+                            // gera o botão textual de View More
                             Text(
                                 text = "View More",
                                 color = PrimaryOrange,
@@ -289,7 +344,8 @@ fun RecipesContent(
                                 fontSize = 14.sp,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable { onNavigateToIngredientViewMore(ingredientName) } // vai para o ecrã novo
+                                    // navega e passa o ingrediente à próxima viewmodel
+                                    .clickable { onNavigateToIngredientViewMore(ingredientName) }
                                     .padding(vertical = 8.dp),
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
                             )
@@ -299,7 +355,7 @@ fun RecipesContent(
                 }
             }
         } else {
-            // mostra a msg de que não existem receitas para os ingredientes a expirar
+            // se de facto a despensa não tem nada ou os ingredientes não serviram
             item {
                 Column(
                     modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
@@ -317,7 +373,13 @@ fun RecipesContent(
     }
 }
 
-// cartão da receita com melhor match para os ingredientes do utilizador
+/**
+ * Componente do cartão que salienta a recomendação principal (Best Match) baseada nos prazos
+ *
+ * @param recipe objeto de onde sacamos o thumbnail grande
+ * @param usedIngredients os nomes de despensa envolvidos na preparação para listar nas letras pequenas
+ * @param onClick evento ativado num toque qualquer na área do cartão
+ */
 @Composable
 fun BestMatchCard(
     recipe: Recipe,
@@ -407,6 +469,13 @@ fun BestMatchCard(
     }
 }
 
+/**
+ * O pequeno módulo individual com formato padrão para integrar nas listas extensas
+ *
+ * @param recipe contém apenas o thumbnail pequeno e o seu nome respetivo para usar
+ * @param modifier permite aplicar alterações superiores na função mãe a este design
+ * @param onClick a ordem de ativação enviada se a pressão o alcançar
+ */
 @Composable
 fun RecipeGridCard(recipe: Recipe, modifier: Modifier = Modifier, onClick: () -> Unit) {
     Card(
@@ -436,3 +505,26 @@ fun RecipeGridCard(recipe: Recipe, modifier: Modifier = Modifier, onClick: () ->
         }
     }
 }
+
+/**
+ * Criei este ficheiro para fazer o ecrã principal das receitas (Recipes)
+ *
+ * Serve para recomendar receitas automáticas baseadas nos ingredientes da despensa
+ * e agrupar essas receitas em listas dinâmicas expansíveis
+ *
+ * Funções e componentes criados:
+ * - RecipesScreen:
+ *      É a função de entrada. Fica à escuta do RecipesUiState do ViewModel e gere
+ *      qual é o ecrã ou aviso a mostrar à frente
+ * - RecipesContent:
+ *      É o corpo da aplicação para as receitas. Cria uma LazyColumn infinita e mostra o título,
+ *      o botão de pesquisa, os avisos (caso não encontre receitas), o grande destaque (BestMatchCard)
+ *      e as categorias abertas/fechadas com as respetivas grelhas
+ * - BestMatchCard:
+ *      É o cartão visual gigante, com cantos arredondados, feito para destacar uma
+ *      sugestão urgente. Mostra a etiqueta verde de destaque, e corta a imagem
+ *      perfeitamente usando ContentScale.Crop
+ * - RecipeGridCard:
+ *      É a pequena célula reutilizável com uma imagem e título que preenche as
+ *      linhas da grelha de forma simétrica
+ */
