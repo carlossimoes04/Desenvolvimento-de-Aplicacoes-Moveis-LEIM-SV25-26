@@ -22,100 +22,81 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import dam_A51696.pantrychef.presentation.theme.CreamBackground
 import dam_A51696.pantrychef.presentation.theme.ForestGreen
 import dam_A51696.pantrychef.presentation.theme.White
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dam_A51696.pantrychef.domain.model.Recipe
-import dam_A51696.pantrychef.domain.repository.RecipeRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-sealed class IngredientRecipesState {
-    object Loading : IngredientRecipesState()
-    data class Success(val recipes: List<Recipe>, val ingredientName: String) : IngredientRecipesState()
-    data class Error(val message: String) : IngredientRecipesState()
-}
-
-@HiltViewModel
-class IngredientRecipesViewModel @Inject constructor(
-    private val recipeRepository: RecipeRepository,
-    savedStateHandle: SavedStateHandle
-) : ViewModel() {
-    private val _state = MutableStateFlow<IngredientRecipesState>(IngredientRecipesState.Loading)
-    val state: StateFlow<IngredientRecipesState> = _state.asStateFlow()
-
-    init {
-        // recebe o nome do ingrediente que passou na navegação
-        val ingredient = savedStateHandle.get<String>("ingredientName")
-        if (ingredient != null) {
-            fetchRecipes(ingredient)
-        } else {
-            _state.value = IngredientRecipesState.Error("Ingredient missing")
-        }
-    }
-
-    private fun fetchRecipes(ingredientName: String) {
-        viewModelScope.launch {
-            try {
-                // vai procurar todas as receitas para esse ingrediente
-                val recipes = recipeRepository.getRecipesByIngredient(ingredientName)
-                _state.value = IngredientRecipesState.Success(recipes, ingredientName)
-            } catch (e: Exception) {
-                _state.value = IngredientRecipesState.Error(e.message ?: "Unknown error")
-            }
-        }
-    }
-}
-
+/**
+ * Ecrã que mostra todas as receitas que levam um determinado ingrediente
+ *
+ * @param onNavigateBack função chamada ao clicar no botão de voltar
+ * @param onNavigateToRecipe função chamada para abrir os detalhes de uma receita da lista
+ * @param viewModel viewmodel injetado pelo hilt para gerir os dados do ecrã
+ */
 @Composable
 fun IngredientRecipesScreen(
     onNavigateBack: () -> Unit,
     onNavigateToRecipe: (String) -> Unit,
     viewModel: IngredientRecipesViewModel = hiltViewModel()
 ) {
+    // fica sempre a ler o estado do viewmodel para atualizar a interface
     val state by viewModel.state.collectAsState()
-
+    // o esqueleto do ecrã com a cor de fundo bege
     Scaffold(containerColor = CreamBackground) { padding ->
+        // organiza tudo numa coluna, respeitando as margens do sistema
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            // cabeçalho do ecrã com botão de voltar
+
+            // cabeçalho do ecrã (botão de voltar + título)
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // botão circular de voltar para trás
                 IconButton(
                     onClick = onNavigateBack,
                     modifier = Modifier.size(40.dp).background(White, CircleShape)
                 ) {
                     Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = ForestGreen)
                 }
-                Spacer(modifier = Modifier.width(16.dp))
 
-                // título dinâmico (ex: "Recipes with Rice")
+                // dá um espacinho entre o botão e o título
+                Spacer(modifier = Modifier.width(16.dp))
+                // gera o título de acordo com o estado do ecrã
                 val title = if (state is IngredientRecipesState.Success) {
+                    // põe a primeira letra do ingrediente em maiúscula
                     "Recipes with ${(state as IngredientRecipesState.Success).ingredientName.replaceFirstChar { it.uppercase() }}"
                 } else "Loading..."
-
+                // texto do título
                 Text(text = title, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = ForestGreen)
             }
-
-            // grelha - mostra todas as receitas infinitamente para baixo
+            // verifica qual é o estado atual para saber o que desenhar
             when (state) {
-                is IngredientRecipesState.Loading -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator(color = ForestGreen) }
-                is IngredientRecipesState.Error -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text(text = (state as IngredientRecipesState.Error).message, color = Color.Red) }
+                // se estiver a carregar, desenha a rodinha verde no centro
+                is IngredientRecipesState.Loading -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = ForestGreen)
+                }
+
+                // se der erro, escreve a vermelho no centro
+                is IngredientRecipesState.Error -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = (state as IngredientRecipesState.Error).message, color = Color.Red)
+                }
+
+                // se teve sucesso, desenha a lista em grelha
                 is IngredientRecipesState.Success -> {
+                    // apanha a lista do estado
                     val recipes = (state as IngredientRecipesState.Success).recipes
-                    LazyVerticalGrid( // lista em grelha
+
+                    // desenha a grelha com 2 colunas
+                    LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
-                        contentPadding = PaddingValues(24.dp),
+                        contentPadding = PaddingValues(start = 24.dp, end = 24.dp, bottom = 24.dp),
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
+                        // cria um cartão por cada receita
                         items(recipes) { recipe ->
-                            RecipeGridCard(recipe = recipe, onClick = { onNavigateToRecipe(recipe.idMeal) })
+                            // uso o cartão reutilizável das outras páginas
+                            RecipeGridCard(
+                                recipe = recipe,
+                                onClick = { onNavigateToRecipe(recipe.idMeal) }
+                            )
                         }
                     }
                 }
@@ -123,3 +104,15 @@ fun IngredientRecipesScreen(
         }
     }
 }
+
+/**
+ * Criei este ficheiro para fazer o ecrã de Receitas por Ingrediente
+ * Serve para desenhar a interface que lista as receitas de um ingrediente em grelha,
+ * quando o utilizador clica em "Ver mais" na página principal das receitas
+ *
+ * Funções e componentes criados:
+ * - IngredientRecipesScreen:
+ *      É a função principal da interface. Recebe o estado do ViewModel e desenha
+ *      o botão de voltar, o título dinâmico e uma grelha (LazyVerticalGrid) com os cartões
+ *      das receitas
+ */
