@@ -32,6 +32,21 @@ Here you will find direct links to the Practical Assignments (TPs) developed thr
     * [CoolJetpackWeatherAPP](./code/CoolJetpackWeatherApp)
     * [PicsumGalleryCompose](./DAM_TP3_Antigravity)
 
+* **TP4 - Flows&Firebase**
+  * [Report](./docs/report_tp4.md)
+  * Kotlin
+    * [intro-coroutines](./intro-coroutines)
+    * [intro-coroutinesV2](./intro-coroutinesV2)
+    * [AISimpleCalls](./AISimpleCalls)
+  * Android Studio
+    * [Friendly Chat](./build-android-start)
+    * [NotesProXMLViews3](./NotesProXMLViews3)
+
+* **PRJ - Pantry Chef**
+  * [Report](./Proj_DAM_51696/docs/report_proj.md)
+  * [Project Proposal](./Proj_DAM_51696/docs/Project%20Proposal%20-%20A51696%20-%20Pantry%20Chef.pdf)
+  * [Project](./Proj_DAM_51696/PantryChef)
+
 ## Tech Stack
 * Kotlin, using IntelliJ Idea 2025.3.2
 * Android Studio Panda 1 (XML Views)
