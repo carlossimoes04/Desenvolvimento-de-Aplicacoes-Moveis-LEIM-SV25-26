@@ -8,13 +8,13 @@ import dam_A51696.pantrychef.domain.model.ShoppingItem
  * @property id ID do item: pode ser nulo enquanto não for guardado no Firebase
  * @property name Nome do item
  * @property details Detalhes do item
- * @property isBought Indica se o item já foi comprado
+ * @property bought Indica se o item já foi comprado
  */
 data class ShoppingItemFirebaseDto(
     val id: String? = null,
     val name: String = "",
     val details: String = "",
-    val isBought: Boolean = false
+    val bought: Boolean = false
 )
 
 /**
@@ -27,7 +27,7 @@ fun ShoppingItemFirebaseDto.toDomain(): ShoppingItem {
         id = this.id ?: "",
         name = this.name,
         details = this.details,
-        isBought = this.isBought
+        isBought = this.bought
     )
 }
 
@@ -41,7 +41,7 @@ fun ShoppingItem.toDto(): ShoppingItemFirebaseDto {
         id = this.id,
         name = this.name,
         details = this.details,
-        isBought = this.isBought
+        bought = this.isBought
     )
 }
 
