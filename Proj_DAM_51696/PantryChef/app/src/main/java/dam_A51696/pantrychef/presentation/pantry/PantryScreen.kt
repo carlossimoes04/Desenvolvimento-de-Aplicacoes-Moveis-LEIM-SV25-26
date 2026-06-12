@@ -2,6 +2,7 @@ package dam_A51696.pantrychef.presentation.pantry
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,6 +51,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -89,24 +93,36 @@ fun PantryScreen(
     // estado que guarda o ingrediente a ser editado (se for nulo, o diálogo de edição não aparece)
     var ingredientToEdit by remember { mutableStateOf<Ingredient?>(null) }
 
+    // estado que guarda o texto escrito na barra de pesquisa
+    var searchQuery by remember { mutableStateOf("") }
+
     // obtém o tempo atual em milissegundos para realizar os cálculos das validades
     val currentTime = System.currentTimeMillis()
     // define a constante que representa a quantidade de milissegundos num dia
     val dayInMillis = 1000 * 60 * 60 * 24L
 
+    val focusManager = LocalFocusManager.current // gerir o foco para ocultar o teclado
+
+    // aplica o filtro de pesquisa antes de separar os ingredientes por validade
+    val filteredIngredients = if (searchQuery.isBlank()) {
+        ingredients
+    } else {
+        ingredients.filter { it.name.contains(searchQuery, ignoreCase = true) }
+    }
+
     // filtra os ingredientes expirados (diferença de dias menor que 0)
-    val expired = ingredients.filter {
+    val expired = filteredIngredients.filter {
         ((it.expirationDate - currentTime) / dayInMillis).toInt() < 0
     }
 
     // filtra os ingredientes a expirar brevemente (hoje, amanhã ou nos próximos 3 dias)
-    val expiringSoon = ingredients.filter {
+    val expiringSoon = filteredIngredients.filter {
         val days = ((it.expirationDate - currentTime) / dayInMillis).toInt()
         days in 0..3
     }
 
     // filtra os ingredientes que ainda têm uma data de validade alargada (4 ou mais dias)
-    val goodToGo = ingredients.filter {
+    val goodToGo = filteredIngredients.filter {
         val days = ((it.expirationDate - currentTime) / dayInMillis).toInt()
         days >= 4
     }
@@ -129,7 +145,12 @@ fun PantryScreen(
         // lista desenhada apenas quando visível, ocupando o ecrã inteiro
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus() // esconde o teclado ao clicar fora
+                })
+            },
             // aplica o padding para criar o efeito edge-to-edge sem tapar texto
             contentPadding = androidx.compose.foundation.layout.PaddingValues(
                 start = 24.dp,
@@ -192,8 +213,8 @@ fun PantryScreen(
 
                 // caixa de texto com cantos arredondados que serve como barra de pesquisa
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = {},
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = { Text("Search Ingredients...", color = GrayText) },
                     leadingIcon = {

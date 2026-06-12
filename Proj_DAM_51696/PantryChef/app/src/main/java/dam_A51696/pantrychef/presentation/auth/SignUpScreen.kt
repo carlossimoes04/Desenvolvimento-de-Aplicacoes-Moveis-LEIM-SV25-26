@@ -2,6 +2,7 @@ package dam_A51696.pantrychef.presentation.auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -13,6 +14,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -50,6 +53,8 @@ fun SignUpScreen(
     // guarda o estado mutável da confirmação de palavra-passe
     var passwordConfirm by remember { mutableStateOf("") }
 
+    val focusManager = LocalFocusManager.current // para esconder o teclado
+
     // reage a alterações no estado de autenticação para navegar em caso de sucesso
     LaunchedEffect(authState) {
         if (authState is AuthState.Success) {
@@ -64,7 +69,10 @@ fun SignUpScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(CreamBackground),
+            .background(CreamBackground)
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = { focusManager.clearFocus() })
+            },
         contentAlignment = Alignment.Center
     ) {
         // alinha os campos do formulário e textos verticalmente

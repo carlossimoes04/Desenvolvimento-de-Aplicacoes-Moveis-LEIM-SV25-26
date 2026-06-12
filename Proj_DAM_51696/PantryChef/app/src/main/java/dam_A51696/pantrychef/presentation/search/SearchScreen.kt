@@ -1,6 +1,7 @@
 package dam_A51696.pantrychef.presentation.search
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -17,6 +18,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -48,8 +51,15 @@ fun SearchScreen(
     // guarda o texto que está escrito na barra de pesquisa neste momento
     val searchQuery by viewModel.searchQuery.collectAsState()
 
+    val focusManager = LocalFocusManager.current // para esconder o teclado
+
     // o fundo bege claro
-    Scaffold(containerColor = CreamBackground) { padding ->
+    Scaffold(
+        modifier = Modifier.pointerInput(Unit) {
+            detectTapGestures(onTap = { focusManager.clearFocus() })
+        },
+        containerColor = CreamBackground
+    ) { padding ->
         // organiza tudo verticalmente, respeitando as margens do sistema
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             // secção superior: botão de voltar e barra de pesquisa lado a lado
