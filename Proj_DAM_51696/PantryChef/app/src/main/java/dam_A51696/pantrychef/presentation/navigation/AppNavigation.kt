@@ -174,7 +174,17 @@ fun AppNavigation(authViewModel: AuthViewModel = hiltViewModel()) {
             }
             // rota do ecrã principal da despensa (pantry)
             composable(Screen.Pantry.route) {
-                PantryScreen()
+                PantryScreen(
+                    onLogoutClick = {
+                        // sair da conta
+                        authViewModel.logout()
+                        // redirecionar para o login
+                        navController.navigate(Screen.Login.route) {
+                            // limpa a pilha de navegação para evitar o retorno acidental
+                            popUpTo(0)
+                        }
+                    }
+                )
             }
             // rota do ecrã principal de receitas (recipes)
             composable(Screen.Recipes.route) {

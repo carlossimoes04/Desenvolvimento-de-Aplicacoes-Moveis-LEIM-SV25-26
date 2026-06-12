@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,6 +25,7 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -34,16 +34,12 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -66,7 +62,6 @@ import dam_A51696.pantrychef.presentation.theme.GrayText
 import dam_A51696.pantrychef.presentation.theme.LightForestGreen
 import dam_A51696.pantrychef.presentation.theme.LightOrange
 import dam_A51696.pantrychef.presentation.theme.PrimaryOrange
-import dam_A51696.pantrychef.presentation.theme.TagGreen
 import dam_A51696.pantrychef.presentation.theme.White
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -83,7 +78,10 @@ import java.util.Locale
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PantryScreen(viewModel: PantryViewModel = hiltViewModel()) {
+fun PantryScreen(
+    viewModel: PantryViewModel = hiltViewModel(),
+    onLogoutClick: () -> Unit = {}
+) {
     // recolhe a lista de ingredientes mais recente fornecida pelo viewmodel
     val ingredients by viewModel.ingredients.collectAsState()
     // estado que controla a visibilidade do diálogo para adicionar um ingrediente
@@ -164,15 +162,29 @@ fun PantryScreen(viewModel: PantryViewModel = hiltViewModel()) {
                     }
                     // círculo que simula a fotografia de perfil do utilizador
                     // de momento só aparece um círculo verde que diz "Me"
-                    Box(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .clip(CircleShape)
-                            .background(ForestGreen),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        // texto de perfil
-                        Text("Me", color = White)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+
+                        // O nosso novo botão de Logout!
+                        IconButton(onClick = onLogoutClick) {
+                            Icon(
+                                // Se der erro de import, usa apenas Icons.Default.ExitToApp
+                                imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                                contentDescription = "Logout",
+                                tint = ForestGreen
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(8.dp))
+                        // O círculo original que diz "Me"
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(CircleShape)
+                                .background(ForestGreen),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("Me", color = White)
+                        }
                     }
                 }
                 // aplica um pequeno espaço vertical
