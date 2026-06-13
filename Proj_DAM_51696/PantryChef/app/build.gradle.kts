@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,6 +9,13 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.services)
 }
+
+val configProperties = Properties()
+val configFile = rootProject.file("config.properties")
+if (configFile.exists()) {
+    configProperties.load(FileInputStream(configFile))
+}
+val nvidiaKey = configProperties.getProperty("NVIDIA_API_KEY") ?: ""
 
 android {
     namespace = "dam_A51696.pantrychef"
@@ -19,6 +29,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "NVIDIA_API_KEY", "\"$nvidiaKey\"")
     }
 
     buildTypes {
@@ -39,6 +51,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -82,4 +95,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.database)
     implementation(libs.firebase.auth)
+
+    // Mais icons
+    implementation("br.com.devsrsouza.compose.icons:simple-icons:1.1.1")
 }
