@@ -7,6 +7,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dam_A51696.pantrychef.core.utils.Constants
 import dam_A51696.pantrychef.data.remote.api.MealDbApi
+import dam_A51696.pantrychef.data.remote.api.NvidiaApi
 import dam_A51696.pantrychef.data.repository.PantryRepositoryImpl
 import dam_A51696.pantrychef.data.repository.RecipeRepositoryImpl
 import dam_A51696.pantrychef.domain.repository.PantryRepository
@@ -17,8 +18,10 @@ import dam_A51696.pantrychef.domain.repository.FavoriteRepository
 import dam_A51696.pantrychef.data.repository.FavoriteRepositoryImpl
 import dam_A51696.pantrychef.domain.repository.AuthRepository
 import dam_A51696.pantrychef.data.repository.AuthRepositoryImpl
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 /**
@@ -115,6 +118,27 @@ object AppModule {
     @Singleton
     fun provideAuthRepository(): AuthRepository {
         return AuthRepositoryImpl()
+    }
+
+    /**
+     * Fornece a interface da Nvidia API com um cliente OkHttp customizado
+     * para aguentar chamadas longas (60 segundos) do modelo Llama.
+     */
+    @Provides
+    @Singleton
+    fun provideNvidiaApi(): NvidiaApi {
+        // cliente HTTP personalizado com timeout
+        val okHttpClient = OkHttpClient.Builder()
+            .readTimeout(60, TimeUnit.SECONDS) // tempo limite de leitura
+            .connectTimeout(60, TimeUnit.SECONDS) // tempo limite de conexão
+            .build() // constrói o cliente
+        // instancia da API com o cliente personalizado
+        return Retrofit.Builder()
+            .baseUrl("https://integrate.api.nvidia.com/v1/") // URL base da API
+            .client(okHttpClient) // usa o cliente personalizado
+            .addConverterFactory(GsonConverterFactory.create()) // conversor Gson
+            .build() // constrói a instância
+            .create(NvidiaApi::class.java) // cria a implementação da API
     }
 }
 

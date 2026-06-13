@@ -1,5 +1,7 @@
 package dam_A51696.pantrychef.presentation.navigation
 
+import compose.icons.SimpleIcons
+import compose.icons.simpleicons.Chatbot
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -33,6 +35,7 @@ import dam_A51696.pantrychef.presentation.auth.SignUpScreen
 import dam_A51696.pantrychef.presentation.theme.ForestGreen
 import dam_A51696.pantrychef.presentation.recipes.IngredientRecipesScreen
 import dam_A51696.pantrychef.presentation.search.SearchScreen
+import dam_A51696.pantrychef.presentation.translator.TranslatorScreen
 
 /**
  * Representa um destino de navegação (ecrã) na aplicação Pantry Chef
@@ -58,6 +61,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector?
         fun createRoute(ingredientName: String) = "ingredient_recipes/$ingredientName"
     } // página de receitas que utilizam um ingrediente específico
     object Search : Screen("search", "Search", null) // página de pesquisa
+    object Translator : Screen("translator", "AI Translator", SimpleIcons.Chatbot) // página de tradução AI
 }
 
 /**
@@ -67,7 +71,8 @@ val bottomNavItems = listOf(
     Screen.Pantry,
     Screen.Recipes,
     Screen.Shopping,
-    Screen.Favorites
+    Screen.Favorites,
+    Screen.Translator
 )
 
 
@@ -246,6 +251,10 @@ fun AppNavigation(authViewModel: AuthViewModel = hiltViewModel()) {
                         navController.navigate(Screen.RecipeDetail.createRoute(recipeId))
                     }
                 )
+            }
+            // rota do ecrã de tradução por chatbot
+            composable(Screen.Translator.route) {
+                TranslatorScreen()
             }
         }
     }
