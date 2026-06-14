@@ -70,6 +70,7 @@ fun SignUpScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(CreamBackground)
+            .displayCutoutPadding()
             .pointerInput(Unit) {
                 detectTapGestures(onTap = { focusManager.clearFocus() })
             },

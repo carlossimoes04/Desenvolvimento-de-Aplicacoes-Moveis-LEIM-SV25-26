@@ -50,7 +50,10 @@ fun TranslatorScreen(
     val focusManager = LocalFocusManager.current
 
     // para podermos esconder o teclado após se enviar a mensagem
-    Scaffold(containerColor = CreamBackground) { padding ->
+    Scaffold(
+        containerColor = CreamBackground,
+        modifier = Modifier.displayCutoutPadding()
+    ) { padding ->
         // coluna gigante que ocupa o ecrã todo e respeita as margens
         Column(
             modifier = Modifier

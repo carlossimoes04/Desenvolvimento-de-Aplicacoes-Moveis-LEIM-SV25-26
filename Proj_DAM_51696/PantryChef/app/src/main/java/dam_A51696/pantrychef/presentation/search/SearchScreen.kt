@@ -55,9 +55,14 @@ fun SearchScreen(
 
     // o fundo bege claro
     Scaffold(
-        modifier = Modifier.pointerInput(Unit) {
-            detectTapGestures(onTap = { focusManager.clearFocus() })
-        },
+        modifier = Modifier
+            .displayCutoutPadding()
+            .pointerInput(Unit) {
+            detectTapGestures(
+                onTap = { focusManager.clearFocus() }
+            )
+            }
+            .padding(top = 0.dp),
         containerColor = CreamBackground
     ) { padding ->
         // organiza tudo verticalmente, respeitando as margens do sistema
@@ -66,7 +71,7 @@ fun SearchScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 24.dp, start = 24.dp, end = 24.dp, bottom = 16.dp),
+                    .padding(start = 24.dp, end = 24.dp, bottom = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // botão circular branco com a seta verde para voltar

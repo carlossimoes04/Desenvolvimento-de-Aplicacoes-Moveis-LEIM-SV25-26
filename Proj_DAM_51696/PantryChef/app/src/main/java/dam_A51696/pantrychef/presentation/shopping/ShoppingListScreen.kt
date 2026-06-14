@@ -51,6 +51,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.input.pointer.pointerInput
@@ -86,7 +87,8 @@ fun ShoppingListScreen(
     val focusManager = LocalFocusManager.current // para esconder o teclado
 
     Scaffold(
-        containerColor = CreamBackground
+        containerColor = CreamBackground,
+        modifier = Modifier.displayCutoutPadding()
     ) { padding ->
         // uso da lista preguiçosa porque as listas de compras costumam ficar compridas
         LazyColumn(

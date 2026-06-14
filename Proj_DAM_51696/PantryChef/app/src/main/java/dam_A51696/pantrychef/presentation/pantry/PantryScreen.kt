@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -129,6 +130,7 @@ fun PantryScreen(
 
     // estrutura base do ecrã com uma cor de fundo personalizada e um botão flutuante
     Scaffold(
+        modifier = Modifier.displayCutoutPadding(),
         containerColor = CreamBackground,
         floatingActionButton = {
             // botão flutuante posicionado no canto inferior direito para adicionar ingredientes

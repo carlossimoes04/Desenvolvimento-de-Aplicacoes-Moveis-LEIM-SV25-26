@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -68,7 +69,8 @@ fun FavoritesScreen(
 
     // o Scaffold define a área base do ecrã (e permite adicionar barras de navegação futuramente)
     Scaffold(
-        containerColor = CreamBackground
+        containerColor = CreamBackground,
+        modifier = Modifier.displayCutoutPadding()
     ) { padding ->
         // uma caixa (Box) que ocupa o ecrã todo e não se sobrepõe ao menu de baixo (devido ao padding)
         Box(modifier = Modifier.fillMaxSize()) {
@@ -119,7 +121,8 @@ fun FavoritesContent(
     // apenas carrega para a memória as receitas visíveis no ecrã
     LazyColumn(
         // ocupa todo o espaço disponível
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize(),
         // define as margens interiores: 24dp dos lados e 80dp em baixo
         // (para não ficar tapado pelo bottom menu)
         contentPadding = PaddingValues(
@@ -129,7 +132,6 @@ fun FavoritesContent(
             bottom = paddingValues.calculateBottomPadding()
         )
     ) {
-
         // o cabeçalho (título) da página
         item {
             Text(

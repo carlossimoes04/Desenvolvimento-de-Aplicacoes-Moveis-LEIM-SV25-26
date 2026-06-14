@@ -24,7 +24,7 @@ import dam_A51696.pantrychef.presentation.theme.ForestGreen
 import dam_A51696.pantrychef.presentation.theme.White
 
 /**
- * Ecrã que mostra todas as receitas que levam um determinado ingrediente
+ * Ecrã que mostra todas as receitas que usam um determinado ingrediente
  *
  * @param onNavigateBack função chamada ao clicar no botão de voltar
  * @param onNavigateToRecipe função chamada para abrir os detalhes de uma receita da lista
@@ -41,7 +41,14 @@ fun IngredientRecipesScreen(
     // o esqueleto do ecrã com a cor de fundo bege
     Scaffold(containerColor = CreamBackground) { padding ->
         // organiza tudo numa coluna, respeitando as margens do sistema
-        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+        Column(
+            modifier = Modifier
+            .fillMaxSize()
+            .displayCutoutPadding()
+            .padding(
+                top = 24.dp
+            )
+        ) {
 
             // cabeçalho do ecrã (botão de voltar + título)
             Row(

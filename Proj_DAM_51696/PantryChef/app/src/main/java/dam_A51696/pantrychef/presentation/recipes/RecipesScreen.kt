@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -82,7 +83,8 @@ fun RecipesScreen(
 
     // fundo principal do ecrã com a cor creme que definimos
     Scaffold(
-        containerColor = CreamBackground
+        containerColor = CreamBackground,
+        modifier = Modifier.displayCutoutPadding()
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize()) {
             // avalia o tipo de estado que recebemos do ViewModel
