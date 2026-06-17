@@ -60,22 +60,64 @@ This architecture forces a one-way dependency rule. The UI (Presentation) depend
 To achieve a professional-grade application, several industry-standard external libraries were utilized in the `build.gradle.kts`. Each plays a critical role in the system:
 
 * **Jetpack Compose (`androidx.compose.*`)**
-  * **Where:** Used universally in the `presentation` layer.
+  * **Where:** Used extensively in the UI layer. Specific files:
+    * `presentation/auth/LoginScreen.kt`
+    * `presentation/auth/SignUpScreen.kt`
+    * `presentation/favorites/FavoritesScreen.kt`
+    * `presentation/navigation/AppNavigation.kt`
+    * `presentation/pantry/PantryScreen.kt`
+    * `presentation/recipes/IngredientRecipesScreen.kt`
+    * `presentation/recipes/RecipeDetailScreen.kt`
+    * `presentation/recipes/RecipesScreen.kt`
+    * `presentation/search/SearchScreen.kt`
+    * `presentation/shopping/ShoppingListScreen.kt`
+    * `presentation/theme/Color.kt`
+    * `presentation/theme/Theme.kt`
+    * `presentation/theme/Type.kt`
+    * `presentation/translator/TranslatorScreen.kt`
   * **Why:** Replaces legacy XML layouts. It allows the UI to be built dynamically and react instantly to state changes using a declarative Kotlin syntax.
 * **Dagger-Hilt (`com.google.dagger:hilt-android`)**
-  * **Where:** Used across all layers (e.g., `@HiltViewModel` in presentation, `@Inject` in data/domain, and `@HiltAndroidApp` in the Application class).
+  * **Where:** Used across all layers. Specific files:
+    * `MainActivity.kt`
+    * `PantryChefApp.kt`
+    * `di/AppModule.kt`
+    * `domain/usecase/AddMissingIngredientsUseCase.kt`
+    * `domain/usecase/GetExpiringIngredientsUseCase.kt`
+    * `domain/usecase/GetRecipeDetailUseCase.kt`
+    * `domain/usecase/GetRecipesUseCase.kt`
+    * `presentation/auth/AuthViewModel.kt`
+    * `presentation/favorites/FavoritesViewModel.kt`
+    * `presentation/pantry/PantryViewModel.kt`
+    * `presentation/recipes/IngredientRecipesViewModel.kt`
+    * `presentation/recipes/RecipeDetailViewModel.kt`
+    * `presentation/recipes/RecipesViewModel.kt`
+    * `presentation/search/SearchViewModel.kt`
+    * `presentation/shopping/ShoppingViewModel.kt`
+    * `presentation/translator/TranslatorViewModel.kt`
   * **Why:** Manages **Dependency Injection (DI)**. It automatically provides instances of Repositories and UseCases directly to the ViewModels, eliminating manual class instantiations, reducing boilerplate, and making the app modular.
 * **Firebase (`com.google.firebase:firebase-bom`)**
-  * **Where:** Implemented in the `data/remote/` package.
+  * **Where:** Implemented in the `data/remote/` package and Domain interfaces. Specific files:
+    * `data/repository/AuthRepositoryImpl.kt`
+    * `data/repository/FavoriteRepositoryImpl.kt`
+    * `data/repository/PantryRepositoryImpl.kt`
+    * `data/repository/ShoppingRepositoryImpl.kt`
+    * `domain/repository/AuthRepository.kt`
   * **Why:** Serves as the remote backend. **Firebase Auth** securely manages user sessions. The **Realtime Database** synchronizes user data (pantry stock, shopping lists) across devices instantly, utilizing `ValueEventListeners` converted to Kotlin `Flow` for real-time reactivity.
 * **Retrofit2 & Gson (`com.squareup.retrofit2:retrofit` & `converter-gson`)**
-  * **Where:** Implemented in the `data/remote/` package and DI modules.
+  * **Where:** Implemented in the `data/remote/` package and DI modules. Specific files:
+    * `data/remote/api/MealDbApi.kt`
+    * `data/remote/api/NvidiaApi.kt`
+    * `data/remote/dto/MealResponseDto.kt`
+    * `di/AppModule.kt`
   * **Why:** Retrofit handles the HTTP REST requests to the public *TheMealDB* API and the *Nvidia NIM* API. **Gson** acts as the converter factory alongside Retrofit, automatically serializing and deserializing the raw JSON responses from the APIs directly into our Kotlin Data Classes (DTOs). Additionally, a custom `OkHttpClient` was explicitly configured with extended read/connect timeouts (60 seconds) to accommodate the lengthy generation times of the 70B parameter Llama model.
 * **Coil (`io.coil-kt:coil-compose`)**
-  * **Where:** Used in the UI layer (e.g., `RecipeGridCard.kt`, `RecipeDetailScreen.kt`).
+  * **Where:** Used in the UI layer for image rendering. Specific files:
+    * `presentation/recipes/RecipeDetailScreen.kt`
+    * `presentation/recipes/RecipesScreen.kt`
   * **Why:** An image-loading library explicitly built for Kotlin and Compose. It fetches, caches, and displays high-resolution food images from URLs asynchronously without blocking the main UI thread.
 * **Jetpack Navigation Compose (`androidx.navigation:navigation-compose`)**
-  * **Where:** Implemented in the `presentation/navigation/` package.
+  * **Where:** Implemented in the `presentation/navigation/` package. Specific files:
+    * `presentation/navigation/AppNavigation.kt`
   * **Why:** Manages the screen flow, deep linking, and the bottom navigation bar seamlessly within the Jetpack Compose ecosystem.
 
 ## 5. Autonomous Software Engineering & UI Design
