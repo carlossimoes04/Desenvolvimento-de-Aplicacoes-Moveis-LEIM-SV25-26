@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!--
+    Classe base da aplicação: PantryChefApp
+    Fluxo de abertura da app:
+        PantryChefApp -> MainActivity -> PantryChefTheme -> AppNavigation
+    -->
     <application
         android:name=".PantryChefApp"
         android:allowBackup="true"
