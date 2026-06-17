@@ -68,9 +68,9 @@ To achieve a professional-grade application, several industry-standard external 
 * **Firebase (`com.google.firebase:firebase-bom`)**
   * **Where:** Implemented in the `data/remote/` package.
   * **Why:** Serves as the remote backend. **Firebase Auth** securely manages user sessions. The **Realtime Database** synchronizes user data (pantry stock, shopping lists) across devices instantly, utilizing `ValueEventListeners` converted to Kotlin `Flow` for real-time reactivity.
-* **Retrofit2 & Gson (`com.squareup.retrofit2:retrofit`)**
+* **Retrofit2 & Gson (`com.squareup.retrofit2:retrofit` & `converter-gson`)**
   * **Where:** Implemented in the `data/remote/` package and DI modules.
-  * **Why:** Handles HTTP REST requests to the public *TheMealDB* API and the *Nvidia NIM* API. A custom `OkHttpClient` was explicitly configured with extended read/connect timeouts (60 seconds) to accommodate the lengthy generation times of the 70B parameter Llama model.
+  * **Why:** Retrofit handles the HTTP REST requests to the public *TheMealDB* API and the *Nvidia NIM* API. **Gson** acts as the converter factory alongside Retrofit, automatically serializing and deserializing the raw JSON responses from the APIs directly into our Kotlin Data Classes (DTOs). Additionally, a custom `OkHttpClient` was explicitly configured with extended read/connect timeouts (60 seconds) to accommodate the lengthy generation times of the 70B parameter Llama model.
 * **Coil (`io.coil-kt:coil-compose`)**
   * **Where:** Used in the UI layer (e.g., `RecipeGridCard.kt`, `RecipeDetailScreen.kt`).
   * **Why:** An image-loading library explicitly built for Kotlin and Compose. It fetches, caches, and displays high-resolution food images from URLs asynchronously without blocking the main UI thread.
